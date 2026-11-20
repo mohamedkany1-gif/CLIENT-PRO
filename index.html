@@ -15,14 +15,14 @@
 html{min-height:100%;-webkit-text-size-adjust:100%}
 body{margin:0;min-height:100vh;min-height:100dvh;background:radial-gradient(ellipse at 90% 0%,#f7e9eb 0,transparent 34%),#f5f6f8;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;line-height:1.55}
 
-.top{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:64px;padding:8px max(18px,calc((100% - 1180px)/2));background:linear-gradient(115deg,#681923 0%,#8e2431 48%,#b33340 100%);box-shadow:0 8px 28px #741d2928}
-.top:after{content:"";position:absolute;width:300px;height:300px;border:1px solid #ffffff18;border-radius:50%;left:8%;top:-210px;box-shadow:0 0 0 35px #ffffff08,0 0 0 70px #ffffff06;pointer-events:none}
-.brand{display:flex;align-items:center;gap:11px;position:relative;z-index:1;min-width:0}
-.brandmark{width:38px;height:38px;flex:0 0 38px;border-radius:50%;filter:drop-shadow(0 3px 8px #0003)}
-.brand h1{font-size:19px;font-weight:800;letter-spacing:.7px;margin:0;line-height:1.3}
-.brand p{font-size:11px;opacity:.88;letter-spacing:.1px;margin:3px 0 0;color:#f5dadd;line-height:1.4}
+.top{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:50px;padding:6px max(18px,calc((100% - 1180px)/2));background:linear-gradient(115deg,#681923 0%,#8e2431 48%,#b33340 100%);box-shadow:0 5px 18px #741d2922}
+.top:after{content:"";position:absolute;width:210px;height:210px;border:1px solid #ffffff12;border-radius:50%;left:8%;top:-170px;pointer-events:none}
+.brand{display:flex;align-items:center;gap:10px;position:relative;z-index:1;min-width:0}
+.brandmark{width:35px;height:35px;flex:0 0 35px;border-radius:50%;filter:drop-shadow(0 3px 8px #0003)}
+.brand h1{font-size:18px;font-weight:800;letter-spacing:.7px;margin:0;line-height:1.2}
+.brand p{font-size:10.5px;opacity:.88;letter-spacing:.1px;margin:2px 0 0;color:#f5dadd;line-height:1.3}
 
-.wrap{max-width:1180px;margin:26px auto;padding:0 18px}
+.wrap{max-width:1180px;margin:24px auto;padding:0 18px}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}
 .stat,.panel{background:var(--card);border:1px solid #e9eaf0;border-radius:18px;box-shadow:var(--shadow)}
 .stat{position:relative;overflow:hidden;padding:19px 20px;min-height:106px}
@@ -87,19 +87,19 @@ tbody tr:hover{background:#fff9fa}
 .login-card .field{margin-bottom:14px}
 .login-card .btn{width:100%;margin-top:5px;padding:13px;border-radius:12px;font-size:14px}
 .userbar{display:flex;align-items:center;gap:9px;font-size:12px;position:relative;z-index:1;flex-shrink:0}
-.userbar span{background:#ffffff18;border:1px solid #ffffff30;border-radius:30px;padding:8px 12px;color:#fff;font-weight:650}
-.userbar .btn{background:#fff;color:#81212d;border-radius:30px;padding:9px 14px;font-weight:700;box-shadow:0 3px 10px #0002;border:0;white-space:nowrap}
+.userbar span{background:#ffffff18;border:1px solid #ffffff30;border-radius:30px;padding:6px 11px;color:#fff;font-weight:650}
+.userbar .btn{background:#fff;color:#81212d;border-radius:30px;padding:7px 12px;font-weight:700;box-shadow:0 3px 10px #0002;border:0;white-space:nowrap}
 
 @media(max-width:650px){
-.top{padding:7px 12px;min-height:54px;align-items:center;gap:8px}
-.brand{gap:9px;min-width:0}
-.brandmark{width:34px;height:34px;flex:0 0 34px}
-.brand h1{font-size:17px;line-height:1.25}
-.brand p{font-size:10px;margin-top:3px;line-height:1.35}
+.top{padding:5px 12px;min-height:44px;align-items:center;gap:8px}
+.brand{gap:8px;min-width:0}
+.brandmark{width:31px;height:31px;flex:0 0 31px}
+.brand h1{font-size:15.5px;line-height:1.15}
+.brand p{font-size:9px;margin-top:1px;line-height:1.2}
 .userbar{gap:6px;justify-content:flex-end}
-.userbar span{font-size:10px;padding:6px 8px;max-width:115px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.userbar .btn{font-size:10px;padding:7px 9px}
-.wrap{margin:16px auto;padding:0 12px}
+.userbar span{font-size:10px;padding:5px 8px;max-width:115px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.userbar .btn{font-size:10px;padding:6px 9px}
+.wrap{margin:14px auto;padding:0 12px}
 .stats{gap:8px}
 .stat{padding:13px 12px;min-height:88px;border-radius:14px}
 .stat strong{font-size:22px}
@@ -123,22 +123,22 @@ tbody tr:hover{background:#fff9fa}
 }
 
 @media(max-width:420px){
-.top{padding:6px 10px;min-height:50px;gap:6px}
+.top{padding:4px 10px;min-height:42px;gap:6px}
 .brand{gap:7px}
-.brandmark{width:32px;height:32px;flex-basis:32px}
-.brand h1{font-size:16px}
-.brand p{font-size:9px}
+.brandmark{width:29px;height:29px;flex:0 0 29px}
+.brand h1{font-size:14.5px}
+.brand p{font-size:8.5px}
 .userbar{gap:5px}
-.userbar span{max-width:82px;font-size:9px;padding:5px 6px}
-.userbar .btn{font-size:9px;padding:6px 7px}
+.userbar span{max-width:82px;font-size:9px;padding:4px 6px}
+.userbar .btn{font-size:9px;padding:5px 7px}
 }
 
 @media(max-width:360px){
-.top{padding:8px}
-.brand h1{font-size:15px}
+.top{padding:4px 8px;min-height:40px}
+.brand h1{font-size:14px}
 .brand p{font-size:8px}
 .userbar span{display:none}
-.userbar .btn{font-size:9px;padding:6px}
+.userbar .btn{font-size:9px;padding:5px 6px}
 .stats{grid-template-columns:repeat(3,minmax(0,1fr))}
 .stat{padding:11px 8px}
 .stat span{font-size:9px}
@@ -873,4 +873,4 @@ if('serviceWorker' in navigator){
 }
 </script>
 </body>
-                                                       </html>
+</html>
