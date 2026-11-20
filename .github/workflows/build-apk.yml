@@ -1,48 +1,58 @@
 name: Build CLIENT PRO APK
 
 on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
+workflow_dispatch:
+push:
+branches:
+- main
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+build:
+runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
+steps:
+  - name: Checkout
+    uses: actions/checkout@v5
 
-      - name: Setup Node
-        uses: actions/setup-node@v5
-        with:
-          node-version: 22
+  - name: Setup Node
+    uses: actions/setup-node@v5
+    with:
+      node-version: 22
 
-      - name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: 21
+  - name: Setup Java
+    uses: actions/setup-java@v5
+    with:
+      distribution: temurin
+      java-version: 21
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+  - name: Setup Android SDK
+    uses: android-actions/setup-android@v3
+    with:
+      packages: 'platform-tools;platforms;android-35;build-tools;35.0.0'
 
-      - name: Build APK
-        run: |
-          npm init -y
-          npm install @capacitor/core @capacitor/cli @capacitor/android
-          mkdir -p www
-          cp index.html www/index.html
-          cp manifest.webmanifest sw.js icon.svg icon-192.png www/ 2>/dev/null || true
-          npx cap init "CLIENT PRO" "com.mohamedkany.clientpro" --web-dir www
-          npx cap add android
-          cd android
-          chmod +x gradlew
-          ./gradlew assembleDebug
+  - name: Build APK
+    run: |
+      npm init -y
+      npm install @capacitor/core @capacitor/cli @capacitor/android
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: CLIENT-PRO-APK
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+      mkdir -p www
+
+      cp index.html www/index.html
+      cp manifest.webmanifest sw.js icon.svg icon-192.png www/ 2>/dev/null || true
+
+      npx cap init "CLIENT PRO" "com.mohamedkany.clientpro" --web-dir www
+
+      npx cap add android
+
+      cd android
+
+      chmod +x gradlew
+
+      ./gradlew assembleDebug
+
+  - name: Upload APK
+    uses: actions/upload-artifact@v4
+    with:
+      name: CLIENT-PRO-APK
+      path: android/app/build/outputs/apk/debug/app-debug.apk
+      if-no-files-found: error
