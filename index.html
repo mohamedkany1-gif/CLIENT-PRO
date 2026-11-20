@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#a92835">
+<meta name="description" content="CLIENT PRO لإدارة العملاء والزيارات وقطع الغيار">
+<title>CLIENT PRO | إدارة العملاء</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{--red:#a92835;--red2:#7f1e29;--bg:#f4f5f7;--card:#fff;--ink:#20232a;--muted:#737985;--line:#e7e9ed;--green:#16845b;--shadow:0 8px 26px #1720330c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Tahoma,Arial,sans-serif}
+.top{background:linear-gradient(120deg,var(--red2),var(--red));color:white;padding:20px max(18px,calc((100% - 1180px)/2));display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:12px}.brandmark{width:48px;height:48px;flex:0 0 48px;border-radius:50%;filter:drop-shadow(0 2px 5px #0002)}.brand h1{font-size:23px;margin:0;letter-spacing:1px}.brand p{margin:5px 0 0;color:#f5dadd;font-size:12px}
+.wrap{max-width:1180px;margin:22px auto;padding:0 16px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+.stat,.panel{background:var(--card);border:1px solid var(--line);border-radius:15px;box-shadow:var(--shadow)}.stat{padding:17px}.stat span{font-size:12px;color:var(--muted)}.stat strong{display:block;font-size:25px;margin-top:8px}
+.panel{padding:18px;margin-bottom:18px}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}.toolbar h2{font-size:17px;margin:0}
+.actions,.form-actions,.rowactions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:0;border-radius:9px;padding:11px 15px;font:inherit;font-size:13px;cursor:pointer;background:#f0f1f4;color:#30343b}.btn.primary{background:var(--red);color:#fff}.btn.dark{background:#30343b;color:#fff}.btn.danger{background:#fae9eb;color:#9d2431}.btn:disabled{opacity:.55;cursor:not-allowed}
+input,textarea,select{font:inherit;border:1px solid #dfe2e8;border-radius:9px;padding:12px;background:#fff;color:var(--ink);width:100%;outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--red);box-shadow:0 0 0 3px #a9283512}
+label{font-size:12px;color:#555e6b;display:block;margin:0 0 7px}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.full{grid-column:1/-1}
+.hidden{display:none!important}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:11px}table{width:100%;border-collapse:collapse;min-width:820px;background:white}
+th,td{padding:13px 12px;text-align:right;border-bottom:1px solid var(--line);font-size:13px;vertical-align:top}th{background:#fafafb;color:#666d78;font-weight:600;white-space:nowrap}tr:last-child td{border-bottom:0}
+.name{font-weight:700}.sub{color:var(--muted);font-size:11px;margin-top:5px}.rating{color:#d28a19;white-space:nowrap}.mini{padding:7px 9px;font-size:11px}.empty{text-align:center;color:var(--muted);padding:35px}
+.foot{text-align:center;color:#9298a2;font-size:11px;padding:8px 0 28px}.badge{font-size:11px;background:#f8e9eb;color:var(--red);padding:5px 8px;border-radius:20px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#252932;color:white;padding:12px 18px;border-radius:10px;box-shadow:var(--shadow);z-index:30;font-size:13px;max-width:90%;text-align:center}
+.search{max-width:420px;min-width:220px}.photo-box{border:1px dashed #cfd3dc;border-radius:13px;padding:14px;background:#fafafb}.photo-pick{display:flex;align-items:center;justify-content:center;min-height:60px;border-radius:10px;background:#fff;color:var(--red);font-weight:700;cursor:pointer}.photo-pick input{display:none}
+.photo-preview{display:none;width:100%;max-width:260px;max-height:190px;object-fit:contain;border:1px solid var(--line);border-radius:12px;margin-top:12px;padding:6px;background:#fff}.device-thumb{width:48px;height:48px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+.hint{font-size:11px;color:var(--muted);line-height:1.8;margin-top:10px}.modal{position:fixed;inset:0;background:#11182788;z-index:20;display:flex;align-items:center;justify-content:center;padding:14px}.modalbox{background:#fff;border-radius:16px;width:min(900px,100%);max-height:92vh;overflow:auto;padding:18px}
+.modalhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:15px}.modalhead h2{margin:0;font-size:17px}
+.part-row{display:grid;grid-template-columns:2fr .8fr 1fr 2fr auto;gap:8px;align-items:end;margin-bottom:9px}.part-total{font-weight:700;color:var(--red);font-size:17px}
+.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px}.login-card{width:min(420px,100%);background:#fff;padding:25px;border-radius:18px;box-shadow:var(--shadow);border:1px solid var(--line)}
+.login-card .brand{justify-content:center;color:var(--ink);margin-bottom:24px}.login-card .brand p{color:var(--muted)}.login-card h2{text-align:center;font-size:18px;margin:0 0 20px}
+.login-card .field{margin-bottom:14px}.login-card .btn{width:100%;margin-top:5px}.userbar{display:flex;align-items:center;gap:10px;font-size:12px}
+@media(max-width:650px){.top{padding:16px}.brand h1{font-size:19px}.stats{gap:8px}.stat{padding:12px}.stat strong{font-size:20px}.wrap{margin:14px auto}.panel{padding:13px}.formgrid{grid-template-columns:1fr}.full{grid-column:auto}.toolbar{align-items:stretch}.search{max-width:none}.actions .btn{flex:1}.stat span{font-size:10px}.part-row{grid-template-columns:1fr 1fr}.part-row .part-name,.part-row .part-notes{grid-column:1/-1}.part-row .remove-part{grid-column:1/-1}.userbar{flex-wrap:wrap;justify-content:flex-end}}
+
+/* CLIENT PRO visual refresh */
+:root{--red:#a52836;--red2:#741d29;--bg:#f5f6f8;--card:#fff;--ink:#20242c;--muted:#78808c;--line:#e8eaf0;--green:#16845b;--shadow:0 12px 34px rgba(25,31,45,.065)}
+body{background:radial-gradient(ellipse at 90% 0%,#f7e9eb 0,transparent 34%),#f5f6f8;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;line-height:1.55}
+.top{position:relative;overflow:hidden;padding:22px max(18px,calc((100% - 1180px)/2));background:linear-gradient(115deg,#681923 0%,#8e2431 48%,#b33340 100%);box-shadow:0 8px 28px #741d2928}
+.top:after{content:"";position:absolute;width:300px;height:300px;border:1px solid #ffffff18;border-radius:50%;left:8%;top:-210px;box-shadow:0 0 0 35px #ffffff08,0 0 0 70px #ffffff06;pointer-events:none}
+.brand{gap:14px;position:relative;z-index:1}.brandmark{width:52px;height:52px;flex-basis:52px;filter:drop-shadow(0 3px 8px #0003)}.brand h1{font-size:22px;font-weight:800;letter-spacing:.7px}.brand p{font-size:12px;opacity:.88;letter-spacing:.1px}
+.userbar{position:relative;z-index:1;gap:11px}.userbar span{background:#ffffff18;border:1px solid #ffffff30;border-radius:30px;padding:9px 14px;color:#fff;font-weight:650}.userbar .btn{background:#fff;color:#81212d;border-radius:30px;padding:10px 17px;font-weight:700;box-shadow:0 3px 10px #0002}
+.wrap{max-width:1180px;margin:26px auto;padding:0 18px}.stats{gap:16px;margin-bottom:20px}.stat,.panel{border:1px solid #e9eaf0;border-radius:18px;box-shadow:var(--shadow)}.stat{position:relative;overflow:hidden;padding:19px 20px;min-height:106px}.stat:before{content:"";position:absolute;right:0;top:0;bottom:0;width:4px;background:linear-gradient(var(--red),#d77b83)}.stat span{font-size:12px;font-weight:650;color:#7b818d}.stat strong{font-size:29px;line-height:1.2;margin-top:10px;color:#282c35}
+.panel{padding:21px;margin-bottom:20px}.toolbar{margin-bottom:18px}.toolbar h2{font-size:18px;font-weight:800;display:flex;align-items:center;gap:9px}.toolbar h2:before{content:"";width:5px;height:21px;border-radius:8px;background:var(--red);display:inline-block}.badge{background:#f9ecee;color:#962a37;border:1px solid #f2dadd;border-radius:30px;padding:6px 11px;font-weight:700}
+.btn{border:1px solid #e7e8ed;border-radius:11px;padding:10px 15px;font-weight:650;font-size:13px;transition:transform .16s,box-shadow .16s,background .16s}.btn:hover{transform:translateY(-1px);box-shadow:0 5px 13px #1d263510}.btn.primary{background:linear-gradient(135deg,#a72b39,#84212e);border-color:transparent;box-shadow:0 5px 13px #a5283526}.btn.primary:hover{background:linear-gradient(135deg,#b33543,#922735)}.btn.dark{background:#303641}.btn.danger{border-color:#f5d9dd;background:#fff0f1}.btn.mini{border-radius:9px;padding:7px 10px}
+input,textarea,select{border:1px solid #e0e3e9;border-radius:11px;padding:12px 13px;background:#fff;font-size:14px;transition:border-color .15s,box-shadow .15s}input::placeholder,textarea::placeholder{color:#a4a9b2}input:focus,textarea:focus,select:focus{border-color:#b64b56;box-shadow:0 0 0 4px #a9283512}label{font-size:12px;font-weight:700;color:#59616d;margin-bottom:8px}.formgrid{gap:16px}.form-actions{border-top:1px solid #eff0f3;margin-top:20px;padding-top:17px}.form-actions .btn{min-width:130px}
+.photo-box{border:1px dashed #d5d9e1;border-radius:13px;background:#fafbfc;padding:12px}.photo-pick{border:1px solid #f0dadd;background:#fff8f9;border-radius:10px;min-height:54px}.photo-preview{border-radius:12px}.part-row{padding:12px;background:#fafbfc;border:1px solid #eceef2;border-radius:13px;gap:10px}.part-total{padding:11px 14px;border-radius:11px;background:#fbf0f1;color:#922936;font-size:15px;display:inline-flex;margin-top:10px}
+.search{max-width:460px;background:#fafbfc;padding:12px 15px}.tablewrap{border:1px solid #e9ebf0;border-radius:14px}table{min-width:860px}th{background:#f7f8fa;color:#646c78;font-size:12px;font-weight:750;padding:14px}td{padding:13px 12px;font-size:13px}tbody tr{transition:background .15s}tbody tr:hover{background:#fff9fa}.device-thumb{width:52px;height:52px;border-radius:11px}.empty{padding:42px 18px;font-size:13px}
+.modal{backdrop-filter:blur(5px);background:#1519239c}.modalbox{border:1px solid #ffffff80;border-radius:20px;box-shadow:0 24px 80px #11182735;padding:22px}.modalhead{padding-bottom:13px;border-bottom:1px solid #eff0f3}.modalhead h2{font-size:18px;font-weight:800}.toast{border-radius:13px;padding:13px 19px;box-shadow:0 10px 35px #11182735}
+.login-screen{background:radial-gradient(circle at 15% 20%,#f5dfe2 0,transparent 30%),radial-gradient(circle at 85% 85%,#e9eaf0 0,transparent 34%),#f5f6f8}.login-card{border:1px solid #ececf1;border-radius:23px;padding:31px;box-shadow:0 22px 65px #20283b12}.login-card .brandmark{width:58px;height:58px;flex-basis:58px}.login-card .brand h1{font-size:24px}.login-card h2{font-size:19px;margin-bottom:23px}.login-card .btn{padding:13px;border-radius:12px;font-size:14px}
+@media(max-width:650px){.top{padding:15px 14px;align-items:flex-start}.brand{gap:10px}.brandmark{width:44px;height:44px;flex-basis:44px}.brand h1{font-size:18px}.brand p{font-size:10px}.userbar{gap:7px}.userbar span{font-size:10px;padding:7px 9px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.userbar .btn{font-size:11px;padding:8px 10px}.wrap{margin:16px auto;padding:0 12px}.stats{gap:8px}.stat{padding:13px 12px;min-height:88px;border-radius:14px}.stat strong{font-size:22px}.stat span{font-size:10px;line-height:1.4;display:block}.panel{padding:15px;border-radius:15px}.toolbar{gap:10px}.toolbar h2{font-size:16px}.actions{width:100%}.actions .btn{flex:1;padding:10px 8px;font-size:11px}.formgrid{gap:13px}.form-actions .btn{flex:1;min-width:0}.part-row{padding:10px}.modal{padding:8px}.modalbox{padding:15px;border-radius:17px;max-height:94vh}.login-card{padding:24px 19px}}
+@media(max-width:380px){.userbar{max-width:48%;}.userbar span{display:none}.stats{grid-template-columns:repeat(3,minmax(0,1fr))}.stat{padding:11px 8px}.stat span{font-size:9px}.stat strong{font-size:20px}}
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div id="loginScreen" class="login-screen">
+ <form id="loginForm" class="login-card">
+  <div class="brand">
+   <svg class="brandmark" viewBox="0 0 64 64" role="img" aria-label="CLIENT PRO"><circle cx="32" cy="32" r="31" fill="#fff" stroke="#eee"/><path d="M39 13c-4-3-8-4-13-4C13 9 4 19 4 32s9 23 22 23c5 0 9-1 13-4l-8-9c-2 2-4 3-7 3-7 0-11-5-11-13s4-13 11-13c3 0 5 1 7 3z" fill="#a92835"/><path d="M39 23h19v7H39zm0 12h19v7H39z" fill="#a92835"/></svg>
+   <div><h1>CLIENT PRO</h1><p>إدارة العملاء والزيارات وقطع الغيار</p></div>
+  </div>
+  <h2>تسجيل الدخول</h2>
+  <div class="field"><label for="loginUsername">اسم المستخدم</label><input id="loginUsername" type="text" autocomplete="username" autocapitalize="none" required></div>
+  <div class="field"><label for="loginPassword">كلمة المرور</label><input id="loginPassword" type="password" autocomplete="current-password" required></div>
+  <button class="btn primary" id="loginBtn" type="submit">دخول</button>
+  <p class="hint">استخدم اسم المستخدم وكلمة المرور المسجلين في CLIENT PRO.</p>
+ </form>
+</div>
+
+<div id="app" class="hidden">
+<header class="top">
+ <div class="brand"><svg class="brandmark" viewBox="0 0 64 64" role="img" aria-label="CLIENT PRO"><circle cx="32" cy="32" r="31" fill="#fff"/><path d="M39 13c-4-3-8-4-13-4C13 9 4 19 4 32s9 23 22 23c5 0 9-1 13-4l-8-9c-2 2-4 3-7 3-7 0-11-5-11-13s4-13 11-13c3 0 5 1 7 3z" fill="#a92835"/><path d="M39 23h19v7H39zm0 12h19v7H39z" fill="#a92835"/></svg><div><h1>CLIENT PRO</h1><p>إدارة العملاء والزيارات وقطع الغيار</p></div></div>
+ <div class="userbar"><span id="userEmail"></span><button class="btn" id="logoutBtn">تسجيل الخروج</button></div>
+</header>
+<main class="wrap">
+<section class="stats"><div class="stat"><span>إجمالي العملاء</span><strong id="total">0</strong></div><div class="stat"><span>عملاء تمت إضافتهم هذا الشهر</span><strong id="month">0</strong></div><div class="stat"><span>متوسط التقييم</span><strong id="average">—</strong></div></section>
+<section class="panel" id="editor">
+ <div class="toolbar"><h2 id="formTitle">إضافة عميل جديد</h2><span class="badge">بيانات العميل</span></div>
+ <form id="customerForm"><input type="hidden" id="editId"><div class="formgrid">
+  <div><label for="phone">رقم التليفون</label><input id="phone" inputmode="tel"></div>
+  <div><label for="name">اسم العميل *</label><input id="name" required></div>
+  <div><label for="address">العنوان</label><input id="address"></div>
+  <div><label for="device">نوع الجهاز</label><input id="device"></div>
+  <div><label for="devicePhoto">صورة الجهاز</label><div class="photo-box"><label class="photo-pick" for="devicePhoto">إضافة صورة للجهاز<input id="devicePhoto" type="file" accept="image/*" capture="environment"></label><img id="photoPreview" class="photo-preview" alt="معاينة صورة الجهاز"><button class="btn mini hidden" type="button" id="removePhoto">إزالة الصورة</button></div></div>
+  <div><label for="rating">التقييم</label><select id="rating"><option value="">بدون تقييم</option><option value="5">5 ممتاز</option><option value="4">4 جيد جداً</option><option value="3">3 جيد</option><option value="2">2 مقبول</option><option value="1">1 ضعيف</option></select></div>
+  <div class="full"><label for="problem">سبب المشكلة</label><textarea id="problem" rows="2"></textarea></div>
+  <div class="full"><label for="notes">ملاحظات</label><textarea id="notes" rows="2"></textarea></div>
+  <div><label for="initialVisitDate">تاريخ الزيارة</label><input id="initialVisitDate" type="date"></div>
+  <div class="full">
+   <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0 10px"><label style="margin:0;font-weight:700;color:#30343b">قطع الغيار</label><button class="btn mini" type="button" id="addInitialPartBtn">+ إضافة قطعة غيار</button></div>
+   <div id="initialPartsEditor"></div>
+   <div class="part-total" id="initialPartsTotal">إجمالي قطع الغيار: 0</div>
+  </div>
+ </div><div class="form-actions"><button class="btn primary" type="submit" id="saveBtn">حفظ العميل</button><button class="btn hidden" type="button" id="cancelEdit">إلغاء التعديل</button><button class="btn" type="reset" id="clearBtn">مسح الخانات</button></div></form>
+</section>
+<section class="panel">
+ <div class="toolbar"><h2>سجل العملاء <span class="sub" id="shown"></span></h2><div class="actions"><button class="btn" id="refreshBtn">تحديث البيانات</button><button class="btn" id="exportBtn">تصدير Excel</button></div></div>
+ <input class="search" id="search" aria-label="بحث في سجل العملاء">
+ <div class="tablewrap" style="margin-top:14px"><table><thead><tr><th>العميل</th><th>رقم التليفون</th><th>العنوان</th><th>آخر زيارة</th><th>نوع الجهاز</th><th>صورة الجهاز</th><th>سبب المشكلة</th><th>التقييم</th><th>الإجراءات</th></tr></thead><tbody id="rows"></tbody></table><div class="empty hidden" id="empty">لا توجد بيانات لعرضها.</div></div>
+ <p class="hint">البيانات تُحفظ في قاعدة بيانات CLIENT PRO وتظهر بعد تسجيل الدخول من الأجهزة الأخرى.</p>
+</section>
+<div class="foot">CLIENT PRO · Customer Records</div>
+</main>
+</div>
+
+<div id="visitModal" class="modal hidden"><div class="modalbox">
+ <div class="modalhead"><h2 id="visitTitle">سجل زيارات العميل</h2><button class="btn" type="button" onclick="closeVisits()">إغلاق</button></div>
+ <div class="panel">
+  <h3 style="font-size:15px;margin-top:0">إضافة زيارة</h3>
+  <form id="visitForm"><input type="hidden" id="visitCustomerId"><div class="formgrid">
+   <div><label for="visitDate">تاريخ الزيارة</label><input id="visitDate" type="date" required></div>
+   <div class="full"><label for="visitProblem">سبب الزيارة أو المشكلة</label><textarea id="visitProblem" rows="2"></textarea></div>
+   <div class="full"><label for="visitNotes">ملاحظات الزيارة</label><textarea id="visitNotes" rows="2"></textarea></div>
+  </div>
+  <div style="margin:16px 0 10px;display:flex;justify-content:space-between;align-items:center;gap:8px"><h3 style="font-size:15px;margin:0">قطع الغيار المستخدمة</h3><button class="btn mini" type="button" id="addPartBtn">إضافة قطعة</button></div>
+  <div id="partsEditor"></div>
+  <div class="part-total" id="partsTotal">إجمالي قطع الغيار: 0</div>
+  <div class="form-actions"><button class="btn primary" id="saveVisitBtn" type="submit">حفظ الزيارة وقطع الغيار</button></div>
+  </form>
+ </div>
+ <h3 style="font-size:15px">سجل الزيارات السابق</h3><div id="visitHistory"></div>
+</div></div>
+<div id="toast" class="toast hidden"></div>
+
+<script>
+const SUPABASE_URL='https://uwbgxuomriltdmjdcmnk.supabase.co';
+const SUPABASE_KEY='sb_publishable_LCdc9EPosGfewwDJYQFNog_OLXOMlph';
+const LOGIN_USERNAME='Mohamed helal';
+const LOGIN_EMAIL='mohamedkany1@gmail.com';
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const $=id=>document.getElementById(id);
+let customers=[],currentPhotoPath='',activeCustomer=null,partRows=0,photoPreviewUrl='';
+function toast(message){$('toast').textContent=message;$('toast').classList.remove('hidden');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>$('toast').classList.add('hidden'),3000)}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function localDate(){let d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+async function requireSession(){const {data:{session}}=await db.auth.getSession();if(session){showApp(session);await loadCustomers()}else showLogin()}
+function showLogin(){$('loginScreen').classList.remove('hidden');$('app').classList.add('hidden')}
+function showApp(session){$('loginScreen').classList.add('hidden');$('app').classList.remove('hidden');const email=session?.user?.email||'';$('userEmail').textContent=email.toLowerCase()===LOGIN_EMAIL.toLowerCase()?LOGIN_USERNAME:email}
+$('loginForm').addEventListener('submit',async e=>{e.preventDefault();$('loginBtn').disabled=true;try{const username=$('loginUsername').value.trim().toLowerCase();if(username!==LOGIN_USERNAME.toLowerCase())throw new Error('Invalid username');const {data,error}=await db.auth.signInWithPassword({email:LOGIN_EMAIL,password:$('loginPassword').value});if(error)throw error;showApp(data);await loadCustomers();toast('أهلاً بك Mohamed helal')}catch(err){console.error(err);toast('اسم المستخدم أو كلمة المرور غير صحيحة')}finally{$('loginBtn').disabled=false}});
+$('logoutBtn').onclick=async()=>{await db.auth.signOut();customers=[];showLogin();toast('تم تسجيل الخروج')};
+db.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_OUT')showLogin();if(event==='TOKEN_REFRESHED'&&session)showApp(session)});
+async function uploadPhoto(file,customerId){const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';const path=`${customerId}/${crypto.randomUUID()}.${ext}`;const {error}=await db.storage.from('customer-photos').upload(path,file,{upsert:false,contentType:file.type||'image/jpeg'});if(error)throw error;return path}
+async function signedPhoto(path){if(!path)return '';const {data,error}=await db.storage.from('customer-photos').createSignedUrl(path,3600);return error?'':data.signedUrl}
+async function loadCustomers(){try{const {data,error}=await db.from('customers').select('*').order('created_at',{ascending:false});if(error)throw error;customers=data||[];await render()}catch(err){console.error(err);toast('تعذر تحميل العملاء. راجع اتصال قاعدة البيانات والصلاحيات')}}
+async function render(){const q=$('search').value.toLowerCase().trim();let list=customers.filter(c=>[c.name,c.phone,c.address,c.device_type,c.problem_description,c.notes].join(' ').toLowerCase().includes(q));let latest={};if(list.length){const ids=list.map(c=>c.id);const {data}=await db.from('visits').select('customer_id,visit_date').in('customer_id',ids).order('visit_date',{ascending:false});(data||[]).forEach(v=>{if(!latest[v.customer_id])latest[v.customer_id]=v.visit_date})}
+$('total').textContent=customers.length;const month=localDate().slice(0,7);$('month').textContent=customers.filter(c=>(c.created_at||'').slice(0,7)===month).length;const rated=customers.filter(c=>Number(c.rating)>0);$('average').textContent=rated.length?(rated.reduce((a,c)=>a+Number(c.rating),0)/rated.length).toFixed(1)+' / 5':'—';$('shown').textContent=`(${list.length})`;
+const rows=await Promise.all(list.map(async c=>{const photo=await signedPhoto(c.device_photo);return `<tr><td><div class="name">${esc(c.name)}</div><div class="sub">${esc(c.notes||'')}</div></td><td dir="ltr">${esc(c.phone||'—')}</td><td>${esc(c.address||'—')}</td><td>${esc(latest[c.id]||'—')}</td><td>${esc(c.device_type||'—')}</td><td>${photo?`<img class="device-thumb" src="${photo}" alt="صورة الجهاز">`:'—'}</td><td>${esc(c.problem_description||'—')}</td><td class="rating">${c.rating?'★'.repeat(Number(c.rating))+'☆'.repeat(5-Number(c.rating)):'—'}</td><td><div class="rowactions"><button class="btn mini" onclick="editCustomer('${c.id}')">تعديل</button><button class="btn mini" onclick="openVisits('${c.id}')">الزيارات والقطع</button><button class="btn mini danger" onclick="deleteCustomer('${c.id}')">حذف</button></div></td></tr>`}));$('rows').innerHTML=rows.join('');$('empty').classList.toggle('hidden',list.length>0)}
+function formValue(id){return $(id).value.trim()}
+$('customerForm').addEventListener('submit',async e=>{
+ e.preventDefault();
+ const id=$('editId').value||crypto.randomUUID();
+ const old=customers.find(c=>c.id===id);
+ const file=$('devicePhoto').files[0];
+ const parts=collectParts('initialPartsEditor');
+ const invalid=[...$('initialPartsEditor').querySelectorAll('.part-row')].some(r=>r.querySelector('.p-name').value.trim()&&(!(Number(r.querySelector('.p-qty').value)>0)||Number(r.querySelector('.p-price').value)<0));
+ if(invalid){toast('راجع كمية وسعر قطع الغيار');return}
+ $('saveBtn').disabled=true;
+ try{
+  let photoPath=old?.device_photo||null;
+  if(file)photoPath=await uploadPhoto(file,id);
+  const payload={id,name:formValue('name'),phone:formValue('phone')||null,address:formValue('address')||null,device_type:formValue('device')||null,device_photo:photoPath,problem_description:formValue('problem')||null,notes:formValue('notes')||null,rating:formValue('rating')?Number(formValue('rating')):null};
+  if(old){
+   const result=await db.from('customers').update(payload).eq('id',id).select().single();
+   if(result.error)throw result.error;
+   if($('initialVisitDate').value||parts.length){
+    const {data:visit,error:visitError}=await db.from('visits').insert({customer_id:id,visit_date:$('initialVisitDate').value||localDate(),problem_description:payload.problem_description,notes:payload.notes}).select().single();
+    if(visitError)throw visitError;
+    if(parts.length){const {error:partsError}=await db.from('spare_parts').insert(parts.map(p=>({...p,visit_id:visit.id})));if(partsError){await db.from('visits').delete().eq('id',visit.id);throw partsError}}
+    await logActivity(id,'visited','تسجيل زيارة وقطع غيار');
+   }
+   await logActivity(id,'updated','تعديل بيانات العميل');
+   toast('تم تحديث بيانات العميل');
+  }else{
+   const visit={visit_date:$('initialVisitDate').value||localDate(),problem_description:payload.problem_description,notes:payload.notes};
+   const {data,error}=await db.rpc('clientpro_create_customer_visit',{p_customer:payload,p_parts:parts,p_visit:visit});
+   if(error)throw error;
+   const savedId=typeof data==='string'?data:(data?.id||id);
+   await logActivity(savedId,'created','إضافة عميل مع الزيارة وقطع الغيار');
+   toast('تم حفظ العميل والزيارة وقطع الغيار');
+  }
+  resetForm();
+  await loadCustomers();
+ }catch(err){console.error('CLIENT PRO save error:',err);toast('تعذر الحفظ: '+(err?.message||'راجع الاتصال والصلاحيات'))}
+ finally{$('saveBtn').disabled=false}
+});
+async function logActivity(customerId,action,details){const {data:{user}}=await db.auth.getUser();if(!user)return;const {error}=await db.from('customer_activity').insert({customer_id:customerId,user_id:user.id,action,details});if(error)console.warn('activity log',error)}
+window.editCustomer=async id=>{const c=customers.find(x=>x.id===id);if(!c)return;const map={phone:c.phone,name:c.name,address:c.address,device:c.device_type,problem:c.problem_description,notes:c.notes,rating:c.rating};Object.entries(map).forEach(([k,v])=>$(k).value=v??'');$('editId').value=id;$('initialVisitDate').value='';$('initialPartsEditor').innerHTML='';updatePartsTotal('initialPartsEditor','initialPartsTotal');currentPhotoPath=c.device_photo||'';$('devicePhoto').value='';$('photoPreview').src=await signedPhoto(currentPhotoPath);$('photoPreview').style.display=currentPhotoPath?'block':'none';$('removePhoto').classList.toggle('hidden',!currentPhotoPath);$('formTitle').textContent='تعديل بيانات العميل';$('saveBtn').textContent='حفظ التعديلات';$('cancelEdit').classList.remove('hidden');$('editor').scrollIntoView({behavior:'smooth'})};
+window.deleteCustomer=async id=>{const c=customers.find(x=>x.id===id);if(!c||!confirm(`تأكيد حذف العميل «${c.name}»؟ سيتم حذف الزيارات وقطع الغيار المرتبطة به.`))return;try{const {error}=await db.from('customers').delete().eq('id',id);if(error)throw error;if(c.device_photo)await db.storage.from('customer-photos').remove([c.device_photo]);await logActivity(null,'deleted',`حذف العميل ${c.name}`);toast('تم حذف العميل');await loadCustomers()}catch(err){console.error(err);toast('تعذر حذف العميل')}}
+function resetForm(){$('customerForm').reset();$('editId').value='';currentPhotoPath='';$('photoPreview').src='';$('photoPreview').style.display='none';$('removePhoto').classList.add('hidden');$('initialPartsEditor').innerHTML='';updatePartsTotal('initialPartsEditor','initialPartsTotal');$('initialVisitDate').value=localDate();$('formTitle').textContent='إضافة عميل جديد';$('saveBtn').textContent='حفظ العميل';$('cancelEdit').classList.add('hidden')}
+$('cancelEdit').onclick=resetForm;$('clearBtn').onclick=()=>setTimeout(resetForm,0);$('search').oninput=()=>render();$('refreshBtn').onclick=loadCustomers;
+$('devicePhoto').onchange=async e=>{const f=e.target.files[0];if(!f)return;const url=URL.createObjectURL(f);$('photoPreview').src=url;$('photoPreview').style.display='block';$('removePhoto').classList.remove('hidden')};
+$('removePhoto').onclick=()=>{ $('devicePhoto').value='';currentPhotoPath='';$('photoPreview').src='';$('photoPreview').style.display='none';$('removePhoto').classList.add('hidden')};
+window.openVisits=async id=>{activeCustomer=customers.find(c=>c.id===id);if(!activeCustomer)return;$('visitTitle').textContent=`زيارات وقطع غيار: ${activeCustomer.name}`;$('visitCustomerId').value=id;$('visitDate').value=localDate();$('visitProblem').value='';$('visitNotes').value='';$('partsEditor').innerHTML='';partRows=0;updatePartsTotal();$('visitModal').classList.remove('hidden');await loadVisitHistory(id)};
+window.closeVisits=()=>{$('visitModal').classList.add('hidden');activeCustomer=null};
+$('addPartBtn').onclick=()=>addPartRow('partsEditor','partsTotal');
+$('addInitialPartBtn').onclick=()=>addPartRow('initialPartsEditor','initialPartsTotal');
+function addPartRow(editorId,totalId,part={}){const row=document.createElement('div');row.className='part-row';row.innerHTML=`<div class="part-name"><label>اسم قطعة الغيار</label><input class="p-name"></div><div><label>الكمية</label><input class="p-qty" type="number" min="0.01" step="0.01" value="1"></div><div><label>سعر القطعة</label><input class="p-price" type="number" min="0" step="0.01" value="0"></div><div class="part-notes"><label>ملاحظات</label><input class="p-notes"></div><button class="btn mini danger remove-part" type="button">حذف</button>`;$(editorId).appendChild(row);row.querySelector('.p-name').value=part.part_name||'';row.querySelector('.p-qty').value=part.quantity??1;row.querySelector('.p-price').value=part.unit_price??0;row.querySelector('.p-notes').value=part.notes||'';row.querySelectorAll('input').forEach(x=>x.addEventListener('input',()=>updatePartsTotal(editorId,totalId)));row.querySelector('.remove-part').onclick=()=>{row.remove();updatePartsTotal(editorId,totalId)};updatePartsTotal(editorId,totalId)}
+function collectParts(editorId='partsEditor'){return [...$(editorId).querySelectorAll('.part-row')].map(r=>({part_name:r.querySelector('.p-name').value.trim(),quantity:Number(r.querySelector('.p-qty').value),unit_price:Number(r.querySelector('.p-price').value),notes:r.querySelector('.p-notes').value.trim()})).filter(p=>p.part_name)}
+function updatePartsTotal(editorId='partsEditor',totalId='partsTotal'){const total=collectParts(editorId).reduce((sum,p)=>sum+(p.quantity*p.unit_price),0);$(totalId).textContent='إجمالي قطع الغيار: '+total.toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:2})}
+$('visitForm').addEventListener('submit',async e=>{e.preventDefault();const customerId=$('visitCustomerId').value;const parts=collectParts('partsEditor');if([...$('partsEditor').querySelectorAll('.part-row')].some(r=>r.querySelector('.p-name').value.trim()&&(!(Number(r.querySelector('.p-qty').value)>0)||Number(r.querySelector('.p-price').value)<0))){toast('راجع كمية وسعر قطع الغيار');return}
+$('saveVisitBtn').disabled=true;try{const {data:visit,error}=await db.from('visits').insert({customer_id:customerId,visit_date:$('visitDate').value||localDate(),problem_description:$('visitProblem').value.trim()||null,notes:$('visitNotes').value.trim()||null}).select().single();if(error)throw error;if(parts.length){const rows=parts.map(p=>({...p,visit_id:visit.id}));const {error:partError}=await db.from('spare_parts').insert(rows);if(partError){await db.from('visits').delete().eq('id',visit.id);throw partError}}
+await logActivity(customerId,'visited','تسجيل زيارة وقطع غيار');toast('تم حفظ الزيارة وقطع الغيار');$('visitDate').value=localDate();$('visitProblem').value='';$('visitNotes').value='';$('partsEditor').innerHTML='';updatePartsTotal('partsEditor','partsTotal');await loadVisitHistory(customerId);await loadCustomers()}catch(err){console.error(err);toast('تعذر حفظ الزيارة. راجع الصلاحيات وحاول مرة أخرى')}finally{$('saveVisitBtn').disabled=false}});
+async function loadVisitHistory(customerId){$('visitHistory').innerHTML='<div class="empty">جاري تحميل الزيارات...</div>';try{const {data:visits,error}=await db.from('visits').select('*').eq('customer_id',customerId).order('visit_date',{ascending:false});if(error)throw error;if(!visits?.length){$('visitHistory').innerHTML='<div class="empty">لا توجد زيارات مسجلة لهذا العميل.</div>';return}
+const partsResult=await db.from('spare_parts').select('*').in('visit_id',visits.map(v=>v.id));if(partsResult.error)throw partsResult.error;const byVisit={};(partsResult.data||[]).forEach(p=>(byVisit[p.visit_id]??=[]).push(p));
+$('visitHistory').innerHTML=visits.map(v=>{const parts=byVisit[v.id]||[];const sum=parts.reduce((s,p)=>s+Number(p.quantity)*Number(p.unit_price),0);return `<div class="panel"><div class="toolbar"><strong>زيارة ${esc(v.visit_date)}</strong><span class="badge">${parts.length} قطعة</span></div><div>${esc(v.problem_description||'')}</div><div class="sub">${esc(v.notes||'')}</div>${parts.length?`<div class="tablewrap" style="margin-top:10px"><table style="min-width:600px"><thead><tr><th>قطعة الغيار</th><th>الكمية</th><th>سعر القطعة</th><th>الإجمالي</th><th>ملاحظات</th></tr></thead><tbody>${parts.map(p=>`<tr><td>${esc(p.part_name)}</td><td>${esc(p.quantity)}</td><td>${Number(p.unit_price).toFixed(2)}</td><td>${(Number(p.quantity)*Number(p.unit_price)).toFixed(2)}</td><td>${esc(p.notes||'')}</td></tr>`).join('')}</tbody></table></div>`:'<div class="sub">لا توجد قطع غيار مسجلة في الزيارة.</div>'}<div class="part-total" style="margin-top:10px">إجمالي قطع الغيار: ${sum.toFixed(2)}</div></div>`}).join('')}catch(err){console.error(err);$('visitHistory').innerHTML='<div class="empty">تعذر تحميل سجل الزيارات.</div>'}}
+$('exportBtn').onclick=async()=>{
+  const btn=$('exportBtn');
+  const oldText=btn.textContent;
+  btn.disabled=true;btn.textContent='جاري تجهيز Excel...';
+  try{
+    const data=[...customers].sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||'')));
+    if(!data.length){toast('لا توجد بيانات محمّلة للتصدير. اضغط تحديث البيانات أولاً.');return;}
+    const headers=['اسم العميل','رقم التليفون','العنوان','نوع الجهاز','سبب المشكلة','ملاحظات','التقييم'];
+    const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    const rows=data.map(c=>[c.name,c.phone,c.address,c.device_type,c.problem_description,c.notes,c.rating]);
+    const table='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>العملاء</x:Name><x:WorksheetOptions><x:DisplayRightToLeft/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><style>table{border-collapse:collapse;direction:rtl}th,td{border:1px solid #999;padding:6px;mso-number-format:"\\@"}th{font-weight:bold;background:#eee}</style></head><body><table dir="rtl"><thead><tr>'+headers.map(h=>'<th>'+esc(h)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+r.map(v=>'<td>'+esc(v)+'</td>').join('')+'</tr>').join('')+'</tbody></table></body></html>';
+    const file=new File(['\ufeff',table],'CLIENT-PRO-customers.xls',{type:'application/vnd.ms-excel'});
+    if(!navigator.share||!navigator.canShare||!navigator.canShare({files:[file]})){
+      toast('المتصفح لا يدعم مشاركة ملفات Excel. افتح CLIENT PRO في Chrome وجرّب التصدير.');
+      return;
+    }
+    await navigator.share({files:[file],title:'بيانات عملاء CLIENT PRO'});
+    toast('تم إنشاء ملف Excel ومشاركته. عدد العملاء: '+data.length);
+  }catch(e){
+    if(e?.name!=='AbortError'){console.error('Excel export error:',e);toast('تعذر إنشاء أو مشاركة Excel: '+(e?.message||'افتح التطبيق في Chrome ثم أعد المحاولة'));}
+  }finally{btn.disabled=false;btn.textContent=oldText;}
+}
+$('initialVisitDate').value=localDate();
+requireSession();
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(err=>console.warn('Service worker registration failed',err)));}
+</script>
+</body></html>
