@@ -25,12 +25,16 @@ jobs:
           distribution: temurin
           java-version: 21
 
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
       - name: Build APK
         run: |
           npm init -y
           npm install @capacitor/core @capacitor/cli @capacitor/android
           mkdir -p www
           cp index.html www/index.html
+          cp manifest.webmanifest sw.js icon.svg icon-192.png www/ 2>/dev/null || true
           npx cap init "CLIENT PRO" "com.mohamedkany.clientpro" --web-dir www
           npx cap add android
           cd android
