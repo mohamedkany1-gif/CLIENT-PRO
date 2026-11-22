@@ -10,145 +10,159 @@
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
-:root{--red:#a52836;--red2:#741d29;--bg:#f5f6f8;--card:#fff;--ink:#20242c;--muted:#78808c;--line:#e8eaf0;--green:#16845b;--shadow:0 12px 34px rgba(25,31,45,.065)}
+:root{--red:#a52836;--red2:#741d29;--bg:#f5f6f8;--card:#fff;--ink:#20242c;--muted:#78808c;--line:#e8eaf0;--green:#16845b;--amber:#b4690e;--shadow:0 12px 34px rgba(25,31,45,.065);--sat:max(env(safe-area-inset-top,0px),var(--safe-area-inset-top,0px));--sab:max(env(safe-area-inset-bottom,0px),var(--safe-area-inset-bottom,0px))}
 *{box-sizing:border-box}
-html{min-height:100%;-webkit-text-size-adjust:100%}
-body{margin:0;min-height:100vh;min-height:100dvh;background:radial-gradient(ellipse at 90% 0%,#f7e9eb 0,transparent 34%),#f5f6f8;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;line-height:1.55}
+body{margin:0;background:radial-gradient(ellipse at 90% 0%,#f7e9eb 0,transparent 34%),#f5f6f8;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;line-height:1.55}
+body::before{content:"";position:fixed;top:0;left:0;right:0;height:var(--sat);background:linear-gradient(115deg,#681923 0%,#8e2431 48%,#b33340 100%);z-index:60;pointer-events:none}
+.top{position:relative;overflow:hidden;padding:calc(var(--sat) + 22px) max(18px,calc((100% - 1180px)/2)) 22px;background:linear-gradient(115deg,#681923 0%,#8e2431 48%,#b33340 100%);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:16px;box-shadow:0 8px 28px #741d2928}
+.top:after{content:"";position:absolute;width:300px;height:300px;border:1px solid #ffffff18;border-radius:50%;left:8%;top:-210px;box-shadow:0 0 0 35px #ffffff08,0 0 0 70px #ffffff06;pointer-events:none}
+.brand{display:flex;align-items:center;gap:14px;position:relative;z-index:1}
+.brandmark{width:52px;height:52px;flex:0 0 52px;border-radius:50%;filter:drop-shadow(0 3px 8px #0003)}
+.brand h1{font-size:22px;font-weight:800;margin:0;letter-spacing:.7px}
+.brand p{margin:4px 0 0;color:#f5dadd;font-size:12px;opacity:.9}
+.userbar{display:flex;align-items:center;gap:11px;font-size:12px;position:relative;z-index:1}
+.userbar span{background:#ffffff18;border:1px solid #ffffff30;border-radius:30px;padding:9px 14px;color:#fff;font-weight:650}
+.userbar .btn{background:#fff;color:#81212d;border-radius:30px;padding:10px 17px;font-weight:700;box-shadow:0 3px 10px #0002}
+.wrap{max-width:1180px;margin:26px auto;padding:0 18px}
 
-.top{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:50px;padding:6px max(18px,calc((100% - 1180px)/2));background:linear-gradient(115deg,#681923 0%,#8e2431 48%,#b33340 100%);box-shadow:0 5px 18px #741d2922}
-.top:after{content:"";position:absolute;width:210px;height:210px;border:1px solid #ffffff12;border-radius:50%;left:8%;top:-170px;pointer-events:none}
-.brand{display:flex;align-items:center;gap:10px;position:relative;z-index:1;min-width:0}
-.brandmark{width:35px;height:35px;flex:0 0 35px;border-radius:50%;filter:drop-shadow(0 3px 8px #0003)}
-.brand h1{font-size:18px;font-weight:800;letter-spacing:.7px;margin:0;line-height:1.2}
-.brand p{font-size:10.5px;opacity:.88;letter-spacing:.1px;margin:2px 0 0;color:#f5dadd;line-height:1.3}
-
-.wrap{max-width:1180px;margin:24px auto;padding:0 18px}
+/* Interactive Dashboard Cards & Modal */
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}
 .stat,.panel{background:var(--card);border:1px solid #e9eaf0;border-radius:18px;box-shadow:var(--shadow)}
-.stat{position:relative;overflow:hidden;padding:19px 20px;min-height:106px}
-.stat:before{content:"";position:absolute;right:0;top:0;bottom:0;width:4px;background:linear-gradient(var(--red),#d77b83)}
-.stat span{font-size:12px;font-weight:650;color:#7b818d}
-.stat strong{display:block;font-size:29px;line-height:1.2;margin-top:10px;color:#282c35}
+.stat{position:relative;overflow:hidden;padding:18px 20px;min-height:116px;cursor:pointer;text-align:right;width:100%;font:inherit;display:flex;flex-direction:column;justify-content:space-between;transition:transform .2s,box-shadow .2s,border-color .2s,background .2s}
+.stat:hover{transform:translateY(-3px);box-shadow:0 16px 36px rgba(165,40,54,.14);border-color:#dfaeb4}
+.stat:active{transform:scale(.985)}
+.stat.active{background:linear-gradient(145deg,#fff,#fff4f5);border:2px solid var(--red);box-shadow:0 12px 28px rgba(165,40,54,.16)}
+.stat:before{content:"";position:absolute;right:0;top:0;bottom:0;width:5px;background:linear-gradient(var(--red),#d77b83)}
+.stat-top{display:flex;align-items:center;justify-content:space-between;gap:6px;width:100%}
+.stat span{font-size:12px;font-weight:700;color:#6c7380}
+.stat-icon{width:28px;height:28px;border-radius:9px;background:#fdf0f1;color:var(--red);display:inline-flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.stat strong{display:block;font-size:28px;line-height:1.2;margin:6px 0 4px;color:#22262f}
+.stat-foot{display:flex;align-items:center;justify-content:space-between;width:100%;font-size:11px;color:#a52836;font-weight:700;border-top:1px dashed #f0dfe2;padding-top:6px;margin-top:4px}
+.dash-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;border-bottom:1px solid #eff0f3;padding-bottom:12px}
+.dash-tab{border:1px solid #e4e6ec;background:#f7f8fa;color:#49505c;border-radius:20px;padding:7px 14px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s}
+.dash-tab.active{background:var(--red);color:#fff;border-color:var(--red)}
+.dash-list{display:flex;flex-direction:column;gap:10px}
+.dash-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;border:1px solid #eceef2;border-radius:14px;background:#fafbfc;transition:background .15s,border-color .15s}
+.dash-item:hover{background:#fff6f7;border-color:#ecc6cb}
+.dash-item-main{min-width:0;flex:1}
+.dash-item-title{font-weight:800;font-size:14px;color:#20242c}
+.dash-item-meta{font-size:12px;color:#6b7280;margin-top:3px;display:flex;gap:10px;flex-wrap:wrap}
+.dash-item-actions{display:flex;gap:6px;flex-shrink:0}
+.device-thumb{width:54px;height:54px;object-fit:cover;border-radius:11px;border:1px solid #dce0e8;cursor:zoom-in;transition:transform .16s,box-shadow .16s}
+.device-thumb:hover{transform:scale(1.07);box-shadow:0 6px 16px rgba(0,0,0,.16)}
+.lightbox-img{display:block;max-width:100%;max-height:74vh;margin:0 auto;border-radius:14px;object-fit:contain;background:#f7f8fa;border:1px solid #e8eaf0}
+
 .panel{padding:21px;margin-bottom:20px}
 .toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px}
-.toolbar h2{font-size:18px;font-weight:800;display:flex;align-items:center;gap:9px;margin:0}
+.toolbar h2{font-size:18px;font-weight:800;margin:0;display:flex;align-items:center;gap:9px}
 .toolbar h2:before{content:"";width:5px;height:21px;border-radius:8px;background:var(--red);display:inline-block}
 .actions,.form-actions,.rowactions{display:flex;gap:8px;flex-wrap:wrap}
-.btn{border:1px solid #e7e8ed;border-radius:11px;padding:10px 15px;font:inherit;font-weight:650;font-size:13px;cursor:pointer;transition:transform .16s,box-shadow .16s,background .16s;background:#f0f1f4;color:#30343b}
+.btn{border:1px solid #e7e8ed;border-radius:11px;padding:10px 15px;font:inherit;font-weight:650;font-size:13px;cursor:pointer;background:#f0f1f4;color:#30343b;transition:transform .16s,box-shadow .16s,background .16s}
 .btn:hover{transform:translateY(-1px);box-shadow:0 5px 13px #1d263510}
-.btn.primary{background:linear-gradient(135deg,#a72b39,#84212e);border-color:transparent;color:#fff;box-shadow:0 5px 13px #a5283526}
+.btn.primary{background:linear-gradient(135deg,#a72b39,#84212e);color:#fff;border-color:transparent;box-shadow:0 5px 13px #a5283526}
 .btn.primary:hover{background:linear-gradient(135deg,#b33543,#922735)}
 .btn.dark{background:#303641;color:#fff}
 .btn.danger{border-color:#f5d9dd;background:#fff0f1;color:#9d2431}
-.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn.mini{border-radius:9px;padding:7px 10px;font-size:11px}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
 input,textarea,select{font:inherit;border:1px solid #e0e3e9;border-radius:11px;padding:12px 13px;background:#fff;color:var(--ink);width:100%;outline:none;font-size:14px;transition:border-color .15s,box-shadow .15s}
 input::placeholder,textarea::placeholder{color:#a4a9b2}
 input:focus,textarea:focus,select:focus{border-color:#b64b56;box-shadow:0 0 0 4px #a9283512}
 label{font-size:12px;font-weight:700;color:#59616d;display:block;margin:0 0 8px}
 .formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
 .full{grid-column:1/-1}
+.form-actions{border-top:1px solid #eff0f3;margin-top:20px;padding-top:17px}
+.form-actions .btn{min-width:130px}
 .hidden{display:none!important}
+
+/* Custom Day/Month/Year Date Selects */
+.dmy-grid{display:grid;grid-template-columns:1fr 1.25fr 1.15fr;gap:8px;direction:rtl}
+.dmy-grid select{padding:11px 8px;text-align:center;font-weight:650}
+
 .tablewrap{overflow:auto;border:1px solid #e9ebf0;border-radius:14px}
-table{width:100%;border-collapse:collapse;min-width:860px;background:white}
+table{width:100%;border-collapse:collapse;min-width:920px;background:#fff}
 th,td{padding:13px 12px;text-align:right;border-bottom:1px solid var(--line);font-size:13px;vertical-align:top}
-th{background:#f7f8fa;color:#646c78;font-size:12px;font-weight:750;white-space:nowrap;padding:14px}
-td{padding:13px 12px}
+th{background:#f7f8fa;color:#646c78;font-size:12px;font-weight:750;padding:14px;white-space:nowrap}
 tr:last-child td{border-bottom:0}
 tbody tr{transition:background .15s}
 tbody tr:hover{background:#fff9fa}
 .name{font-weight:700}
 .sub{color:var(--muted);font-size:11px;margin-top:5px}
+.date-pill{display:inline-block;background:#f3f5f8;color:#2a303b;padding:4px 8px;border-radius:8px;font-weight:650;font-size:12px;direction:ltr}
+.reminder-pill{display:inline-block;background:#fff6e8;color:#9b5606;border:1px solid #f7dfb8;padding:4px 8px;border-radius:8px;font-weight:650;font-size:11px;margin-top:4px}
+.reminder-due{background:#fdecee;color:#a52836;border-color:#f4c4c9}
 .rating{color:#d28a19;white-space:nowrap}
-.mini{padding:7px 10px;font-size:11px;border-radius:9px}
 .empty{text-align:center;color:var(--muted);padding:42px 18px;font-size:13px}
-.foot{text-align:center;color:#9298a2;font-size:11px;padding:8px 0 28px}
-.badge{font-size:11px;background:#f9ecee;color:#962a37;border:1px solid #f2dadd;border-radius:30px;padding:6px 11px;font-weight:700}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#252932;color:white;padding:13px 19px;border-radius:13px;box-shadow:0 10px 35px #11182735;z-index:30;font-size:13px;max-width:90%;text-align:center}
+.foot{text-align:center;color:#9298a2;font-size:11px;padding:8px 0 calc(28px + var(--sab))}
+.badge{background:#f9ecee;color:#962a37;border:1px solid #f2dadd;border-radius:30px;padding:6px 11px;font-weight:700;font-size:11px}
+.filter-chip{display:inline-flex;align-items:center;gap:6px;background:#fff0f1;color:#962a37;border:1px solid #f2cfd3;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700}
+.filter-chip button{border:0;background:transparent;color:#962a37;font-weight:800;cursor:pointer;font-size:14px;padding:0 2px}
+.toast{position:fixed;bottom:calc(20px + var(--sab));left:50%;transform:translateX(-50%);background:#252932;color:#fff;padding:13px 19px;border-radius:13px;box-shadow:0 10px 35px #11182735;z-index:40;font-size:13px;max-width:92%;text-align:center}
+.reminder-banner{background:linear-gradient(120deg,#fff7ea,#fff0f1);border:1px solid #f2cfd3;border-radius:16px;padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.reminder-banner strong{color:#8e2431;display:block;font-size:14px}
+.reminder-banner span{font-size:12px;color:#555e6b}
 .search{max-width:460px;min-width:220px;background:#fafbfc;padding:12px 15px}
-.photo-box{border:1px dashed #d5d9e1;border-radius:13px;padding:12px;background:#fafbfc}
-.photo-pick{display:flex;align-items:center;justify-content:center;min-height:54px;border:1px solid #f0dadd;border-radius:10px;background:#fff8f9;color:var(--red);font-weight:700;cursor:pointer}
+
+/* Dual Photo Buttons: Camera + Gallery/Device */
+.photo-box{border:1px dashed #d5d9e1;border-radius:13px;background:#fafbfc;padding:12px}
+.photo-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.photo-pick{display:flex;align-items:center;justify-content:center;text-align:center;min-height:48px;padding:8px 10px;border-radius:10px;background:#fff8f9;border:1px solid #f0dadd;color:var(--red);font-weight:700;font-size:12px;cursor:pointer;margin:0}
+.photo-pick.gallery{background:#fff;border-color:#dce0e8;color:#30343b}
 .photo-pick input{display:none}
 .photo-preview{display:none;width:100%;max-width:260px;max-height:190px;object-fit:contain;border:1px solid var(--line);border-radius:12px;margin-top:12px;padding:6px;background:#fff}
-.device-thumb{width:52px;height:52px;object-fit:cover;border-radius:11px;border:1px solid var(--line)}
+
+
 .hint{font-size:11px;color:var(--muted);line-height:1.8;margin-top:10px}
-.modal{position:fixed;inset:0;background:#1519239c;backdrop-filter:blur(5px);z-index:20;display:flex;align-items:center;justify-content:center;padding:14px}
-.modalbox{background:#fff;border:1px solid #ffffff80;border-radius:20px;width:min(900px,100%);max-height:92vh;overflow:auto;padding:22px;box-shadow:0 24px 80px #11182735}
+.modal{position:fixed;inset:0;backdrop-filter:blur(5px);background:#1519239c;z-index:30;display:flex;align-items:center;justify-content:center;padding:14px}
+.modalbox{background:#fff;border:1px solid #ffffff80;border-radius:20px;box-shadow:0 24px 80px #11182735;width:min(900px,100%);max-height:92vh;overflow:auto;padding:22px}
 .modalhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:15px;padding-bottom:13px;border-bottom:1px solid #eff0f3}
 .modalhead h2{margin:0;font-size:18px;font-weight:800}
 .part-row{display:grid;grid-template-columns:2fr .8fr 1fr 2fr auto;gap:10px;align-items:end;margin-bottom:9px;padding:12px;background:#fafbfc;border:1px solid #eceef2;border-radius:13px}
 .part-total{font-weight:700;color:#922936;font-size:15px;padding:11px 14px;border-radius:11px;background:#fbf0f1;display:inline-flex;margin-top:10px}
-.login-screen{min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:18px;background:radial-gradient(circle at 15% 20%,#f5dfe2 0,transparent 30%),radial-gradient(circle at 85% 85%,#e9eaf0 0,transparent 34%),#f5f6f8}
+.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:calc(18px + var(--sat)) 18px calc(18px + var(--sab));background:radial-gradient(circle at 15% 20%,#f5dfe2 0,transparent 30%),radial-gradient(circle at 85% 85%,#e9eaf0 0,transparent 34%),#f5f6f8}
 .login-card{width:min(420px,100%);background:#fff;padding:31px;border-radius:23px;box-shadow:0 22px 65px #20283b12;border:1px solid #ececf1}
 .login-card .brand{justify-content:center;color:var(--ink);margin-bottom:24px}
-.login-card .brandmark{width:58px;height:58px;flex-basis:58px}
-.login-card .brand h1{font-size:24px}
 .login-card .brand p{color:var(--muted)}
+.login-card .brandmark{width:58px;height:58px;flex-basis:58px}
 .login-card h2{text-align:center;font-size:19px;margin:0 0 23px}
 .login-card .field{margin-bottom:14px}
 .login-card .btn{width:100%;margin-top:5px;padding:13px;border-radius:12px;font-size:14px}
-.userbar{display:flex;align-items:center;gap:9px;font-size:12px;position:relative;z-index:1;flex-shrink:0}
-.userbar span{background:#ffffff18;border:1px solid #ffffff30;border-radius:30px;padding:6px 11px;color:#fff;font-weight:650}
-.userbar .btn{background:#fff;color:#81212d;border-radius:30px;padding:7px 12px;font-weight:700;box-shadow:0 3px 10px #0002;border:0;white-space:nowrap}
-
 @media(max-width:650px){
-.top{padding:5px 12px;min-height:44px;align-items:center;gap:8px}
-.brand{gap:8px;min-width:0}
-.brandmark{width:31px;height:31px;flex:0 0 31px}
-.brand h1{font-size:15.5px;line-height:1.15}
-.brand p{font-size:9px;margin-top:1px;line-height:1.2}
-.userbar{gap:6px;justify-content:flex-end}
-.userbar span{font-size:10px;padding:5px 8px;max-width:115px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.userbar .btn{font-size:10px;padding:6px 9px}
-.wrap{margin:14px auto;padding:0 12px}
+.top{padding:calc(var(--sat) + 9px) 12px 10px;align-items:center;gap:8px;flex-wrap:nowrap}
+.brand{gap:9px;min-width:0;flex:1 1 auto}
+.brand>div{min-width:0}
+.brandmark{width:38px;height:38px;flex-basis:38px}
+.brand h1{font-size:16px;line-height:1.25;letter-spacing:.5px}
+.brand p{font-size:10px;line-height:1.3;margin:1px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.userbar{flex:0 0 auto;max-width:none;gap:6px;flex-wrap:nowrap}
+.userbar span{display:none}
+.userbar .btn{padding:7px 12px;font-size:11px;white-space:nowrap}
+.wrap{margin-top:12px;padding:0 12px}
 .stats{gap:8px}
-.stat{padding:13px 12px;min-height:88px;border-radius:14px}
-.stat strong{font-size:22px}
-.stat span{font-size:10px;line-height:1.4;display:block}
+.stat{padding:12px 10px;min-height:94px;border-radius:14px}
+.stat strong{font-size:21px}
+.stat span{font-size:10px;line-height:1.35}
+.stat small{font-size:9px}
 .panel{padding:15px;border-radius:15px}
 .toolbar{gap:10px}
 .toolbar h2{font-size:16px}
 .actions{width:100%}
 .actions .btn{flex:1;padding:10px 8px;font-size:11px}
+.search{max-width:none}
 .formgrid{grid-template-columns:1fr;gap:13px}
 .full{grid-column:auto}
-.form-actions{gap:8px}
 .form-actions .btn{flex:1;min-width:0}
 .part-row{grid-template-columns:1fr 1fr;padding:10px}
-.part-row .part-name,.part-row .part-notes{grid-column:1/-1}
-.part-row .remove-part{grid-column:1/-1}
+.part-row .part-name,.part-row .part-notes,.part-row .remove-part{grid-column:1/-1}
 .modal{padding:8px}
 .modalbox{padding:15px;border-radius:17px;max-height:94vh}
 .login-card{padding:24px 19px}
-.search{max-width:none}
-}
-
-@media(max-width:420px){
-.top{padding:4px 10px;min-height:42px;gap:6px}
-.brand{gap:7px}
-.brandmark{width:29px;height:29px;flex:0 0 29px}
-.brand h1{font-size:14.5px}
-.brand p{font-size:8.5px}
-.userbar{gap:5px}
-.userbar span{max-width:82px;font-size:9px;padding:4px 6px}
-.userbar .btn{font-size:9px;padding:5px 7px}
-}
-
-@media(max-width:360px){
-.top{padding:4px 8px;min-height:40px}
-.brand h1{font-size:14px}
-.brand p{font-size:8px}
-.userbar span{display:none}
-.userbar .btn{font-size:9px;padding:5px 6px}
-.stats{grid-template-columns:repeat(3,minmax(0,1fr))}
-.stat{padding:11px 8px}
-.stat span{font-size:9px}
-.stat strong{font-size:19px}
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
-
 <div id="loginScreen" class="login-screen">
  <form id="loginForm" class="login-card">
   <div class="brand">
@@ -159,7 +173,7 @@ tbody tr:hover{background:#fff9fa}
   <div class="field"><label for="loginUsername">اسم المستخدم</label><input id="loginUsername" type="text" autocomplete="username" autocapitalize="none" required></div>
   <div class="field"><label for="loginPassword">كلمة المرور</label><input id="loginPassword" type="password" autocomplete="current-password" required></div>
   <button class="btn primary" id="loginBtn" type="submit">دخول</button>
-  <p class="hint">استخدم اسم المستخدم وكلمة المرور المسجلين في CLIENT PRO.</p>
+  <p class="hint">لا يُسمح بتسجيل الدخول لنفس الحساب من جهاز آخر أثناء فتح الجلسة الحالية.</p>
  </form>
 </div>
 
@@ -168,116 +182,142 @@ tbody tr:hover{background:#fff9fa}
  <div class="brand"><svg class="brandmark" viewBox="0 0 64 64" role="img" aria-label="CLIENT PRO"><circle cx="32" cy="32" r="31" fill="#fff"/><path d="M39 13c-4-3-8-4-13-4C13 9 4 19 4 32s9 23 22 23c5 0 9-1 13-4l-8-9c-2 2-4 3-7 3-7 0-11-5-11-13s4-13 11-13c3 0 5 1 7 3z" fill="#a92835"/><path d="M39 23h19v7H39zm0 12h19v7H39z" fill="#a92835"/></svg><div><h1>CLIENT PRO</h1><p>إدارة العملاء والزيارات وقطع الغيار</p></div></div>
  <div class="userbar"><span id="userEmail"></span><button class="btn" id="logoutBtn">تسجيل الخروج</button></div>
 </header>
-
 <main class="wrap">
-<section class="stats">
- <div class="stat"><span>إجمالي العملاء</span><strong id="total">0</strong></div>
- <div class="stat"><span>عملاء تمت إضافتهم هذا الشهر</span><strong id="month">0</strong></div>
- <div class="stat"><span>متوسط التقييم</span><strong id="average">—</strong></div>
+<div id="reminderBanner" class="reminder-banner hidden">
+ <div><strong id="reminderBannerTitle">تنبيه بمواعيد التذكير</strong><span id="reminderBannerText"></span></div>
+ <button class="btn mini primary" type="button" id="enableNotifBtn">تفعيل إشعارات الجهاز</button>
+</div>
+
+<!-- Interactive Dashboard -->
+<section class="stats" aria-label="لوحة الإحصائيات التفاعلية">
+ <button type="button" class="stat active" id="statAll" onclick="openDashboardModal('all')">
+  <div class="stat-top"><span>إجمالي العملاء</span><span class="stat-icon">👥</span></div>
+  <strong id="total">0</strong>
+  <div class="stat-foot"><span>عرض القائمة والتفاصيل</span><span>←</span></div>
+ </button>
+ <button type="button" class="stat" id="statMonth" onclick="openDashboardModal('month')">
+  <div class="stat-top"><span>عملاء هذا الشهر</span><span class="stat-icon">📅</span></div>
+  <strong id="month">0</strong>
+  <div class="stat-foot"><span>استعراض عملاء الشهر</span><span>←</span></div>
+ </button>
+ <button type="button" class="stat" id="statRated" onclick="openDashboardModal('rated')">
+  <div class="stat-top"><span>متوسط التقييم</span><span class="stat-icon">⭐</span></div>
+  <strong id="average">—</strong>
+  <div class="stat-foot"><span>ترتيب التقييمات والتذكيرات</span><span>←</span></div>
+ </button>
 </section>
 
 <section class="panel" id="editor">
  <div class="toolbar"><h2 id="formTitle">إضافة عميل جديد</h2><span class="badge">بيانات العميل</span></div>
- <form id="customerForm">
- <input type="hidden" id="editId">
- <div class="formgrid">
+ <form id="customerForm"><input type="hidden" id="editId"><div class="formgrid">
   <div><label for="phone">رقم التليفون</label><input id="phone" inputmode="tel"></div>
   <div><label for="name">اسم العميل *</label><input id="name" required></div>
   <div><label for="address">العنوان</label><input id="address"></div>
   <div><label for="device">نوع الجهاز</label><input id="device"></div>
   <div>
-   <label for="devicePhoto">صورة الجهاز</label>
+   <label>صورة الجهاز</label>
    <div class="photo-box">
-    <label class="photo-pick" for="devicePhoto">إضافة صورة للجهاز<input id="devicePhoto" type="file" accept="image/*" capture="environment"></label>
+    <div class="photo-actions">
+     <label class="photo-pick" for="deviceCamera">تصوير بالكاميرا<input id="deviceCamera" type="file" accept="image/*" capture="environment"></label>
+     <label class="photo-pick gallery" for="deviceGallery">اختيار صورة من الجهاز<input id="deviceGallery" type="file" accept="image/*"></label>
+    </div>
     <img id="photoPreview" class="photo-preview" alt="معاينة صورة الجهاز">
-    <button class="btn mini hidden" type="button" id="removePhoto">إزالة الصورة</button>
+    <button class="btn mini hidden" style="margin-top:10px" type="button" id="removePhoto">إزالة الصورة</button>
+   </div>
+  </div>
+  <div><label for="rating">التقييم</label><select id="rating"><option value="">بدون تقييم</option><option value="5">5 ممتاز</option><option value="4">4 جيد جداً</option><option value="3">3 جيد</option><option value="2">2 مقبول</option><option value="1">1 ضعيف</option></select></div>
+  <div>
+   <label>تاريخ الزيارة (يوم / شهر / سنة)</label>
+   <div class="dmy-grid">
+    <select id="initDay" aria-label="اليوم"></select>
+    <select id="initMonth" aria-label="الشهر"></select>
+    <select id="initYear" aria-label="السنة"></select>
    </div>
   </div>
   <div>
-   <label for="rating">التقييم</label>
-   <select id="rating">
-    <option value="">بدون تقييم</option>
-    <option value="5">5 ممتاز</option>
-    <option value="4">4 جيد جداً</option>
-    <option value="3">3 جيد</option>
-    <option value="2">2 مقبول</option>
-    <option value="1">1 ضعيف</option>
-   </select>
+   <label for="reminderAt">ميعاد التذكير</label>
+   <input id="reminderAt" type="datetime-local">
+   <div class="sub" id="reminderAtFormatted"></div>
   </div>
   <div class="full"><label for="problem">سبب المشكلة</label><textarea id="problem" rows="2"></textarea></div>
   <div class="full"><label for="notes">ملاحظات</label><textarea id="notes" rows="2"></textarea></div>
-  <div><label for="initialVisitDate">تاريخ الزيارة</label><input id="initialVisitDate" type="date"></div>
   <div class="full">
-   <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0 10px">
-    <label style="margin:0;font-weight:700;color:#30343b">قطع الغيار</label>
-    <button class="btn mini" type="button" id="addInitialPartBtn">+ إضافة قطعة غيار</button>
-   </div>
+   <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0 10px"><label style="margin:0;font-weight:700;color:#30343b">قطع الغيار</label><button class="btn mini" type="button" id="addInitialPartBtn">+ إضافة قطعة غيار</button></div>
    <div id="initialPartsEditor"></div>
    <div class="part-total" id="initialPartsTotal">إجمالي قطع الغيار: 0</div>
   </div>
- </div>
- <div class="form-actions">
-  <button class="btn primary" type="submit" id="saveBtn">حفظ العميل</button>
-  <button class="btn hidden" type="button" id="cancelEdit">إلغاء التعديل</button>
-  <button class="btn" type="reset" id="clearBtn">مسح الخانات</button>
- </div>
- </form>
+ </div><div class="form-actions"><button class="btn primary" type="submit" id="saveBtn">حفظ العميل</button><button class="btn hidden" type="button" id="cancelEdit">إلغاء التعديل</button><button class="btn" type="reset" id="clearBtn">مسح الخانات</button></div></form>
 </section>
 
-<section class="panel">
+<section class="panel" id="recordsPanel">
  <div class="toolbar">
-  <h2>سجل العملاء <span class="sub" id="shown"></span></h2>
-  <div class="actions">
-   <button class="btn" id="refreshBtn">تحديث البيانات</button>
-   <button class="btn" id="exportBtn">تصدير Excel</button>
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+   <h2>سجل العملاء <span class="sub" id="shown"></span></h2>
+   <span id="activeFilterChip" class="filter-chip hidden"><span id="activeFilterText"></span><button type="button" onclick="setDashboardFilter('all')" title="إلغاء التصفية">×</button></span>
   </div>
+  <div class="actions"><button class="btn" id="refreshBtn">تحديث البيانات</button><button class="btn" id="exportBtn">تصدير Excel</button></div>
  </div>
- <input class="search" id="search" aria-label="بحث في سجل العملاء">
- <div class="tablewrap" style="margin-top:14px">
-  <table>
-   <thead>
-    <tr>
-     <th>العميل</th><th>رقم التليفون</th><th>العنوان</th><th>آخر زيارة</th><th>نوع الجهاز</th><th>صورة الجهاز</th><th>سبب المشكلة</th><th>التقييم</th><th>الإجراءات</th>
-    </tr>
-   </thead>
-   <tbody id="rows"></tbody>
-  </table>
-  <div class="empty hidden" id="empty">لا توجد بيانات لعرضها.</div>
- </div>
+ <input class="search" id="search" placeholder="بحث بالاسم، التليفون، الجهاز، العنوان..." aria-label="بحث في سجل العملاء">
+ <div class="tablewrap" style="margin-top:14px"><table><thead><tr><th>العميل</th><th>رقم التليفون</th><th>العنوان</th><th>آخر زيارة (يوم/شهر/سنة)</th><th>ميعاد التذكير</th><th>نوع الجهاز</th><th>صورة الجهاز</th><th>سبب المشكلة</th><th>التقييم</th><th>الإجراءات</th></tr></thead><tbody id="rows"></tbody></table><div class="empty hidden" id="empty">لا توجد بيانات لعرضها.</div></div>
  <p class="hint">البيانات تُحفظ في قاعدة بيانات CLIENT PRO وتظهر بعد تسجيل الدخول من الأجهزة الأخرى.</p>
 </section>
 <div class="foot">CLIENT PRO · Customer Records</div>
 </main>
 </div>
 
-<div id="visitModal" class="modal hidden">
- <div class="modalbox">
-  <div class="modalhead">
-   <h2 id="visitTitle">سجل زيارات العميل</h2>
-   <button class="btn" type="button" onclick="closeVisits()">إغلاق</button>
-  </div>
-  <div class="panel">
-   <h3 style="font-size:15px;margin-top:0">إضافة زيارة</h3>
-   <form id="visitForm">
-    <input type="hidden" id="visitCustomerId">
-    <div class="formgrid">
-     <div><label for="visitDate">تاريخ الزيارة</label><input id="visitDate" type="date" required></div>
-     <div class="full"><label for="visitProblem">سبب الزيارة أو المشكلة</label><textarea id="visitProblem" rows="2"></textarea></div>
-     <div class="full"><label for="visitNotes">ملاحظات الزيارة</label><textarea id="visitNotes" rows="2"></textarea></div>
+<div id="visitModal" class="modal hidden"><div class="modalbox">
+ <div class="modalhead"><h2 id="visitTitle">سجل زيارات العميل</h2><button class="btn" type="button" onclick="closeVisits()">إغلاق</button></div>
+ <div class="panel">
+  <h3 style="font-size:15px;margin-top:0">إضافة زيارة</h3>
+  <form id="visitForm"><input type="hidden" id="visitCustomerId"><div class="formgrid">
+   <div>
+    <label>تاريخ الزيارة (يوم / شهر / سنة)</label>
+    <div class="dmy-grid">
+     <select id="vDay" aria-label="اليوم"></select>
+     <select id="vMonth" aria-label="الشهر"></select>
+     <select id="vYear" aria-label="السنة"></select>
     </div>
-    <div style="margin:16px 0 10px;display:flex;justify-content:space-between;align-items:center;gap:8px">
-     <h3 style="font-size:15px;margin:0">قطع الغيار المستخدمة</h3>
-     <button class="btn mini" type="button" id="addPartBtn">إضافة قطعة</button>
-    </div>
-    <div id="partsEditor"></div>
-    <div class="part-total" id="partsTotal">إجمالي قطع الغيار: 0</div>
-    <div class="form-actions"><button class="btn primary" id="saveVisitBtn" type="submit">حفظ الزيارة وقطع الغيار</button></div>
-   </form>
+   </div>
+   <div><label for="visitReminderAt">ميعاد تذكير للزيارة</label><input id="visitReminderAt" type="datetime-local"><div class="sub" id="visitReminderFormatted"></div></div>
+   <div class="full"><label for="visitProblem">سبب الزيارة أو المشكلة</label><textarea id="visitProblem" rows="2"></textarea></div>
+   <div class="full"><label for="visitNotes">ملاحظات الزيارة</label><textarea id="visitNotes" rows="2"></textarea></div>
   </div>
-  <h3 style="font-size:15px">سجل الزيارات السابق</h3>
-  <div id="visitHistory"></div>
+  <div style="margin:16px 0 10px;display:flex;justify-content:space-between;align-items:center;gap:8px"><h3 style="font-size:15px;margin:0">قطع الغيار المستخدمة</h3><button class="btn mini" type="button" id="addPartBtn">إضافة قطعة</button></div>
+  <div id="partsEditor"></div>
+  <div class="part-total" id="partsTotal">إجمالي قطع الغيار: 0</div>
+  <div class="form-actions"><button class="btn primary" id="saveVisitBtn" type="submit">حفظ الزيارة وقطع الغيار</button></div>
+  </form>
  </div>
-</div>
+ <h3 style="font-size:15px">سجل الزيارات السابق</h3><div id="visitHistory"></div>
+</div></div>
+
+<div id="photoModal" class="modal hidden" onclick="if(event.target===this)closePhotoModal()"><div class="modalbox" style="width:min(680px,100%)">
+ <div class="modalhead">
+  <div><h2 id="photoModalTitle">صورة الجهاز</h2><div class="sub" id="photoModalSub"></div></div>
+  <div class="actions">
+   <a id="photoDownloadLink" class="btn mini primary" download="device-photo.jpg" target="_blank" rel="noopener">فتح / تنزيل</a>
+   <button class="btn mini" type="button" onclick="closePhotoModal()">إغلاق</button>
+  </div>
+ </div>
+ <img id="photoModalImg" class="lightbox-img" src="" alt="صورة الجهاز مكبرة">
+</div></div>
+
+<div id="dashModal" class="modal hidden" onclick="if(event.target===this)closeDashboardModal()"><div class="modalbox" style="width:min(820px,100%)">
+ <div class="modalhead">
+  <div><h2 id="dashModalTitle">لوحة البيانات التفاعلية</h2><div class="sub" id="dashModalSub"></div></div>
+  <div class="actions">
+   <button class="btn mini primary" type="button" id="dashApplyToTableBtn">تطبيق على الجدول الرئيسي</button>
+   <button class="btn mini" type="button" onclick="closeDashboardModal()">إغلاق</button>
+  </div>
+ </div>
+ <div class="dash-tabs" id="dashTabs">
+  <button type="button" class="dash-tab" data-tab="all" onclick="switchDashTab('all')">جميع العملاء (<span id="tabCountAll">0</span>)</button>
+  <button type="button" class="dash-tab" data-tab="month" onclick="switchDashTab('month')">عملاء هذا الشهر (<span id="tabCountMonth">0</span>)</button>
+  <button type="button" class="dash-tab" data-tab="rated" onclick="switchDashTab('rated')">التقييمات (<span id="tabCountRated">0</span>)</button>
+  <button type="button" class="dash-tab" data-tab="reminders" onclick="switchDashTab('reminders')">التذكيرات القادمة (<span id="tabCountRem">0</span>)</button>
+ </div>
+ <div id="dashModalList" class="dash-list"></div>
+</div></div>
 
 <div id="toast" class="toast hidden"></div>
 
@@ -286,321 +326,543 @@ const SUPABASE_URL='https://uwbgxuomriltdmjdcmnk.supabase.co';
 const SUPABASE_KEY='sb_publishable_LCdc9EPosGfewwDJYQFNog_OLXOMlph';
 const LOGIN_USERNAME='Mohamed helal';
 const LOGIN_EMAIL='mohamedkany1@gmail.com';
+const SESSION_STORAGE_KEY='clientpro_device_session_id';
+const notifiedReminderKeys=new Set();
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const $=id=>document.getElementById(id);
+let customers=[],currentPhotoPath='',selectedPhotoFile=null,activeCustomer=null,heartbeatTimer=null,reminderTimer=null,dashboardFilter='all';
 
-let customers=[],currentPhotoPath='',activeCustomer=null,partRows=0,photoPreviewUrl='';
+function toast(message){$('toast').textContent=message;$('toast').classList.remove('hidden');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>$('toast').classList.add('hidden'),3500)}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function localDate(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 
-function toast(message){
- $('toast').textContent=message;
- $('toast').classList.remove('hidden');
- clearTimeout(window.toastTimer);
- window.toastTimer=setTimeout(()=>$('toast').classList.add('hidden'),3000);
+// Populate Day / Month / Year dropdowns (يوم / شهر / سنة)
+const ARABIC_MONTHS=['01 - يناير','02 - فبراير','03 - مارس','04 - أبريل','05 - مايو','06 - يونيو','07 - يوليو','08 - أغسطس','09 - سبتمبر','10 - أكتوبر','11 - نوفمبر','12 - ديسمبر'];
+function initDMYSelectors(dayId,monthId,yearId){
+  const dSel=$(dayId),mSel=$(monthId),ySel=$(yearId);
+  dSel.innerHTML='<option value="">يوم</option>'+Array.from({length:31},(_,i)=>{const v=String(i+1).padStart(2,'0');return `<option value="${v}">${v}</option>`}).join('');
+  mSel.innerHTML='<option value="">شهر</option>'+ARABIC_MONTHS.map((label,i)=>{const v=String(i+1).padStart(2,'0');return `<option value="${v}">${label}</option>`}).join('');
+  const curYear=new Date().getFullYear();
+  let years='<option value="">سنة</option>';
+  for(let y=curYear+2;y>=2020;y--)years+=`<option value="${y}">${y}</option>`;
+  ySel.innerHTML=years;
+}
+function setDMYValue(dayId,monthId,yearId,isoDate){
+  if(!isoDate){$(dayId).value='';$(monthId).value='';$(yearId).value='';return}
+  const parts=String(isoDate).slice(0,10).split('-');
+  if(parts.length===3){
+    $(yearId).value=parts[0];
+    $(monthId).value=parts[1];
+    $(dayId).value=parts[2];
+  }
+}
+function getDMYValue(dayId,monthId,yearId){
+  const d=$(dayId).value,m=$(monthId).value,y=$(yearId).value;
+  if(!d||!m||!y)return '';
+  return `${y}-${m}-${d}`;
 }
 
-function esc(s){
- return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function formatDMY(dateStr){
+  if(!dateStr)return '—';
+  const clean=String(dateStr).slice(0,10);
+  const parts=clean.split('-');
+  if(parts.length!==3)return clean;
+  return `${parts[2]}/${parts[1]}/${parts[0]}`;
 }
 
-function localDate(){
- let d=new Date();
- return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+function formatDateTimeAR(dtStr){
+  if(!dtStr)return '';
+  const d=new Date(dtStr);
+  if(Number.isNaN(d.getTime()))return '';
+  const day=String(d.getDate()).padStart(2,'0');
+  const month=String(d.getMonth()+1).padStart(2,'0');
+  const year=d.getFullYear();
+  let hours=d.getHours();
+  const mins=String(d.getMinutes()).padStart(2,'0');
+  const period=hours>=12?'مساءً':'صباحاً';
+  hours=hours%12;
+  if(hours===0)hours=12;
+  return `${day}/${month}/${year} · ${hours}:${mins} ${period}`;
+}
+
+// Interactive Dashboard Filter
+window.setDashboardFilter=async mode=>{
+  dashboardFilter=mode;
+  $('statAll').classList.toggle('active',mode==='all');
+  $('statMonth').classList.toggle('active',mode==='month');
+  $('statRated').classList.toggle('active',mode==='rated');
+  const chip=$('activeFilterChip');
+  if(mode==='all'){
+    chip.classList.add('hidden');
+  }else if(mode==='month'){
+    chip.classList.remove('hidden');
+    $('activeFilterText').textContent='تصفية: عملاء هذا الشهر';
+  }else if(mode==='rated'){
+    chip.classList.remove('hidden');
+    $('activeFilterText').textContent='ترتيب: الأعلى تقييماً';
+  }
+  await render();
+  $('recordsPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+};
+
+function getDeviceSessionId(){
+  let sid=localStorage.getItem(SESSION_STORAGE_KEY);
+  if(!sid){
+    sid=(crypto.randomUUID?crypto.randomUUID():(Date.now()+'-'+Math.random().toString(36).slice(2)));
+    localStorage.setItem(SESSION_STORAGE_KEY,sid);
+  }
+  return sid;
+}
+function getDeviceInfo(){
+  const ua=navigator.userAgent||'Unknown Device';
+  const platform=navigator.platform||'';
+  return `${platform} (${ua.slice(0,70)})`.trim();
+}
+function startSessionGuards(){
+  stopSessionGuards();
+  const sid=getDeviceSessionId();
+  heartbeatTimer=setInterval(async()=>{
+    try{
+      const {data:{session}}=await db.auth.getSession();
+      if(!session)return;
+      const {data,error}=await db.rpc('clientpro_heartbeat_session',{p_device_session_id:sid});
+      if(!error&&data&&data.ok===false&&data.reason==='taken_over_by_another_device'){
+        stopSessionGuards();
+        await db.auth.signOut();
+        showLogin();
+        toast('تم فتح الحساب من جهاز آخر، تم إنهاء الجلسة الحالية');
+      }
+    }catch(e){console.warn('heartbeat error',e)}
+  },25000);
+  reminderTimer=setInterval(checkReminders,10000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkReminders()});window.addEventListener('focus',checkReminders);
+}
+function stopSessionGuards(){
+  if(heartbeatTimer){clearInterval(heartbeatTimer);heartbeatTimer=null}
+  if(reminderTimer){clearInterval(reminderTimer);reminderTimer=null}
 }
 
 async function requireSession(){
- const {data:{session}}=await db.auth.getSession();
- if(session){
+  const {data:{session}}=await db.auth.getSession();
+  if(!session){showLogin();return}
+  const sid=getDeviceSessionId();
+  const {data,error}=await db.rpc('clientpro_claim_session',{p_device_session_id:sid,p_device_info:getDeviceInfo(),p_force:false});
+  if(!error&&data&&data.ok===false&&data.reason==='already_logged_in_elsewhere'){
+    await db.auth.signOut();
+    showLogin();
+    toast('هذا الحساب مفتوح حالياً من جهاز آخر ولا يُسمح بتسجيل الدخول المزدوج');
+    return;
+  }
   showApp(session);
+  startSessionGuards();
   await loadCustomers();
- }else showLogin();
 }
 
-function showLogin(){
- $('loginScreen').classList.remove('hidden');
- $('app').classList.add('hidden');
-}
-
+function showLogin(){$('loginScreen').classList.remove('hidden');$('app').classList.add('hidden')}
 function showApp(session){
- $('loginScreen').classList.add('hidden');
- $('app').classList.remove('hidden');
- const email=session?.user?.email||'';
- $('userEmail').textContent=email.toLowerCase()===LOGIN_EMAIL.toLowerCase()?LOGIN_USERNAME:email;
+  $('loginScreen').classList.add('hidden');
+  $('app').classList.remove('hidden');
+  const email=session?.user?.email||'';
+  $('userEmail').textContent=email.toLowerCase()===LOGIN_EMAIL.toLowerCase()?LOGIN_USERNAME:email;
 }
 
 $('loginForm').addEventListener('submit',async e=>{
- e.preventDefault();
- $('loginBtn').disabled=true;
- try{
-  const username=$('loginUsername').value.trim().toLowerCase();
-  if(username!==LOGIN_USERNAME.toLowerCase())throw new Error('Invalid username');
-  const {data,error}=await db.auth.signInWithPassword({email:LOGIN_EMAIL,password:$('loginPassword').value});
-  if(error)throw error;
-  showApp(data);
-  await loadCustomers();
-  toast('أهلاً بك Mohamed helal');
- }catch(err){
-  console.error(err);
-  toast('اسم المستخدم أو كلمة المرور غير صحيحة');
- }finally{
-  $('loginBtn').disabled=false;
- }
+  e.preventDefault();
+  $('loginBtn').disabled=true;
+  try{
+    const rawUser=$('loginUsername').value.trim();
+    const username=rawUser.toLowerCase().replace(/\s+/g,' ');
+    if(username!==LOGIN_USERNAME.toLowerCase()){
+      toast('اسم المستخدم غير صحيح (اكتب: Mohamed helal)');
+      return;
+    }
+    const {data,error}=await db.auth.signInWithPassword({email:LOGIN_EMAIL,password:$('loginPassword').value});
+    if(error){
+      toast('كلمة المرور غير صحيحة');
+      return;
+    }
+    const sid=getDeviceSessionId();
+    const {data:claim,error:claimError}=await db.rpc('clientpro_claim_session',{p_device_session_id:sid,p_device_info:getDeviceInfo(),p_force:false});
+    if(claimError){
+      console.warn('Session RPC notice:',claimError.message);
+    }else if(claim&&claim.ok===false&&claim.reason==='already_logged_in_elsewhere'){
+      await db.auth.signOut();
+      toast('هذا الحساب مفتوح بالفعل على جهاز آخر. أغلق الجلسة الأخرى أو انتظر دقيقتين.');
+      return;
+    }
+    showApp(data);
+    startSessionGuards();
+    await loadCustomers();
+    toast('أهلاً بك Mohamed helal');
+  }catch(err){
+    console.error(err);
+    toast('تعذر تسجيل الدخول: '+(err?.message||'حاول مرة أخرى'));
+  }finally{$('loginBtn').disabled=false}
 });
 
 $('logoutBtn').onclick=async()=>{
- await db.auth.signOut();
- customers=[];
- showLogin();
- toast('تم تسجيل الخروج');
+  stopSessionGuards();
+  try{await db.rpc('clientpro_release_session',{p_device_session_id:getDeviceSessionId()})}catch(_){}
+  await db.auth.signOut();
+  customers=[];
+  showLogin();
+  toast('تم تسجيل الخروج');
 };
 
 db.auth.onAuthStateChange((event,session)=>{
- if(event==='SIGNED_OUT')showLogin();
- if(event==='TOKEN_REFRESHED'&&session)showApp(session);
+  if(event==='SIGNED_OUT'){stopSessionGuards();showLogin()}
+  if(event==='TOKEN_REFRESHED'&&session)showApp(session)
 });
 
 async function uploadPhoto(file,customerId){
- const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
- const path=`${customerId}/${crypto.randomUUID()}.${ext}`;
- const {error}=await db.storage.from('customer-photos').upload(path,file,{upsert:false,contentType:file.type||'image/jpeg'});
- if(error)throw error;
- return path;
+  const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+  const path=`${customerId}/${crypto.randomUUID()}.${ext}`;
+  const {error}=await db.storage.from('customer-photos').upload(path,file,{upsert:false,contentType:file.type||'image/jpeg'});
+  if(error)throw error;
+  return path;
 }
-
 async function signedPhoto(path){
- if(!path)return '';
- const {data,error}=await db.storage.from('customer-photos').createSignedUrl(path,3600);
- return error?'':data.signedUrl;
+  if(!path)return '';
+  const {data,error}=await db.storage.from('customer-photos').createSignedUrl(path,3600);
+  return error?'':data.signedUrl;
 }
 
 async function loadCustomers(){
- try{
-  const {data,error}=await db.from('customers').select('*').order('created_at',{ascending:false});
-  if(error)throw error;
-  customers=data||[];
-  await render();
- }catch(err){
-  console.error(err);
-  toast('تعذر تحميل العملاء. راجع اتصال قاعدة البيانات والصلاحيات');
- }
+  try{
+    const {data,error}=await db.from('customers').select('*').order('created_at',{ascending:false});
+    if(error)throw error;
+    customers=data||[];
+    await render();
+    checkReminders();
+  }catch(err){
+    console.error(err);
+    toast('تعذر تحميل العملاء. راجع اتصال قاعدة البيانات والصلاحيات');
+  }
 }
 
 async function render(){
- const q=$('search').value.toLowerCase().trim();
- let list=customers.filter(c=>[c.name,c.phone,c.address,c.device_type,c.problem_description,c.notes].join(' ').toLowerCase().includes(q));
- let latest={};
+  const q=$('search').value.toLowerCase().trim();
+  const month=localDate().slice(0,7);
 
- if(list.length){
-  const ids=list.map(c=>c.id);
-  const {data}=await db.from('visits').select('customer_id,visit_date').in('customer_id',ids).order('visit_date',{ascending:false});
-  (data||[]).forEach(v=>{
-   if(!latest[v.customer_id])latest[v.customer_id]=v.visit_date;
-  });
- }
+  $('total').textContent=customers.length;
+  $('month').textContent=customers.filter(c=>(c.created_at||'').slice(0,7)===month).length;
+  const rated=customers.filter(c=>Number(c.rating)>0);
+  $('average').textContent=rated.length?(rated.reduce((a,c)=>a+Number(c.rating),0)/rated.length).toFixed(1)+' / 5':'—';
 
- $('total').textContent=customers.length;
- const month=localDate().slice(0,7);
- $('month').textContent=customers.filter(c=>(c.created_at||'').slice(0,7)===month).length;
- const rated=customers.filter(c=>Number(c.rating)>0);
- $('average').textContent=rated.length?(rated.reduce((a,c)=>a+Number(c.rating),0)/rated.length).toFixed(1)+' / 5':'—';
- $('shown').textContent=`(${list.length})`;
-
- const rows=await Promise.all(list.map(async c=>{
-  const photo=await signedPhoto(c.device_photo);
-  return `<tr>
-   <td><div class="name">${esc(c.name)}</div><div class="sub">${esc(c.notes||'')}</div></td>
-   <td dir="ltr">${esc(c.phone||'—')}</td>
-   <td>${esc(c.address||'—')}</td>
-   <td>${esc(latest[c.id]||'—')}</td>
-   <td>${esc(c.device_type||'—')}</td>
-   <td>${photo?`<img class="device-thumb" src="${photo}" alt="صورة الجهاز">`:'—'}</td>
-   <td>${esc(c.problem_description||'—')}</td>
-   <td class="rating">${c.rating?'★'.repeat(Number(c.rating))+'☆'.repeat(5-Number(c.rating)):'—'}</td>
-   <td><div class="rowactions">
-    <button class="btn mini" onclick="editCustomer('${c.id}')">تعديل</button>
-    <button class="btn mini" onclick="openVisits('${c.id}')">الزيارات والقطع</button>
-    <button class="btn mini danger" onclick="deleteCustomer('${c.id}')">حذف</button>
-   </div></td>
-  </tr>`;
- }));
- $('rows').innerHTML=rows.join('');
- $('empty').classList.toggle('hidden',list.length>0);
-}
-
-function formValue(id){
- return $(id).value.trim();
-}
-
-$('customerForm').addEventListener('submit',async e=>{
- e.preventDefault();
-
- const id=$('editId').value||crypto.randomUUID();
- const old=customers.find(c=>c.id===id);
- const file=$('devicePhoto').files[0];
- const parts=collectParts('initialPartsEditor');
-
- const invalid=[...$('initialPartsEditor').querySelectorAll('.part-row')].some(r=>
-  r.querySelector('.p-name').value.trim()&&
-  (!(Number(r.querySelector('.p-qty').value)>0)||Number(r.querySelector('.p-price').value)<0)
- );
-
- if(invalid){
-  toast('راجع كمية وسعر قطع الغيار');
-  return;
- }
-
- $('saveBtn').disabled=true;
-
- try{
-  let photoPath=old?.device_photo||null;
-  if(file)photoPath=await uploadPhoto(file,id);
-
-  const payload={
-   id,
-   name:formValue('name'),
-   phone:formValue('phone')||null,
-   address:formValue('address')||null,
-   device_type:formValue('device')||null,
-   device_photo:photoPath,
-   problem_description:formValue('problem')||null,
-   notes:formValue('notes')||null,
-   rating:formValue('rating')?Number(formValue('rating')):null
-  };
-
-  if(old){
-   const result=await db.from('customers').update(payload).eq('id',id).select().single();
-   if(result.error)throw result.error;
-
-   if($('initialVisitDate').value||parts.length){
-    const {data:visit,error:visitError}=await db.from('visits').insert({
-     customer_id:id,
-     visit_date:$('initialVisitDate').value||localDate(),
-     problem_description:payload.problem_description,
-     notes:payload.notes
-    }).select().single();
-
-    if(visitError)throw visitError;
-
-    if(parts.length){
-     const {error:partsError}=await db.from('spare_parts').insert(parts.map(p=>({...p,visit_id:visit.id})));
-     if(partsError){
-      await db.from('visits').delete().eq('id',visit.id);
-      throw partsError;
-     }
-    }
-
-    await logActivity(id,'visited','تسجيل زيارة وقطع غيار');
-   }
-
-   await logActivity(id,'updated','تعديل بيانات العميل');
-   toast('تم تحديث بيانات العميل');
-
-  }else{
-   const visit={
-    visit_date:$('initialVisitDate').value||localDate(),
-    problem_description:payload.problem_description,
-    notes:payload.notes
-   };
-
-   const {data,error}=await db.rpc('clientpro_create_customer_visit',{
-    p_customer:payload,
-    p_parts:parts,
-    p_visit:visit
-   });
-
-   if(error)throw error;
-
-   const savedId=typeof data==='string'?data:(data?.id||id);
-   await logActivity(savedId,'created','إضافة عميل مع الزيارة وقطع الغيار');
-   toast('تم حفظ العميل والزيارة وقطع الغيار');
+  let list=customers.filter(c=>[c.name,c.phone,c.address,c.device_type,c.problem_description,c.notes,formatDateTimeAR(c.reminder_at)].join(' ').toLowerCase().includes(q));
+  if(dashboardFilter==='month'){
+    list=list.filter(c=>(c.created_at||'').slice(0,7)===month);
+  }else if(dashboardFilter==='rated'){
+    list=list.filter(c=>Number(c.rating)>0).sort((a,b)=>Number(b.rating)-Number(a.rating));
   }
 
-  resetForm();
-  await loadCustomers();
+  const latest={};
+  if(list.length){
+    const ids=list.map(c=>c.id);
+    const {data}=await db.from('visits').select('customer_id,visit_date').in('customer_id',ids).order('visit_date',{ascending:false});
+    (data||[]).forEach(v=>{if(!latest[v.customer_id])latest[v.customer_id]=v.visit_date});
+  }
+  $('shown').textContent=`(${list.length})`;
 
- }catch(err){
-  console.error('CLIENT PRO save error:',err);
-  toast('تعذر الحفظ: '+(err?.message||'راجع الاتصال والصلاحيات'));
- }finally{
-  $('saveBtn').disabled=false;
- }
+  const now=Date.now();
+  const rows=await Promise.all(list.map(async c=>{
+    const photo=await signedPhoto(c.device_photo);
+    const remFormatted=formatDateTimeAR(c.reminder_at);
+    const isDue=c.reminder_at&&(new Date(c.reminder_at).getTime()<=now);
+    const remHtml=remFormatted?`<span class="reminder-pill ${isDue?'reminder-due':''}">${esc(remFormatted)}${isDue?' · مستحق':''}</span>`:'—';
+    return `<tr>
+      <td><div class="name">${esc(c.name)}</div><div class="sub">${esc(c.notes||'')}</div></td>
+      <td dir="ltr">${esc(c.phone||'—')}</td>
+      <td>${esc(c.address||'—')}</td>
+      <td><span class="date-pill">${esc(formatDMY(latest[c.id]))}</span></td>
+      <td>${remHtml}</td>
+      <td>${esc(c.device_type||'—')}</td>
+      <td>${photo?`<img class="device-thumb" src="${photo}" alt="صورة الجهاز" title="اضغط لتكبير الصورة" onclick="openPhotoModal('${photo}','${esc(c.name)}','${esc(c.device_type||'')}')">`:'—'}</td>
+      <td>${esc(c.problem_description||'—')}</td>
+      <td class="rating">${c.rating?'★'.repeat(Number(c.rating))+'☆'.repeat(5-Number(c.rating)):'—'}</td>
+      <td><div class="rowactions">
+        <button class="btn mini" onclick="editCustomer('${c.id}')">تعديل</button>
+        <button class="btn mini" onclick="openVisits('${c.id}')">الزيارات والقطع</button>
+        <button class="btn mini danger" onclick="deleteCustomer('${c.id}')">حذف</button>
+      </div></td>
+    </tr>`;
+  }));
+  $('rows').innerHTML=rows.join('');
+  $('empty').classList.toggle('hidden',list.length>0);
+}
+
+function syncReminderLabels(){
+  const r1=formatDateTimeAR($('reminderAt').value);
+  $('reminderAtFormatted').textContent=r1?('الميعاد المحدد: '+r1):'';
+  const r2=formatDateTimeAR($('visitReminderAt').value);
+  $('visitReminderFormatted').textContent=r2?('ميعاد التذكير: '+r2):'';
+}
+$('reminderAt').addEventListener('input',syncReminderLabels);
+$('visitReminderAt').addEventListener('input',syncReminderLabels);
+
+// Photo handlers (Camera + Device Gallery)
+function handlePickedPhoto(file){
+  if(!file)return;
+  selectedPhotoFile=file;
+  $('photoPreview').src=URL.createObjectURL(file);
+  $('photoPreview').style.display='block';
+  $('removePhoto').classList.remove('hidden');
+}
+$('deviceCamera').onchange=e=>handlePickedPhoto(e.target.files[0]);
+$('deviceGallery').onchange=e=>handlePickedPhoto(e.target.files[0]);
+$('removePhoto').onclick=()=>{
+  $('deviceCamera').value='';
+  $('deviceGallery').value='';
+  selectedPhotoFile=null;
+  currentPhotoPath='';
+  $('photoPreview').src='';
+  $('photoPreview').style.display='none';
+  $('removePhoto').classList.add('hidden');
+};
+
+function playReminderChime(){
+  try{
+    const AudioCtx=window.AudioContext||window.webkitAudioContext;
+    if(!AudioCtx)return;
+    const ctx=new AudioCtx();
+    const osc=ctx.createOscillator();
+    const gain=ctx.createGain();
+    osc.type='sine';
+    osc.frequency.setValueAtTime(880,ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(660,ctx.currentTime+0.25);
+    gain.gain.setValueAtTime(0.08,ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.35);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime+0.35);
+    setTimeout(()=>ctx.close().catch(()=>{}),500);
+  }catch(_){}
+}
+
+function formatTimeOnlyAR(dtStr){
+  if(!dtStr)return '';
+  const d=new Date(dtStr);
+  if(Number.isNaN(d.getTime()))return '';
+  let hours=d.getHours();
+  const mins=String(d.getMinutes()).padStart(2,'0');
+  const period=hours>=12?'مساءً':'صباحاً';
+  hours=hours%12;
+  if(hours===0)hours=12;
+  return `${hours}:${mins} ${period}`;
+}
+
+function checkReminders(){
+  const now=Date.now();
+  const todayStr=localDate();
+  const due=customers.filter(c=>{
+    if(!c.reminder_at)return false;
+    const t=new Date(c.reminder_at).getTime();
+    return !Number.isNaN(t)&&t<=now;
+  });
+
+  const todayUpcoming=customers.filter(c=>{
+    if(!c.reminder_at)return false;
+    const d=new Date(c.reminder_at);
+    if(Number.isNaN(d.getTime()))return false;
+    const itemDay=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    return itemDay===todayStr&&d.getTime()>now;
+  });
+
+  const banner=$('reminderBanner');
+  if(!due.length&&!todayUpcoming.length){
+    banner.classList.add('hidden');
+    return;
+  }
+  banner.classList.remove('hidden');
+
+  if(due.length){
+    const names=due.slice(0,3).map(c=>`زيارة للعميل ${c.name} (${formatTimeOnlyAR(c.reminder_at)})`).join('، ');
+    $('reminderBannerTitle').textContent=`تنبيه الآن: لديك ${due.length} زيارة مستحقة`;
+    $('reminderBannerText').textContent=names+(due.length>3?' ...':'');
+  }else{
+    const names=todayUpcoming.slice(0,3).map(c=>`العميل ${c.name} الساعة ${formatTimeOnlyAR(c.reminder_at)}`).join('، ');
+    $('reminderBannerTitle').textContent=`تذكيرات زيارات اليوم (${todayUpcoming.length})`;
+    $('reminderBannerText').textContent=names+(todayUpcoming.length>3?' ...':'');
+  }
+
+  due.forEach(c=>{
+    const key=`${c.id}_${c.reminder_at}`;
+    if(!notifiedReminderKeys.has(key)){
+      notifiedReminderKeys.add(key);
+      const clientName=c.name||'عميل';
+      const timeTxt=formatTimeOnlyAR(c.reminder_at)||formatDateTimeAR(c.reminder_at);
+      const title=`تذكير زيارة النهاردة · ${clientName}`;
+      const body=`عندك زيارة النهاردة للعميل ${clientName} الساعة ${timeTxt}${c.device_type?' ('+c.device_type+')':''}`;
+      triggerLocalNotification(title,body);
+    }
+  });
+}
+
+async function triggerLocalNotification(title,body){
+  playReminderChime();
+  toast(`${title} — ${body}`);
+  try{
+    if(window.Capacitor?.Plugins?.LocalNotifications){
+      await window.Capacitor.Plugins.LocalNotifications.schedule({
+        notifications:[{
+          title,
+          body,
+          id:Math.floor(Math.random()*900000)+100000,
+          schedule:{at:new Date(Date.now()+400)},
+          sound:undefined
+        }]
+      });
+      return;
+    }
+  }catch(_){}
+  if('Notification' in window){
+    try{
+      if(Notification.permission==='granted'){
+        new Notification(title,{body,icon:'./icon-192.png'});
+      }else if(Notification.permission!=='denied'){
+        const perm=await Notification.requestPermission();
+        if(perm==='granted')new Notification(title,{body,icon:'./icon-192.png'});
+      }
+    }catch(_){}
+  }
+}
+
+$('enableNotifBtn').onclick=async()=>{
+  try{
+    if(window.Capacitor?.Plugins?.LocalNotifications){
+      await window.Capacitor.Plugins.LocalNotifications.requestPermissions();
+      toast('تم تفعيل إشعارات التطبيق');
+      return;
+    }
+  }catch(_){}
+  if('Notification' in window){
+    const perm=await Notification.requestPermission();
+    toast(perm==='granted'?'تم تفعيل الإشعارات بنجاح':'لم يتم السماح بالإشعارات من المتصفح');
+  }
+};
+
+function formValue(id){return $(id).value.trim()}
+
+$('customerForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const id=$('editId').value||crypto.randomUUID();
+  const old=customers.find(c=>c.id===id);
+  const parts=collectParts('initialPartsEditor');
+  const invalid=[...$('initialPartsEditor').querySelectorAll('.part-row')].some(r=>r.querySelector('.p-name').value.trim()&&(!(Number(r.querySelector('.p-qty').value)>0)||Number(r.querySelector('.p-price').value)<0));
+  if(invalid){toast('راجع كمية وسعر قطع الغيار');return}
+  $('saveBtn').disabled=true;
+  try{
+    let photoPath=old?.device_photo||null;
+    if(selectedPhotoFile)photoPath=await uploadPhoto(selectedPhotoFile,id);
+    else if(!currentPhotoPath)photoPath=null;
+
+    const reminderVal=$('reminderAt').value?new Date($('reminderAt').value).toISOString():null;
+    const initDateVal=getDMYValue('initDay','initMonth','initYear');
+    const payload={
+      id,
+      name:formValue('name'),
+      phone:formValue('phone')||null,
+      address:formValue('address')||null,
+      device_type:formValue('device')||null,
+      device_photo:photoPath,
+      problem_description:formValue('problem')||null,
+      notes:formValue('notes')||null,
+      rating:formValue('rating')?Number(formValue('rating')):null,
+      reminder_at:reminderVal
+    };
+    if(old){
+      const result=await db.from('customers').update(payload).eq('id',id).select().single();
+      if(result.error)throw result.error;
+      if(initDateVal||parts.length){
+        const {data:visit,error:visitError}=await db.from('visits').insert({customer_id:id,visit_date:initDateVal||localDate(),problem_description:payload.problem_description,notes:payload.notes}).select().single();
+        if(visitError)throw visitError;
+        if(parts.length){const {error:partsError}=await db.from('spare_parts').insert(parts.map(p=>({...p,visit_id:visit.id})));if(partsError){await db.from('visits').delete().eq('id',visit.id);throw partsError}}
+        await logActivity(id,'visited','تسجيل زيارة وقطع غيار');
+      }
+      await logActivity(id,'updated','تعديل بيانات العميل');
+      toast('تم تحديث بيانات العميل');
+    }else{
+      const visit={visit_date:initDateVal||localDate(),problem_description:payload.problem_description,notes:payload.notes};
+      const {data,error}=await db.rpc('clientpro_create_customer_visit',{p_customer:payload,p_parts:parts,p_visit:visit});
+      if(error)throw error;
+      const savedId=typeof data==='string'?data:(data?.id||id);
+      await logActivity(savedId,'created','إضافة عميل مع الزيارة وقطع الغيار');
+      toast('تم حفظ العميل والزيارة وقطع الغيار');
+    }
+    resetForm();
+    await loadCustomers();
+  }catch(err){
+    console.error('CLIENT PRO save error:',err);
+    toast('تعذر الحفظ: '+(err?.message||'راجع الاتصال والصلاحيات'));
+  }finally{$('saveBtn').disabled=false}
 });
 
 async function logActivity(customerId,action,details){
- const {data:{user}}=await db.auth.getUser();
- if(!user)return;
- const {error}=await db.from('customer_activity').insert({
-  customer_id:customerId,
-  user_id:user.id,
-  action,
-  details
- });
- if(error)console.warn('activity log',error);
+  const {data:{user}}=await db.auth.getUser();
+  if(!user)return;
+  const {error}=await db.from('customer_activity').insert({customer_id:customerId,user_id:user.id,action,details});
+  if(error)console.warn('activity log',error);
 }
 
 window.editCustomer=async id=>{
- const c=customers.find(x=>x.id===id);
- if(!c)return;
-
- const map={
-  phone:c.phone,
-  name:c.name,
-  address:c.address,
-  device:c.device_type,
-  problem:c.problem_description,
-  notes:c.notes,
-  rating:c.rating
- };
-
- Object.entries(map).forEach(([k,v])=>$(k).value=v??'');
-
- $('editId').value=id;
- $('initialVisitDate').value='';
- $('initialPartsEditor').innerHTML='';
- updatePartsTotal('initialPartsEditor','initialPartsTotal');
- currentPhotoPath=c.device_photo||'';
- $('devicePhoto').value='';
- $('photoPreview').src=await signedPhoto(currentPhotoPath);
- $('photoPreview').style.display=currentPhotoPath?'block':'none';
- $('removePhoto').classList.toggle('hidden',!currentPhotoPath);
- $('formTitle').textContent='تعديل بيانات العميل';
- $('saveBtn').textContent='حفظ التعديلات';
- $('cancelEdit').classList.remove('hidden');
- $('editor').scrollIntoView({behavior:'smooth'});
+  const c=customers.find(x=>x.id===id);
+  if(!c)return;
+  const map={phone:c.phone,name:c.name,address:c.address,device:c.device_type,problem:c.problem_description,notes:c.notes,rating:c.rating};
+  Object.entries(map).forEach(([k,v])=>$(k).value=v??'');
+  if(c.reminder_at){
+    const d=new Date(c.reminder_at);
+    const localIso=new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16);
+    $('reminderAt').value=localIso;
+  }else{
+    $('reminderAt').value='';
+  }
+  $('editId').value=id;
+  setDMYValue('initDay','initMonth','initYear','');
+  $('initialPartsEditor').innerHTML='';
+  updatePartsTotal('initialPartsEditor','initialPartsTotal');
+  currentPhotoPath=c.device_photo||'';
+  selectedPhotoFile=null;
+  $('deviceCamera').value='';
+  $('deviceGallery').value='';
+  $('photoPreview').src=await signedPhoto(currentPhotoPath);
+  $('photoPreview').style.display=currentPhotoPath?'block':'none';
+  $('removePhoto').classList.toggle('hidden',!currentPhotoPath);
+  $('formTitle').textContent='تعديل بيانات العميل';
+  $('saveBtn').textContent='حفظ التعديلات';
+  $('cancelEdit').classList.remove('hidden');
+  syncReminderLabels();
+  $('editor').scrollIntoView({behavior:'smooth'});
 };
 
 window.deleteCustomer=async id=>{
- const c=customers.find(x=>x.id===id);
- if(!c||!confirm(`تأكيد حذف العميل «${c.name}»؟ سيتم حذف الزيارات وقطع الغيار المرتبطة به.`))return;
-
- try{
-  const {error}=await db.from('customers').delete().eq('id',id);
-  if(error)throw error;
-
-  if(c.device_photo)await db.storage.from('customer-photos').remove([c.device_photo]);
-
-  await logActivity(null,'deleted',`حذف العميل ${c.name}`);
-  toast('تم حذف العميل');
-  await loadCustomers();
-
- }catch(err){
-  console.error(err);
-  toast('تعذر حذف العميل');
- }
+  const c=customers.find(x=>x.id===id);
+  if(!c||!confirm(`تأكيد حذف العميل «${c.name}»؟ سيتم حذف الزيارات وقطع الغيار المرتبطة به.`))return;
+  try{
+    const {error}=await db.from('customers').delete().eq('id',id);
+    if(error)throw error;
+    if(c.device_photo)await db.storage.from('customer-photos').remove([c.device_photo]);
+    await logActivity(null,'deleted',`حذف العميل ${c.name}`);
+    toast('تم حذف العميل');
+    await loadCustomers();
+  }catch(err){console.error(err);toast('تعذر حذف العميل')}
 };
 
 function resetForm(){
- $('customerForm').reset();
- $('editId').value='';
- currentPhotoPath='';
- $('photoPreview').src='';
- $('photoPreview').style.display='none';
- $('removePhoto').classList.add('hidden');
- $('initialPartsEditor').innerHTML='';
- updatePartsTotal('initialPartsEditor','initialPartsTotal');
- $('initialVisitDate').value=localDate();
- $('formTitle').textContent='إضافة عميل جديد';
- $('saveBtn').textContent='حفظ العميل';
- $('cancelEdit').classList.add('hidden');
+  $('customerForm').reset();
+  $('editId').value='';
+  currentPhotoPath='';
+  selectedPhotoFile=null;
+  $('photoPreview').src='';
+  $('photoPreview').style.display='none';
+  $('removePhoto').classList.add('hidden');
+  $('initialPartsEditor').innerHTML='';
+  updatePartsTotal('initialPartsEditor','initialPartsTotal');
+  setDMYValue('initDay','initMonth','initYear',localDate());
+  $('reminderAt').value='';
+  $('formTitle').textContent='إضافة عميل جديد';
+  $('saveBtn').textContent='حفظ العميل';
+  $('cancelEdit').classList.add('hidden');
+  syncReminderLabels();
 }
 
 $('cancelEdit').onclick=resetForm;
@@ -608,269 +870,308 @@ $('clearBtn').onclick=()=>setTimeout(resetForm,0);
 $('search').oninput=()=>render();
 $('refreshBtn').onclick=loadCustomers;
 
-$('devicePhoto').onchange=async e=>{
- const f=e.target.files[0];
- if(!f)return;
- const url=URL.createObjectURL(f);
- $('photoPreview').src=url;
- $('photoPreview').style.display='block';
- $('removePhoto').classList.remove('hidden');
-};
-
-$('removePhoto').onclick=()=>{
- $('devicePhoto').value='';
- currentPhotoPath='';
- $('photoPreview').src='';
- $('photoPreview').style.display='none';
- $('removePhoto').classList.add('hidden');
-};
-
 window.openVisits=async id=>{
- activeCustomer=customers.find(c=>c.id===id);
- if(!activeCustomer)return;
-
- $('visitTitle').textContent=`زيارات وقطع غيار: ${activeCustomer.name}`;
- $('visitCustomerId').value=id;
- $('visitDate').value=localDate();
- $('visitProblem').value='';
- $('visitNotes').value='';
- $('partsEditor').innerHTML='';
- partRows=0;
- updatePartsTotal();
- $('visitModal').classList.remove('hidden');
-
- await loadVisitHistory(id);
+  activeCustomer=customers.find(c=>c.id===id);
+  if(!activeCustomer)return;
+  $('visitTitle').textContent=`زيارات وقطع غيار: ${activeCustomer.name}`;
+  $('visitCustomerId').value=id;
+  setDMYValue('vDay','vMonth','vYear',localDate());
+  $('visitReminderAt').value='';
+  $('visitProblem').value='';
+  $('visitNotes').value='';
+  $('partsEditor').innerHTML='';
+  updatePartsTotal();
+  syncReminderLabels();
+  $('visitModal').classList.remove('hidden');
+  await loadVisitHistory(id);
 };
-
-window.closeVisits=()=>{
- $('visitModal').classList.add('hidden');
- activeCustomer=null;
-};
-
+window.closeVisits=()=>{$('visitModal').classList.add('hidden');activeCustomer=null};
 $('addPartBtn').onclick=()=>addPartRow('partsEditor','partsTotal');
 $('addInitialPartBtn').onclick=()=>addPartRow('initialPartsEditor','initialPartsTotal');
 
 function addPartRow(editorId,totalId,part={}){
- const row=document.createElement('div');
- row.className='part-row';
-
- row.innerHTML=`
- <div class="part-name"><label>اسم قطعة الغيار</label><input class="p-name"></div>
- <div><label>الكمية</label><input class="p-qty" type="number" min="0.01" step="0.01" value="1"></div>
- <div><label>سعر القطعة</label><input class="p-price" type="number" min="0" step="0.01" value="0"></div>
- <div class="part-notes"><label>ملاحظات</label><input class="p-notes"></div>
- <button class="btn mini danger remove-part" type="button">حذف</button>`;
-
- $(editorId).appendChild(row);
-
- row.querySelector('.p-name').value=part.part_name||'';
- row.querySelector('.p-qty').value=part.quantity??1;
- row.querySelector('.p-price').value=part.unit_price??0;
- row.querySelector('.p-notes').value=part.notes||'';
-
- row.querySelectorAll('input').forEach(x=>
-  x.addEventListener('input',()=>updatePartsTotal(editorId,totalId))
- );
-
- row.querySelector('.remove-part').onclick=()=>{
-  row.remove();
+  const row=document.createElement('div');
+  row.className='part-row';
+  row.innerHTML=`<div class="part-name"><label>اسم قطعة الغيار</label><input class="p-name"></div><div><label>الكمية</label><input class="p-qty" type="number" min="0.01" step="0.01" value="1"></div><div><label>سعر القطعة</label><input class="p-price" type="number" min="0" step="0.01" value="0"></div><div class="part-notes"><label>ملاحظات</label><input class="p-notes"></div><button class="btn mini danger remove-part" type="button">حذف</button>`;
+  $(editorId).appendChild(row);
+  row.querySelector('.p-name').value=part.part_name||'';
+  row.querySelector('.p-qty').value=part.quantity??1;
+  row.querySelector('.p-price').value=part.unit_price??0;
+  row.querySelector('.p-notes').value=part.notes||'';
+  row.querySelectorAll('input').forEach(x=>x.addEventListener('input',()=>updatePartsTotal(editorId,totalId)));
+  row.querySelector('.remove-part').onclick=()=>{row.remove();updatePartsTotal(editorId,totalId)};
   updatePartsTotal(editorId,totalId);
- };
-
- updatePartsTotal(editorId,totalId);
 }
-
 function collectParts(editorId='partsEditor'){
- return [...$(editorId).querySelectorAll('.part-row')].map(r=>({
-  part_name:r.querySelector('.p-name').value.trim(),
-  quantity:Number(r.querySelector('.p-qty').value),
-  unit_price:Number(r.querySelector('.p-price').value),
-  notes:r.querySelector('.p-notes').value.trim()
- })).filter(p=>p.part_name);
+  return [...$(editorId).querySelectorAll('.part-row')].map(r=>({
+    part_name:r.querySelector('.p-name').value.trim(),
+    quantity:Number(r.querySelector('.p-qty').value),
+    unit_price:Number(r.querySelector('.p-price').value),
+    notes:r.querySelector('.p-notes').value.trim()
+  })).filter(p=>p.part_name);
 }
-
 function updatePartsTotal(editorId='partsEditor',totalId='partsTotal'){
- const total=collectParts(editorId).reduce((sum,p)=>sum+(p.quantity*p.unit_price),0);
- $(totalId).textContent='إجمالي قطع الغيار: '+total.toLocaleString('ar-EG',{
-  minimumFractionDigits:2,
-  maximumFractionDigits:2
- });
+  const total=collectParts(editorId).reduce((sum,p)=>sum+(p.quantity*p.unit_price),0);
+  $(totalId).textContent='إجمالي قطع الغيار: '+total.toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:2});
 }
 
 $('visitForm').addEventListener('submit',async e=>{
- e.preventDefault();
-
- const customerId=$('visitCustomerId').value;
- const parts=collectParts('partsEditor');
-
- if([...$('partsEditor').querySelectorAll('.part-row')].some(r=>
-  r.querySelector('.p-name').value.trim()&&
-  (!(Number(r.querySelector('.p-qty').value)>0)||Number(r.querySelector('.p-price').value)<0)
- )){
-  toast('راجع كمية وسعر قطع الغيار');
-  return;
- }
-
- $('saveVisitBtn').disabled=true;
-
- try{
-  const {data:visit,error}=await db.from('visits').insert({
-   customer_id:customerId,
-   visit_date:$('visitDate').value||localDate(),
-   problem_description:$('visitProblem').value.trim()||null,
-   notes:$('visitNotes').value.trim()||null
-  }).select().single();
-
-  if(error)throw error;
-
-  if(parts.length){
-   const rows=parts.map(p=>({...p,visit_id:visit.id}));
-   const {error:partError}=await db.from('spare_parts').insert(rows);
-
-   if(partError){
-    await db.from('visits').delete().eq('id',visit.id);
-    throw partError;
-   }
-  }
-
-  await logActivity(customerId,'visited','تسجيل زيارة وقطع غيار');
-  toast('تم حفظ الزيارة وقطع الغيار');
-
-  $('visitDate').value=localDate();
-  $('visitProblem').value='';
-  $('visitNotes').value='';
-  $('partsEditor').innerHTML='';
-  updatePartsTotal('partsEditor','partsTotal');
-
-  await loadVisitHistory(customerId);
-  await loadCustomers();
-
- }catch(err){
-  console.error(err);
-  toast('تعذر حفظ الزيارة. راجع الصلاحيات وحاول مرة أخرى');
- }finally{
-  $('saveVisitBtn').disabled=false;
- }
+  e.preventDefault();
+  const customerId=$('visitCustomerId').value;
+  const parts=collectParts('partsEditor');
+  const vDate=getDMYValue('vDay','vMonth','vYear');
+  if(!vDate){toast('اختر اليوم والشهر والسنة للزيارة');return}
+  if([...$('partsEditor').querySelectorAll('.part-row')].some(r=>r.querySelector('.p-name').value.trim()&&(!(Number(r.querySelector('.p-qty').value)>0)||Number(r.querySelector('.p-price').value)<0))){toast('راجع كمية وسعر قطع الغيار');return}
+  $('saveVisitBtn').disabled=true;
+  try{
+    const visitReminderIso=$('visitReminderAt').value?new Date($('visitReminderAt').value).toISOString():null;
+    const {data:visit,error}=await db.from('visits').insert({
+      customer_id:customerId,
+      visit_date:vDate,
+      problem_description:$('visitProblem').value.trim()||null,
+      notes:$('visitNotes').value.trim()||null,
+      reminder_at:visitReminderIso
+    }).select().single();
+    if(error)throw error;
+    if(visitReminderIso){
+      await db.from('customers').update({reminder_at:visitReminderIso}).eq('id',customerId);
+    }
+    if(parts.length){
+      const rows=parts.map(p=>({...p,visit_id:visit.id}));
+      const {error:partError}=await db.from('spare_parts').insert(rows);
+      if(partError){await db.from('visits').delete().eq('id',visit.id);throw partError}
+    }
+    await logActivity(customerId,'visited','تسجيل زيارة وقطع غيار');
+    toast('تم حفظ الزيارة وقطع الغيار');
+    setDMYValue('vDay','vMonth','vYear',localDate());
+    $('visitReminderAt').value='';
+    $('visitProblem').value='';
+    $('visitNotes').value='';
+    $('partsEditor').innerHTML='';
+    updatePartsTotal('partsEditor','partsTotal');
+    syncReminderLabels();
+    await loadVisitHistory(customerId);
+    await loadCustomers();
+  }catch(err){
+    console.error(err);
+    toast('تعذر حفظ الزيارة. راجع الصلاحيات وحاول مرة أخرى');
+  }finally{$('saveVisitBtn').disabled=false}
 });
 
 async function loadVisitHistory(customerId){
- $('visitHistory').innerHTML='<div class="empty">جاري تحميل الزيارات...</div>';
-
- try{
-  const {data:visits,error}=await db.from('visits').select('*').eq('customer_id',customerId).order('visit_date',{ascending:false});
-  if(error)throw error;
-
-  if(!visits?.length){
-   $('visitHistory').innerHTML='<div class="empty">لا توجد زيارات مسجلة لهذا العميل.</div>';
-   return;
-  }
-
-  const partsResult=await db.from('spare_parts').select('*').in('visit_id',visits.map(v=>v.id));
-  if(partsResult.error)throw partsResult.error;
-
-  const byVisit={};
-  (partsResult.data||[]).forEach(p=>(byVisit[p.visit_id]??=[]).push(p));
-
-  $('visitHistory').innerHTML=visits.map(v=>{
-   const parts=byVisit[v.id]||[];
-   const sum=parts.reduce((s,p)=>s+Number(p.quantity)*Number(p.unit_price),0);
-
-   return `<div class="panel">
-    <div class="toolbar"><strong>زيارة ${esc(v.visit_date)}</strong><span class="badge">${parts.length} قطعة</span></div>
-    <div>${esc(v.problem_description||'')}</div>
-    <div class="sub">${esc(v.notes||'')}</div>
-    ${parts.length?`
-    <div class="tablewrap" style="margin-top:10px">
-     <table style="min-width:600px">
-      <thead><tr><th>قطعة الغيار</th><th>الكمية</th><th>سعر القطعة</th><th>الإجمالي</th><th>ملاحظات</th></tr></thead>
-      <tbody>${parts.map(p=>`
-       <tr>
-        <td>${esc(p.part_name)}</td>
-        <td>${esc(p.quantity)}</td>
-        <td>${Number(p.unit_price).toFixed(2)}</td>
-        <td>${(Number(p.quantity)*Number(p.unit_price)).toFixed(2)}</td>
-        <td>${esc(p.notes||'')}</td>
-       </tr>`).join('')}
-      </tbody>
-     </table>
-    </div>`:'<div class="sub">لا توجد قطع غيار مسجلة في الزيارة.</div>'}
-    <div class="part-total" style="margin-top:10px">إجمالي قطع الغيار: ${sum.toFixed(2)}</div>
-   </div>`;
-  }).join('');
-
- }catch(err){
-  console.error(err);
-  $('visitHistory').innerHTML='<div class="empty">تعذر تحميل سجل الزيارات.</div>';
- }
+  $('visitHistory').innerHTML='<div class="empty">جاري تحميل الزيارات...</div>';
+  try{
+    const {data:visits,error}=await db.from('visits').select('*').eq('customer_id',customerId).order('visit_date',{ascending:false});
+    if(error)throw error;
+    if(!visits?.length){$('visitHistory').innerHTML='<div class="empty">لا توجد زيارات مسجلة لهذا العميل.</div>';return}
+    const partsResult=await db.from('spare_parts').select('*').in('visit_id',visits.map(v=>v.id));
+    if(partsResult.error)throw partsResult.error;
+    const byVisit={};
+    (partsResult.data||[]).forEach(p=>(byVisit[p.visit_id]??=[]).push(p));
+    $('visitHistory').innerHTML=visits.map(v=>{
+      const parts=byVisit[v.id]||[];
+      const sum=parts.reduce((s,p)=>s+Number(p.quantity)*Number(p.unit_price),0);
+      const remTxt=v.reminder_at?`<div class="reminder-pill">تذكير: ${esc(formatDateTimeAR(v.reminder_at))}</div>`:'';
+      return `<div class="panel"><div class="toolbar"><strong>زيارة ${esc(formatDMY(v.visit_date))}</strong><span class="badge">${parts.length} قطعة</span></div>${remTxt}<div>${esc(v.problem_description||'')}</div><div class="sub">${esc(v.notes||'')}</div>${parts.length?`<div class="tablewrap" style="margin-top:10px"><table style="min-width:600px"><thead><tr><th>قطعة الغيار</th><th>الكمية</th><th>سعر القطعة</th><th>الإجمالي</th><th>ملاحظات</th></tr></thead><tbody>${parts.map(p=>`<tr><td>${esc(p.part_name)}</td><td>${esc(p.quantity)}</td><td>${Number(p.unit_price).toFixed(2)}</td><td>${(Number(p.quantity)*Number(p.unit_price)).toFixed(2)}</td><td>${esc(p.notes||'')}</td></tr>`).join('')}</tbody></table></div>`:'<div class="sub">لا توجد قطع غيار مسجلة في الزيارة.</div>'}<div class="part-total" style="margin-top:10px">إجمالي قطع الغيار: ${sum.toFixed(2)}</div></div>`;
+    }).join('');
+  }catch(err){console.error(err);$('visitHistory').innerHTML='<div class="empty">تعذر تحميل سجل الزيارات.</div>'}
 }
 
-$('exportBtn').onclick=async()=>{
- const btn=$('exportBtn');
- const oldText=btn.textContent;
 
- btn.disabled=true;
- btn.textContent='جاري تجهيز Excel...';
-
- try{
-  const data=[...customers].sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||'')));
-
-  if(!data.length){
-   toast('لا توجد بيانات محمّلة للتصدير. اضغط تحديث البيانات أولاً.');
-   return;
-  }
-
-  const headers=['اسم العميل','رقم التليفون','العنوان','نوع الجهاز','سبب المشكلة','ملاحظات','التقييم'];
-
-  const esc=v=>String(v??'')
-   .replace(/&/g,'&amp;')
-   .replace(/</g,'&lt;')
-   .replace(/>/g,'&gt;')
-   .replace(/"/g,'&quot;');
-
-  const rows=data.map(c=>[
-   c.name,c.phone,c.address,c.device_type,c.problem_description,c.notes,c.rating
-  ]);
-
-  const table='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>العملاء</x:Name><x:WorksheetOptions><x:DisplayRightToLeft/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><style>table{border-collapse:collapse;direction:rtl}th,td{border:1px solid #999;padding:6px;mso-number-format:"\\\\@"}th{font-weight:bold;background:#eee}</style></head><body><table dir="rtl"><thead><tr>'+headers.map(h=>'<th>'+esc(h)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+r.map(v=>'<td>'+esc(v)+'</td>').join('')+'</tr>').join('')+'</tbody></table></body></html>';
-
-  const file=new File(['\ufeff',table],'CLIENT-PRO-customers.xls',{
-   type:'application/vnd.ms-excel'
-  });
-
-  if(!navigator.share||!navigator.canShare||!navigator.canShare({files:[file]})){
-   toast('المتصفح لا يدعم مشاركة ملفات Excel. افتح CLIENT PRO في Chrome وجرّب التصدير.');
-   return;
-  }
-
-  await navigator.share({
-   files:[file],
-   title:'بيانات عملاء CLIENT PRO'
-  });
-
-  toast('تم إنشاء ملف Excel ومشاركته. عدد العملاء: '+data.length);
-
- }catch(e){
-  if(e?.name!=='AbortError'){
-   console.error('Excel export error:',e);
-   toast('تعذر إنشاء أو مشاركة Excel: '+(e?.message||'افتح التطبيق في Chrome ثم أعد المحاولة'));
-  }
- }finally{
-  btn.disabled=false;
-  btn.textContent=oldText;
- }
+// Photo Lightbox Modal
+window.openPhotoModal=(url,clientName,deviceType)=>{
+  if(!url)return;
+  $('photoModalImg').src=url;
+  $('photoModalTitle').textContent=clientName?`صورة جهاز: ${clientName}`:'صورة الجهاز';
+  $('photoModalSub').textContent=deviceType||'';
+  $('photoDownloadLink').href=url;
+  $('photoModal').classList.remove('hidden');
+};
+window.closePhotoModal=()=>{
+  $('photoModal').classList.add('hidden');
+  $('photoModalImg').src='';
 };
 
-$('initialVisitDate').value=localDate();
+// Interactive Dashboard Modal
+let currentDashTab='all';
+window.openDashboardModal=tab=>{
+  currentDashTab=tab||'all';
+  $('dashModal').classList.remove('hidden');
+  switchDashTab(currentDashTab);
+};
+window.closeDashboardModal=()=>$('dashModal').classList.add('hidden');
 
+window.switchDashTab=tab=>{
+  currentDashTab=tab;
+  const month=localDate().slice(0,7);
+  const allList=[...customers];
+  const monthList=customers.filter(c=>(c.created_at||'').slice(0,7)===month);
+  const ratedList=customers.filter(c=>Number(c.rating)>0).sort((a,b)=>Number(b.rating)-Number(a.rating));
+  const remList=customers.filter(c=>c.reminder_at).sort((a,b)=>new Date(a.reminder_at)-new Date(b.reminder_at));
+
+  $('tabCountAll').textContent=allList.length;
+  $('tabCountMonth').textContent=monthList.length;
+  $('tabCountRated').textContent=ratedList.length;
+  $('tabCountRem').textContent=remList.length;
+
+  document.querySelectorAll('#dashTabs .dash-tab').forEach(btn=>{
+    btn.classList.toggle('active',btn.dataset.tab===tab);
+  });
+
+  let activeList=allList;
+  if(tab==='all'){
+    $('dashModalTitle').textContent='قائمة جميع العملاء';
+    $('dashModalSub').textContent=`إجمالي المسجلين: ${allList.length} عميل`;
+    activeList=allList;
+  }else if(tab==='month'){
+    $('dashModalTitle').textContent='عملاء هذا الشهر';
+    $('dashModalSub').textContent=`المضافون خلال شهر ${month}: ${monthList.length} عميل`;
+    activeList=monthList;
+  }else if(tab==='rated'){
+    $('dashModalTitle').textContent='تقييمات العملاء';
+    const avg=ratedList.length?(ratedList.reduce((a,c)=>a+Number(c.rating),0)/ratedList.length).toFixed(1)+' / 5':'لا يوجد';
+    $('dashModalSub').textContent=`متوسط التقييم العام: ${avg} (${ratedList.length} عميل مُقيّم)`;
+    activeList=ratedList;
+  }else if(tab==='reminders'){
+    $('dashModalTitle').textContent='جدول مواعيد التذكير';
+    $('dashModalSub').textContent=`عدد العملاء الذين لديهم تذكير: ${remList.length}`;
+    activeList=remList;
+  }
+
+  $('dashApplyToTableBtn').onclick=async()=>{
+    closeDashboardModal();
+    if(tab==='reminders'){
+      await setDashboardFilter('all');
+      $('search').value='';
+    }else{
+      await setDashboardFilter(tab);
+    }
+  };
+
+  if(!activeList.length){
+    $('dashModalList').innerHTML='<div class="empty">لا توجد بيانات في هذا القسم حالياً.</div>';
+    return;
+  }
+
+  $('dashModalList').innerHTML=activeList.map(c=>{
+    const stars=c.rating?'★'.repeat(Number(c.rating))+'☆'.repeat(5-Number(c.rating)):'بدون تقييم';
+    const rem=c.reminder_at?` · ⏰ ${esc(formatDateTimeAR(c.reminder_at))}`:'';
+    return `<div class="dash-item">
+      <div class="dash-item-main">
+        <div class="dash-item-title">${esc(c.name)} <span class="rating" style="font-size:12px;margin-right:6px">${stars}</span></div>
+        <div class="dash-item-meta">
+          <span dir="ltr">📞 ${esc(c.phone||'—')}</span>
+          <span>🔧 ${esc(c.device_type||'—')}</span>
+          <span>📍 ${esc(c.address||'—')}</span>
+          <span>${rem}</span>
+        </div>
+      </div>
+      <div class="dash-item-actions">
+        <button type="button" class="btn mini" onclick="closeDashboardModal();editCustomer('${c.id}')">تعديل</button>
+        <button type="button" class="btn mini primary" onclick="closeDashboardModal();openVisits('${c.id}')">الزيارات</button>
+      </div>
+    </div>`;
+  }).join('');
+};
+
+$('exportBtn').onclick=async()=>{
+  const btn=$('exportBtn');
+  const oldText=btn.textContent;
+  btn.disabled=true;btn.textContent='جاري تجهيز Excel...';
+  try{
+    let rowsData=[];
+    try{
+      const {data:rpcRows,error:rpcErr}=await db.rpc('clientpro_get_export_rows');
+      if(!rpcErr&&Array.isArray(rpcRows)&&rpcRows.length)rowsData=rpcRows;
+    }catch(_){}
+    if(!rowsData.length){
+      rowsData=[...customers].sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||'')));
+    }
+    if(!rowsData.length){
+      toast('لا توجد بيانات للتصدير.');
+      return;
+    }
+
+    const sheetRows=rowsData.map(c=>({
+      'اسم العميل':c.name||'',
+      'رقم التليفون':c.phone||'',
+      'العنوان':c.address||'',
+      'نوع الجهاز':c.device_type||'',
+      'ميعاد التذكير':c.reminder_at?formatDateTimeAR(c.reminder_at):'',
+      'سبب المشكلة':c.problem_description||'',
+      'ملاحظات':c.notes||'',
+      'التقييم':c.rating??''
+    }));
+
+    const fileName='CLIENT-PRO-customers.xlsx';
+
+    if(window.XLSX){
+      const wb=window.XLSX.utils.book_new();
+      const ws=window.XLSX.utils.json_to_sheet(sheetRows);
+      ws['!cols']=[{wch:22},{wch:16},{wch:24},{wch:18},{wch:22},{wch:28},{wch:24},{wch:10}];
+      if(!wb.Workbook)wb.Workbook={};
+      wb.Workbook.Views=[{RTL:true}];
+      window.XLSX.utils.book_append_sheet(wb,ws,'العملاء');
+
+      if(window.Capacitor?.Plugins?.Filesystem){
+        try{
+          const b64=window.XLSX.write(wb,{bookType:'xlsx',type:'base64'});
+          const saved=await window.Capacitor.Plugins.Filesystem.writeFile({
+            path:fileName,
+            data:b64,
+            directory:'CACHE'
+          });
+          if(window.Capacitor?.Plugins?.Share&&saved?.uri){
+            await window.Capacitor.Plugins.Share.share({
+              title:'تصدير عملاء CLIENT PRO',
+              url:saved.uri
+            });
+            toast('تم تجهيز ملف Excel ومشاركته');
+            return;
+          }
+          await window.Capacitor.Plugins.Filesystem.writeFile({
+            path:fileName,
+            data:b64,
+            directory:'DOCUMENTS'
+          });
+          toast('تم حفظ ملف Excel في مجلد Documents: '+fileName);
+          return;
+        }catch(capErr){console.warn('Capacitor XLSX fallback',capErr)}
+      }
+
+      window.XLSX.writeFile(wb,fileName);
+      toast('تم تنزيل ملف Excel بنجاح ('+rowsData.length+' عميل)');
+      return;
+    }
+
+    const headers=Object.keys(sheetRows[0]);
+    const csvLines=[headers.join(',')].concat(
+      sheetRows.map(r=>headers.map(h=>'"'+String(r[h]).replace(/"/g,'""')+'"').join(','))
+    );
+    const blob=new Blob(['\ufeff'+csvLines.join('\r\n')],{type:'text/csv;charset=utf-8;'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download='CLIENT-PRO-customers.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),4000);
+    toast('تم تنزيل ملف البيانات بنجاح ('+rowsData.length+' عميل)');
+  }catch(e){
+    console.error('Export error:',e);
+    toast('تعذر التصدير: '+(e?.message||'حاول مرة أخرى'));
+  }finally{btn.disabled=false;btn.textContent=oldText}
+};
+
+initDMYSelectors('initDay','initMonth','initYear');
+initDMYSelectors('vDay','vMonth','vYear');
+setDMYValue('initDay','initMonth','initYear',localDate());
+syncReminderLabels();
 requireSession();
-
-if('serviceWorker' in navigator){
- window.addEventListener('load',()=>{
-  navigator.serviceWorker.register('./sw.js').catch(err=>
-   console.warn('Service worker registration failed',err)
-  );
- });
-}
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(err=>console.warn('Service worker registration failed',err)))}
 </script>
-</body>
-</html>
+<script>
+try{var C=window.Capacitor;if(C&&C.nativePromise){C.nativePromise('SystemBars','setStyle',{style:'DARK',bar:'StatusBar'}).catch(function(){})}}catch(e){}
+</script>
+</body></html>
