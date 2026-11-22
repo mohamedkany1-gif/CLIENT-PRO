@@ -41,7 +41,7 @@ let pushToken=localStorage.getItem('cp_fcm_token')||'';
 
 async function savePushToken(token){
   try{
-    if(!token||!window.db)return;
+    if(!token||typeof db==='undefined'||!db)return;
 
     const {data:{user},error:userError}=await db.auth.getUser();
     if(userError||!user)return;
@@ -480,7 +480,7 @@ function addPushTestButton(){
     btn.textContent='جاري الإرسال...';
 
     try{
-      if(!window.db){
+      if(typeof db==='undefined'||!db){
         throw new Error('Supabase غير جاهز');
       }
 
