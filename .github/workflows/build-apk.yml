@@ -49,6 +49,25 @@ jobs:
       - name: Add Android Platform
         run: npx cap add android
 
+      - name: Configure Firebase
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+
+          config = os.environ.get("GOOGLE_SERVICES_JSON")
+
+          if not config:
+              raise SystemExit("Firebase configuration is missing")
+
+          path = Path("android/app/google-services.json")
+          path.write_text(config, encoding="utf-8")
+
+          print("Firebase configuration installed")
+          PY
+
       - name: Sync Capacitor Plugins
         run: npx cap sync android
 
