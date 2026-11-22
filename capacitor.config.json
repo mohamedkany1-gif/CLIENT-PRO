@@ -1,11 +1,10 @@
 {
-"appId": "com.clientpro.app",
+"appId": "com.mohamedkany.clientpro",
 "appName": "CLIENT PRO",
-"webDir": ".",
+"webDir": "www",
 "bundledWebRuntime": false,
 "plugins": {
 "LocalNotifications": {
-"smallIcon": "ic_stat_icon_config_sample",
 "iconColor": "#a92835"
 }
 }
