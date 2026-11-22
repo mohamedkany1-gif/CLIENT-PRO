@@ -1,5 +1,5 @@
 /* CLIENT PRO extras v1.1.0: إشعارات النظام + تنبيه التحديثات (محتاج سطر واحد في index.html) */
-(()=>{
+(fn=>document.readyState==='loading'?document.addEventListener('DOMContentLoaded',fn):fn())(()=>{
 const APP_VERSION='1.1.0';
 const VERSION_URLS=['https://raw.githubusercontent.com/mohamedkany1-gif/CLIENT-PRO/main/version.json','version.json'];
 const APK_URL='https://github.com/mohamedkany1-gif/CLIENT-PRO/releases/latest/download/app-debug.apk';
@@ -97,4 +97,4 @@ window.loadCustomers=async function(){await _lc();ready=customers.length>0;sync(
 init();check();
 setInterval(check,15*60*1000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});
-})();
+});
