@@ -1,56 +1,83 @@
 name: Build CLIENT PRO APK
 
 "on":
-  workflow_dispatch:
-  push:
-    branches:
-      - main
+workflow_dispatch:
+push:
+branches:
+- main
+
+permissions:
+contents: read
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+build:
+runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
+steps:
+  - name: Checkout
+    uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v5
-        with:
-          node-version: 22
+  - name: Setup Node
+    uses: actions/setup-node@v4
+    with:
+      node-version: 22
 
-      - name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: 21
+  - name: Setup Java
+    uses: actions/setup-java@v4
+    with:
+      distribution: temurin
+      java-version: 21
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+  - name: Setup Android SDK
+    uses: android-actions/setup-android@v3
 
-      - name: Install Android Packages
-        run: |
-          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+  - name: Install Android SDK Packages
+    run: |
+      sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
-      - name: Build APK
-        run: |
-          npm init -y
-          npm install @capacitor/core @capacitor/cli @capacitor/android
+  - name: Install Dependencies
+    run: npm install
 
-          mkdir -p www
-          cp index.html www/index.html
-          cp manifest.webmanifest sw.js icon.svg icon-192.png www/ 2>/dev/null || true
+  - name: Prepare Web Files
+    run: |
+      mkdir -p www
+      cp index.html manifest.webmanifest sw.js icon.svg icon-192.png icon-512.png www/
 
-          npx cap init "CLIENT PRO" "com.mohamedkany.clientpro" --web-dir www
-          npx cap add android
+  - name: Add Android Platform
+    run: npx cap add android
 
-          cd android
-          chmod +x gradlew
-          ./gradlew assembleDebug
+  - name: Sync Capacitor Plugins
+    run: npx cap sync android
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: CLIENT-PRO-APK
-          path: android/app/build/outputs/apk/debug/app-debug.apk
-          if-no-files-found: error
+  - name: Configure Notification Permission
+    run: |
+      python3 - <<'PY'
+      from pathlib import Path
+
+      path = Path("android/app/src/main/AndroidManifest.xml")
+      content = path.read_text()
+
+      permission = '    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />'
+
+      if "android.permission.POST_NOTIFICATIONS" not in content:
+          content = content.replace(
+              "<application",
+              permission + "\n    <application",
+              1
+          )
+
+      path.write_text(content)
+      PY
+
+  - name: Build APK
+    run: |
+      cd android
+      chmod +x gradlew
+      ./gradlew assembleDebug
+
+  - name: Upload APK
+    uses: actions/upload-artifact@v4
+    with:
+      name: CLIENT-PRO-APK
+      path: android/app/build/outputs/apk/debug/app-debug.apk
+      if-no-files-found: error
