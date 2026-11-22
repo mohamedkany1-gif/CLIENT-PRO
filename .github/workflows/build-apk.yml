@@ -51,6 +51,49 @@ jobs:
       - name: Sync Capacitor Plugins
         run: npx cap sync android
 
+      - name: Configure Android Launcher Icon
+        run: |
+          python3 -m pip install --quiet Pillow
+          python3 - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          import re
+
+          source = Image.open("icon-512.png").convert("RGBA")
+          sizes = {
+              "mipmap-mdpi": 48,
+              "mipmap-hdpi": 72,
+              "mipmap-xhdpi": 96,
+              "mipmap-xxhdpi": 144,
+              "mipmap-xxxhdpi": 192,
+          }
+
+          res = Path("android/app/src/main/res")
+          for folder, size in sizes.items():
+              target = res / folder
+              target.mkdir(parents=True, exist_ok=True)
+              icon = source.resize((size, size), Image.Resampling.LANCZOS)
+              icon.save(target / "ic_launcher.png", optimize=True)
+              icon.save(target / "ic_launcher_round.png", optimize=True)
+
+          manifest = Path("android/app/src/main/AndroidManifest.xml")
+          content = manifest.read_text()
+          if 'android:icon="@mipmap/ic_launcher"' not in content:
+              content, count = re.subn(
+                  r'android:icon="[^"]+"',
+                  'android:icon="@mipmap/ic_launcher"',
+                  content,
+                  count=1
+              )
+              if count == 0:
+                  content = content.replace(
+                      "<application",
+                      '<application android:icon="@mipmap/ic_launcher"',
+                      1
+                  )
+          manifest.write_text(content)
+          PY
+
       - name: Configure Notification Permission
         run: |
           python3 - <<'PY'
