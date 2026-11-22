@@ -1,83 +1,83 @@
 name: Build CLIENT PRO APK
 
 "on":
-workflow_dispatch:
-push:
-branches:
-- main
+  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 permissions:
-contents: read
+  contents: read
 
 jobs:
-build:
-runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
 
-steps:
-  - name: Checkout
-    uses: actions/checkout@v4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  - name: Setup Node
-    uses: actions/setup-node@v4
-    with:
-      node-version: 22
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
 
-  - name: Setup Java
-    uses: actions/setup-java@v4
-    with:
-      distribution: temurin
-      java-version: 21
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
 
-  - name: Setup Android SDK
-    uses: android-actions/setup-android@v3
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
-  - name: Install Android SDK Packages
-    run: |
-      sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+      - name: Install Android SDK Packages
+        run: |
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
-  - name: Install Dependencies
-    run: npm install
+      - name: Install Dependencies
+        run: npm install
 
-  - name: Prepare Web Files
-    run: |
-      mkdir -p www
-      cp index.html manifest.webmanifest sw.js icon.svg icon-192.png icon-512.png www/
+      - name: Prepare Web Files
+        run: |
+          mkdir -p www
+          cp index.html manifest.webmanifest sw.js icon.svg icon-192.png icon-512.png www/
 
-  - name: Add Android Platform
-    run: npx cap add android
+      - name: Add Android Platform
+        run: npx cap add android
 
-  - name: Sync Capacitor Plugins
-    run: npx cap sync android
+      - name: Sync Capacitor Plugins
+        run: npx cap sync android
 
-  - name: Configure Notification Permission
-    run: |
-      python3 - <<'PY'
-      from pathlib import Path
+      - name: Configure Notification Permission
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
 
-      path = Path("android/app/src/main/AndroidManifest.xml")
-      content = path.read_text()
+          path = Path("android/app/src/main/AndroidManifest.xml")
+          content = path.read_text()
 
-      permission = '    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />'
+          permission = '    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />'
 
-      if "android.permission.POST_NOTIFICATIONS" not in content:
-          content = content.replace(
-              "<application",
-              permission + "\n    <application",
-              1
-          )
+          if "android.permission.POST_NOTIFICATIONS" not in content:
+              content = content.replace(
+                  "<application",
+                  permission + "\n    <application",
+                  1
+              )
 
-      path.write_text(content)
-      PY
+          path.write_text(content)
+          PY
 
-  - name: Build APK
-    run: |
-      cd android
-      chmod +x gradlew
-      ./gradlew assembleDebug
+      - name: Build APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
 
-  - name: Upload APK
-    uses: actions/upload-artifact@v4
-    with:
-      name: CLIENT-PRO-APK
-      path: android/app/build/outputs/apk/debug/app-debug.apk
-      if-no-files-found: error
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: CLIENT-PRO-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
