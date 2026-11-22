@@ -1,5 +1,5 @@
-/* CLIENT PRO extras v1.2.0
-   Local Notifications + Push Notifications + Update Alerts
+/* CLIENT PRO extras v1.2.1
+   Local Notifications + Push Notifications + Update Alerts + Push Test
 */
 
 (fn=>document.readyState==='loading'?document.addEventListener('DOMContentLoaded',fn):fn())(()=>{
@@ -16,7 +16,7 @@ const LN=window.Capacitor?.Plugins?.LocalNotifications;
 const PN=window.Capacitor?.Plugins?.PushNotifications;
 
 const native=!!window.Capacitor?.isNativePlatform?.();
-const bundled=native&&/^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+const bundled=native&&/^(localhost|127.0.0.1)$/.test(location.hostname);
 
 const CH='reminders_v2';
 const ICON='ic_stat_clientpro';
@@ -44,7 +44,6 @@ async function savePushToken(token){
     if(!token||!db)return;
 
     const {data:{user},error:userError}=await db.auth.getUser();
-
     if(userError||!user)return;
 
     const now=new Date().toISOString();
@@ -68,7 +67,6 @@ async function savePushToken(token){
         .eq('id',existing.id);
 
       if(error)throw error;
-
     }else{
       const {error}=await db
         .from('device_tokens')
@@ -83,7 +81,6 @@ async function savePushToken(token){
     }
 
     console.log('CLIENT PRO: FCM token saved');
-
   }catch(e){
     console.error('CLIENT PRO: Saving FCM token failed',e);
   }
@@ -93,18 +90,15 @@ async function initPush(){
   if(!native||!PN)return;
 
   try{
-
     if(!pushListenersReady){
 
       PN.addListener('registration',async result=>{
         if(!result?.value)return;
 
         pushToken=result.value;
-
         localStorage.setItem('cp_fcm_token',pushToken);
 
         console.log('CLIENT PRO: FCM registration successful');
-
         await savePushToken(pushToken);
       });
 
@@ -131,7 +125,6 @@ async function initPush(){
     }
 
     if(!pushHasRegistered){
-
       let permission=await PN.checkPermissions();
 
       if(permission.receive!=='granted'){
@@ -158,7 +151,6 @@ async function initPush(){
     if(pushToken){
       await savePushToken(pushToken);
     }
-
   }catch(e){
     console.error('CLIENT PRO: Push initialization failed',e);
   }
@@ -168,7 +160,6 @@ async function initPush(){
 
 async function act(a,id){
   try{
-
     if(LN)LN.cancel({notifications:[{id:nid(id)}]}).catch(()=>{});
 
     if(a==='tap'){
@@ -188,7 +179,6 @@ async function act(a,id){
       toast('تم ✓');
 
     }else if(a==='snooze'){
-
       await db.from('customers')
         .update({
           reminder_at:new Date(Date.now()+600000).toISOString()
@@ -196,13 +186,11 @@ async function act(a,id){
         .eq('id',id);
 
       toast('تم التأجيل 10 دقايق');
-
     }else{
       return;
     }
 
     await loadCustomers();
-
   }catch(e){
     console.warn(e);
   }
@@ -216,11 +204,9 @@ async function flush(){
 }
 
 async function sync(){
-
   if(!LN||!customers.length)return;
 
   try{
-
     const old=((await LN.getPending()).notifications||[])
       .map(n=>n.id)
       .filter(i=>i>=1000000);
@@ -237,44 +223,36 @@ async function sync(){
       .filter(c=>c.reminder_at&&new Date(c.reminder_at).getTime()>now+3000)
       .slice(0,60)
       .map(c=>({
-
         id:nid(c.id),
         channelId:CH,
         smallIcon:ICON,
         iconColor:RED,
         actionTypeId:'REMINDER',
         extra:{customerId:c.id},
-
         title:'⏰ تذكير زيارة · '+(c.name||'عميل'),
-
         body:[
           c.device_type,
           c.address,
           c.problem_description
         ].filter(Boolean).join(' · ')||'حان موعد الزيارة',
-
         schedule:{
           at:new Date(c.reminder_at),
           allowWhileIdle:true
         }
-
       }));
 
     if(list.length){
       await LN.schedule({notifications:list});
     }
-
   }catch(e){
     console.warn('sync notif',e);
   }
 }
 
 async function init(){
-
   if(!LN)return;
 
   try{
-
     if((await LN.checkPermissions()).display!=='granted'){
       await LN.requestPermissions();
     }
@@ -314,7 +292,6 @@ async function init(){
       queue.push([e.actionId,id]);
       flush();
     });
-
   }catch(e){
     console.warn('notif init',e);
   }
@@ -338,12 +315,10 @@ const newer=(a,b)=>{
 
     if(p!==q)return p>q;
   }
-
   return false;
 };
 
 function showUpd(){
-
   const v=updInfo;
   if(!v)return;
 
@@ -360,24 +335,19 @@ function showUpd(){
       <div class="modalhead">
         <h2>🚀 تحديث جديد ${esc(v.version)}</h2>
       </div>
-
       <div class="sub">
         ${esc(v.date||'')} · إصدارك الحالي ${APP_VERSION}
       </div>
-
       <strong style="display:block;margin-top:12px;font-size:13px">
         ما الجديد:
       </strong>
-
       <ul style="padding-inline-start:20px;line-height:2;font-size:13px;margin:6px 0 0">
         ${(v.notes||[]).map(n=>`<li>${esc(n)}</li>`).join('')}
       </ul>
-
       <div class="form-actions">
         <button class="btn primary" id="updGo">
           ${apk?'تحميل النسخة الجديدة':'تحديث الآن'}
         </button>
-
         <button class="btn" id="updLater">لاحقاً</button>
       </div>
     </div>
@@ -392,7 +362,6 @@ function showUpd(){
   m.querySelector('#updLater').onclick=()=>m.remove();
 
   m.querySelector('#updGo').onclick=async()=>{
-
     if(apk){
       window.open(apk,'_blank');
       return;
@@ -406,7 +375,6 @@ function showUpd(){
       for(const k of await caches.keys()){
         await caches.delete(k);
       }
-
     }catch(_){}
 
     await Promise.all([
@@ -419,7 +387,6 @@ function showUpd(){
 }
 
 function maybeShow(){
-
   if(
     !updInfo||
     $('app').classList.contains('hidden')||
@@ -427,18 +394,14 @@ function maybeShow(){
   )return;
 
   localStorage.setItem('cp_upd_s',updInfo.version);
-
   showUpd();
 }
 
 async function check(manual){
-
   try{
-
     let v;
 
     for(const u of VERSION_URLS){
-
       try{
         const r=await fetch(u+'?t='+Date.now(),{
           cache:'no-store'
@@ -448,27 +411,22 @@ async function check(manual){
           v=await r.json();
           break;
         }
-
       }catch(_){}
     }
 
     if(!v)throw 0;
 
     if(!newer(v.version,APP_VERSION)){
-
       if(manual===true){
         toast('أنت على آخر إصدار ('+APP_VERSION+')');
       }
-
       return;
     }
 
     updInfo=v;
-
     $('updBtn').classList.remove('hidden');
 
     if(LN&&localStorage.getItem('cp_upd_n')!==v.version){
-
       localStorage.setItem('cp_upd_n',v.version);
 
       LN.schedule({
@@ -487,19 +445,72 @@ async function check(manual){
     }
 
     maybeShow();
-
   }catch(_){
-
     if(manual===true){
       toast('تعذر فحص التحديثات');
     }
   }
 }
 
+/* ---------- زر اختبار إرسال Push ---------- */
+
+function addPushTestButton(){
+  if(!native||document.getElementById('cpPushTest'))return;
+
+  const btn=document.createElement('button');
+  btn.id='cpPushTest';
+  btn.textContent='اختبار الإشعارات';
+  btn.style.cssText=`
+    position:fixed;
+    bottom:20px;
+    left:20px;
+    z-index:999999;
+    padding:14px 20px;
+    background:#a52835;
+    color:white;
+    border:0;
+    border-radius:12px;
+    font-size:15px;
+  `;
+
+  btn.onclick=async()=>{
+    btn.disabled=true;
+    btn.textContent='جاري الإرسال...';
+
+    try{
+      const {data,error}=await db.functions.invoke(
+        'send-push-notification',
+        {
+          body:{
+            title:'CLIENT PRO',
+            body:'تم اختبار نظام الإشعارات بنجاح'
+          }
+        }
+      );
+
+      if(error)throw error;
+
+      console.log('Push test result:',data);
+
+      toast(data?.sent>0
+        ?'تم إرسال الإشعار بنجاح'
+        :'لم يتم إرسال الإشعار');
+
+    }catch(e){
+      console.error('Push test failed:',e);
+      toast('فشل الاختبار. راجع سجل الأخطاء');
+    }finally{
+      btn.disabled=false;
+      btn.textContent='اختبار الإشعارات';
+    }
+  };
+
+  document.body.appendChild(btn);
+}
+
 /* ---------- تشغيل التطبيق ---------- */
 
 const b=document.createElement('button');
-
 b.id='updBtn';
 b.className='btn hidden';
 b.textContent='🚀 تحديث جديد';
@@ -510,7 +521,6 @@ $('logoutBtn').before(b);
 const f=document.querySelector('.foot');
 
 if(f){
-
   f.innerHTML=`
     CLIENT PRO · v${APP_VERSION} ·
     <a href="#" id="chkUpd" style="color:inherit">
@@ -527,7 +537,6 @@ if(f){
 const _lc=window.loadCustomers;
 
 window.loadCustomers=async function(){
-
   await _lc();
 
   ready=customers.length>0;
@@ -535,7 +544,6 @@ window.loadCustomers=async function(){
   sync();
   flush();
 
-  /* تسجيل جهاز المستخدم في Firebase */
   await initPush();
 
   if(!updInfo){
@@ -553,5 +561,7 @@ setInterval(check,15*60*1000);
 document.addEventListener('visibilitychange',()=>{
   if(!document.hidden)check();
 });
+
+setTimeout(addPushTestButton,3000);
 
 });
