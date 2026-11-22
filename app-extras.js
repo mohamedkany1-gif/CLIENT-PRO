@@ -1,4 +1,4 @@
-/* CLIENT PRO extras v1.2.1
+/* CLIENT PRO extras v1.2.2
    Local Notifications + Push Notifications + Update Alerts + Push Test
 */
 
@@ -41,7 +41,7 @@ let pushToken=localStorage.getItem('cp_fcm_token')||'';
 
 async function savePushToken(token){
   try{
-    if(!token||!db)return;
+    if(!token||!window.db)return;
 
     const {data:{user},error:userError}=await db.auth.getUser();
     if(userError||!user)return;
@@ -474,10 +474,24 @@ function addPushTestButton(){
   `;
 
   btn.onclick=async()=>{
+    if(btn.disabled)return;
+
     btn.disabled=true;
     btn.textContent='جاري الإرسال...';
 
     try{
+      if(!window.db){
+        throw new Error('Supabase غير جاهز');
+      }
+
+      const {data:sessionData,error:sessionError}=await db.auth.getSession();
+
+      if(sessionError)throw sessionError;
+
+      if(!sessionData?.session){
+        throw new Error('سجل الدخول إلى التطبيق أولاً');
+      }
+
       const {data,error}=await db.functions.invoke(
         'send-push-notification',
         {
@@ -488,17 +502,38 @@ function addPushTestButton(){
         }
       );
 
-      if(error)throw error;
+      if(error){
+        let details=error.message||'تعذر استدعاء الدالة';
 
-      console.log('Push test result:',data);
+        try{
+          const response=error.context;
 
-      toast(data?.sent>0
-        ?'تم إرسال الإشعار بنجاح'
-        :'لم يتم إرسال الإشعار');
+          if(response&&typeof response.clone==='function'){
+            const responseData=await response.clone().json();
+            details=responseData.error||details;
+          }
+        }catch(_){}
+
+        throw new Error(details);
+      }
+
+      console.log('CLIENT PRO Push test result:',data);
+
+      if(data?.success&&data?.sent>0){
+        toast('تم إرسال الإشعار إلى '+data.sent+' جهاز');
+      }else{
+        const reason=data?.error||
+          data?.errors?.[0]?.error?.message||
+          'لم يتم إرسال الإشعار. راجع Console';
+
+        console.error('CLIENT PRO Push sending failed:',data);
+        toast('فشل الإرسال: '+reason);
+      }
 
     }catch(e){
-      console.error('Push test failed:',e);
-      toast('فشل الاختبار. راجع سجل الأخطاء');
+      console.error('CLIENT PRO Push test error:',e);
+      toast('فشل الاختبار: '+(e.message||'خطأ غير معروف'));
+
     }finally{
       btn.disabled=false;
       btn.textContent='اختبار الإشعارات';
