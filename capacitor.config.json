@@ -1,11 +1,15 @@
 {
-"appId": "com.mohamedkany.clientpro",
-"appName": "CLIENT PRO",
-"webDir": "www",
-"bundledWebRuntime": false,
-"plugins": {
-"LocalNotifications": {
-"iconColor": "#a92835"
-}
-}
+  "appId": "com.mohamedkany.clientpro",
+  "appName": "CLIENT PRO",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "server": {
+    "url": "https://mohamedkany1-gif.github.io/CLIENT-PRO/",
+    "cleartext": false
+  },
+  "plugins": {
+    "LocalNotifications": {
+      "iconColor": "#a92835"
+    }
+  }
 }
