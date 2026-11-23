@@ -79,12 +79,14 @@ label{font-size:12px;font-weight:700;color:#59616d;display:block;margin:0 0 8px}
 .dmy-grid{display:grid;grid-template-columns:1fr 1.25fr 1.15fr;gap:8px;direction:rtl}
 .dmy-grid select{padding:11px 8px;text-align:center;font-weight:650}
 
-.tablewrap{overflow:auto;border:1px solid #e9ebf0;border-radius:14px}
+.tablewrap{overflow:auto;max-height:330px;border:1px solid #e9ebf0;border-radius:14px;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;transition:transform .16s ease}
+.tablewrap.drag-pulling{transition:none}
 table{width:100%;border-collapse:collapse;min-width:920px;background:#fff}
 th,td{padding:13px 12px;text-align:right;border-bottom:1px solid var(--line);font-size:13px;vertical-align:top}
-th{background:#f7f8fa;color:#646c78;font-size:12px;font-weight:750;padding:14px;white-space:nowrap}
+th{position:sticky;top:0;z-index:3;background:#f7f8fa;color:#646c78;font-size:12px;font-weight:750;padding:14px;white-space:nowrap}
 tr:last-child td{border-bottom:0}
 tbody tr{transition:background .15s}
+tbody tr.client-row-clickable{cursor:pointer}
 tbody tr:hover{background:#fff9fa}
 .name{font-weight:700}
 .sub{color:var(--muted);font-size:11px;margin-top:5px}
@@ -98,10 +100,18 @@ tbody tr:hover{background:#fff9fa}
 .filter-chip{display:inline-flex;align-items:center;gap:6px;background:#fff0f1;color:#962a37;border:1px solid #f2cfd3;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700}
 .filter-chip button{border:0;background:transparent;color:#962a37;font-weight:800;cursor:pointer;font-size:14px;padding:0 2px}
 .toast{position:fixed;bottom:calc(20px + var(--sab));left:50%;transform:translateX(-50%);background:#252932;color:#fff;padding:13px 19px;border-radius:13px;box-shadow:0 10px 35px #11182735;z-index:40;font-size:13px;max-width:92%;text-align:center}
-.reminder-banner{background:linear-gradient(120deg,#fff7ea,#fff0f1);border:1px solid #f2cfd3;border-radius:16px;padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+/* Swipeable Reminder Banner with Red Stop Action */
+.reminder-swipe-wrap{position:relative;overflow:hidden;border-radius:16px;margin-bottom:18px;background:#dc2626;border:1px solid #b91c1c;box-shadow:0 10px 26px rgba(220,38,38,.18)}
+.reminder-stop-rail{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 18px;pointer-events:none;opacity:0;transition:opacity .15s ease}
+.reminder-stop-btn{pointer-events:auto;border:0;border-radius:12px;background:#991b1b;color:#fff;padding:9px 15px;font:inherit;font-size:12px;font-weight:800;display:inline-flex;align-items:center;gap:6px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.22)}
+.reminder-stop-btn:hover{background:#7f1d1d}
+.reminder-banner{position:relative;z-index:2;background:linear-gradient(120deg,#fff7ea,#fff0f1);border-radius:16px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;touch-action:pan-y;user-select:none;will-change:transform;transition:transform .24s ease}
+.reminder-banner.dragging{transition:none}
 .reminder-banner strong{color:#8e2431;display:block;font-size:14px}
 .reminder-banner span{font-size:12px;color:#555e6b}
-.search{max-width:460px;min-width:220px;background:#fafbfc;padding:12px 15px}
+
+.search{max-width:none;width:100%;background:#fafbfc;padding:13px 16px;margin-bottom:18px}
 
 /* Dual Photo Buttons: Camera + Gallery/Device */
 .photo-box{border:1px dashed #d5d9e1;border-radius:13px;background:#fafbfc;padding:12px}
@@ -113,6 +123,7 @@ tbody tr:hover{background:#fff9fa}
 
 
 .hint{font-size:11px;color:var(--muted);line-height:1.8;margin-top:10px}
+.login-status-note{font-size:11px;color:var(--muted);line-height:1.8;margin-top:12px;text-align:center;min-height:20px}
 .modal{position:fixed;inset:0;backdrop-filter:blur(5px);background:#1519239c;z-index:30;display:flex;align-items:center;justify-content:center;padding:14px}
 .modalbox{background:#fff;border:1px solid #ffffff80;border-radius:20px;box-shadow:0 24px 80px #11182735;width:min(900px,100%);max-height:92vh;overflow:auto;padding:22px}
 .modalhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:15px;padding-bottom:13px;border-bottom:1px solid #eff0f3}
@@ -148,7 +159,6 @@ tbody tr:hover{background:#fff9fa}
 .toolbar h2{font-size:16px}
 .actions{width:100%}
 .actions .btn{flex:1;padding:10px 8px;font-size:11px}
-.search{max-width:none}
 .formgrid{grid-template-columns:1fr;gap:13px}
 .full{grid-column:auto}
 .form-actions .btn{flex:1;min-width:0}
@@ -158,9 +168,424 @@ tbody tr:hover{background:#fff9fa}
 .modalbox{padding:15px;border-radius:17px;max-height:94vh}
 .login-card{padding:24px 19px}
 }
+
+/* ===== CLIENT PRO — الشكل الجديد ===== */
+:root{--c1:#800021;--c2:#881144;--c3:#C41E5C;--c4:#C24366;--c5:#FF69B4;--c6:#FFE4D8;
+--red:#C41E5C;--red2:#881144;--ink:#2B0F1B;--muted:#8E727C;--line:#F6E6E2;
+--shadow:0 14px 38px rgba(128,0,33,.08);
+--grad:linear-gradient(90deg,#800021 0%,#881144 58%,#A8174F 100%)}
+body{color:var(--ink);background:radial-gradient(circle at 100% 0,#FFD0DD 0,transparent 36%),radial-gradient(circle at 0 100%,#FFE4D8 0,transparent 44%),#FFF7F4}
+
+/* الهيدر */
+body::before,.top{background:var(--grad)}
+.top{border-radius:0 0 30px 30px;box-shadow:0 14px 32px rgba(128,0,33,.25)}
+.top:after{border-color:#ffffff22;box-shadow:0 0 0 35px #ffffff0a,0 0 0 70px #ffffff07}
+.brand p{color:#FFD6DF}
+.userbar span{background:#ffffff1f;border-color:#ffffff38}
+.userbar .btn{background:#fff;color:var(--c2);border:0}
+
+/* الكروت */
+.stat,.panel{background:#fff;border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow)}
+.toolbar h2:before{width:6px;background:linear-gradient(var(--c3),var(--c2))}
+
+/* الداش بورد: سحب يمين وشمال */
+.stats{display:flex;gap:14px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scroll-padding:0 2px;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-width:none;margin:0 0 14px;padding:6px 2px 18px}
+.stats::-webkit-scrollbar{display:none}
+.stat{flex:0 0 clamp(235px,76vw,340px);scroll-snap-align:start;min-height:132px;padding:18px 20px;border-radius:24px;border:1px solid var(--line)}
+.stat:before{width:6px;background:linear-gradient(180deg,var(--c3),var(--c1))}
+.stat.active{background:linear-gradient(145deg,#fff,#FFF0F3);border:2px solid var(--c3);box-shadow:0 14px 30px rgba(196,30,92,.16)}
+.stat-icon{width:34px;height:34px;border-radius:12px;background:#FFE8EE;color:var(--c3);font-size:16px}
+.stat strong{font-size:30px;color:var(--ink)}
+.stat-foot{color:var(--c3);border-top:1px dashed #F4D9DF;padding-top:8px;margin-top:6px}
+
+/* الأزرار والحقول والجدول */
+.btn{border-radius:14px;border-color:var(--line);background:#FFF6F4;color:var(--ink)}
+.btn.primary{background:linear-gradient(135deg,var(--c3),var(--c2));color:#fff;border:0;box-shadow:0 8px 20px rgba(196,30,92,.25)}
+.btn.primary:hover{background:linear-gradient(135deg,#D12465,var(--c1))}
+.btn.danger{background:#FFF0F3;border-color:#F7C9D4;color:var(--c1)}
+input,textarea,select{border-radius:14px;border-color:#F0DCE0;background:#FFFDFC;color:var(--ink)}
+input:focus,textarea:focus,select:focus{border-color:var(--c3);box-shadow:0 0 0 4px rgba(196,30,92,.12)}
+th{background:#FFF4F2;color:#7C5864}
+tbody tr:hover{background:#FFF7F9}
+.badge,.filter-chip{background:#FFE8EE;color:var(--c2);border-color:#F7C9D4}
+.part-total{background:#FFE8EE;color:var(--c2)}
+.photo-box{background:#FFF9F8;border-color:#EBCFD5}
+.photo-pick{background:#FFF0F3;border-color:#F4C8D2;color:var(--c2);border-radius:12px}
+.dash-tab.active{background:var(--c3);border-color:var(--c3)}
+.dash-item{background:#FFF9F8;border-color:var(--line);border-radius:16px}
+.dash-item:hover{background:#FFF0F3;border-color:#F4C8D2}
+
+/* شاشة تسجيل الدخول */
+.login-screen{background:radial-gradient(circle at 15% 15%,#FFD0DD 0,transparent 34%),radial-gradient(circle at 85% 85%,#FFE4D8 0,transparent 38%),#FFF7F4}
+.login-card{border-radius:28px;border:1px solid var(--line);box-shadow:0 24px 60px rgba(128,0,33,.12)}
+
+/* إخفاء زرار تفعيل الإشعارات بأمان */
+#enableNotifBtn{display:none!important}
+@media(max-width:650px){
+.top{border-radius:0 0 24px 24px}
+.stat{flex:0 0 78vw;min-height:118px;padding:15px 16px;border-radius:20px}
+.stat strong{font-size:25px}
+.stat span{font-size:11px}
+}
+
+/* Client Report Bottom Sheet Drawer */
+.report-sheet-backdrop{position:fixed;inset:0;background:rgba(18,7,13,.62);backdrop-filter:blur(5px);z-index:85;display:flex;align-items:flex-end;justify-content:center;padding:0;opacity:0;pointer-events:none;transition:opacity .24s ease}
+.report-sheet-backdrop.open{opacity:1;pointer-events:auto}
+.report-sheet{width:min(760px,100%);max-height:88vh;background:#fff;border-radius:28px 28px 0 0;box-shadow:0 -18px 50px rgba(128,0,33,.28);border:1px solid var(--line);border-bottom:0;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.22,1,.36,1);overflow:hidden}
+.report-sheet-backdrop.open .report-sheet{transform:translateY(0)}
+.report-sheet-handle-wrap{display:flex;justify-content:center;padding:10px 0 2px;background:#FFF7F9;cursor:pointer}
+.report-sheet-handle{width:44px;height:5px;border-radius:999px;background:#E5C2CC}
+.report-sheet-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 20px 14px;background:#FFF7F9;border-bottom:1px solid var(--line)}
+.report-sheet-title-group h3{margin:0;font-size:18px;font-weight:800;color:var(--ink)}
+.report-sheet-title-group p{margin:2px 0 0;font-size:12px;color:var(--muted)}
+.report-close-btn{width:38px;height:38px;border-radius:50%;border:1px solid #F2C8D3;background:#FFE8EE;color:var(--c1);font-size:18px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:transform .15s,background .15s}
+.report-close-btn:hover{background:#ffd6e2;transform:scale(1.05)}
+.report-sheet-body{padding:18px 20px calc(24px + var(--sab));overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:11px}
+.report-row-card{display:flex;flex-direction:column;gap:4px;padding:13px 15px;border-radius:16px;background:#FFF9F8;border:1px solid var(--line)}
+.report-row-label{font-size:11px;font-weight:700;color:#8E727C}
+.report-row-val{font-size:14px;font-weight:700;color:var(--ink);word-break:break-word}
+.report-sheet-photo{width:100%;max-height:220px;object-fit:contain;border-radius:14px;border:1px solid var(--line);background:#fff;padding:6px;cursor:zoom-in}
+.report-visits-box{margin-top:4px;padding:14px 15px;border-radius:16px;background:#FFFDFC;border:1px solid #F0DCE0}
+.report-visits-head{font-size:13px;font-weight:800;color:var(--c2);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.report-visit-item{padding:11px 12px;border-radius:12px;background:#FFF7F9;border:1px solid #F6E6E2;margin-bottom:8px}
+.report-visit-item:last-child{margin-bottom:0}
+.report-sheet-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.client-name-trigger{background:none;border:0;padding:0;margin:0;font:inherit;font-weight:700;color:var(--ink);text-align:right;cursor:pointer;display:inline-block;text-decoration:underline;text-decoration-color:rgba(196,30,92,.35);text-underline-offset:4px}
+.client-name-trigger:hover{color:var(--c3)}
+
+
+.quick-contact-row{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:5px}
+.quick-call-btn,.quick-wa-btn{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border-radius:9px;font-size:11px;font-weight:700;text-decoration:none;border:1px solid transparent;cursor:pointer;transition:transform .14s,box-shadow .14s}
+.quick-call-btn{background:#EEF5FF;color:#1D4ED8;border-color:#BFDBFE}
+.quick-call-btn:hover{background:#DBEAFE;transform:translateY(-1px)}
+.quick-wa-btn{background:#ECFDF5;color:#047857;border-color:#A7F3D0}
+.quick-wa-btn:hover{background:#D1FAE5;transform:translateY(-1px)}
+.status-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:800;border:1px solid transparent}
+.status-new{background:#EFF6FF;color:#1D4ED8;border-color:#BFDBFE}
+.status-followup{background:#FFFBEB;color:#B45309;border-color:#FDE68A}
+.status-completed{background:#ECFDF5;color:#047857;border-color:#A7F3D0}
+.visit-status-select{padding:5px 8px;border-radius:9px;font-size:11px;font-weight:700;border:1px solid #E5C2CC;background:#FFFDFC;color:#2B0F1B;width:auto;min-width:118px;cursor:pointer}
+
+
+/* Theme Toggle Button */
+.theme-toggle-btn{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,.32);background:rgba(255,255,255,.16);color:#fff;border-radius:30px;padding:8px 13px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:transform .16s,background .16s,border-color .16s;white-space:nowrap}
+.theme-toggle-btn:hover{background:rgba(255,255,255,.26);transform:translateY(-1px)}
+.login-card .theme-toggle-btn{background:#FFF0F3;color:#881144;border-color:#F2C8D3;padding:6px 12px;font-size:11px}
+.login-card .theme-toggle-btn:hover{background:#FFE2E8}
+
+/* Dark Mode Palette (Matching Reference Screenshots 88444_2 / 88445_2 / 88450) */
+html.dark{
+  --c1:#6E0722;
+  --c2:#881144;
+  --c3:#C41E5C;
+  --c4:#C24366;
+  --c5:#FF69B4;
+  --c6:#26121A;
+  --red:#C41E5C;
+  --red2:#881144;
+  --bg:#180A10;
+  --card:#211118;
+  --ink:#F7EDF0;
+  --muted:#C2A4AE;
+  --line:#3B202C;
+  --shadow:0 16px 38px rgba(0,0,0,.52);
+  --grad:linear-gradient(90deg,#6E0722 0%,#8B1245 55%,#B81B56 100%)
+}
+html.dark body{
+  color:var(--ink);
+  background:radial-gradient(circle at 85% 0,rgba(196,30,92,.28) 0,transparent 42%),radial-gradient(circle at 10% 100%,rgba(110,7,34,.36) 0,transparent 48%),#16090F
+}
+html.dark body::before,
+html.dark .top{
+  background:var(--grad);
+  box-shadow:0 14px 32px rgba(0,0,0,.45)
+}
+html.dark .userbar span{
+  background:rgba(24,10,16,.38);
+  border-color:rgba(255,255,255,.22);
+  color:#fff
+}
+html.dark .userbar .btn{
+  background:#221017;
+  color:#F7EDF0;
+  border:1px solid #4D2838
+}
+html.dark .stat,
+html.dark .panel,
+html.dark .modalbox,
+html.dark .login-card,
+html.dark .report-sheet{
+  background:#201017;
+  border-color:#3A1F2B;
+  color:var(--ink);
+  box-shadow:var(--shadow)
+}
+html.dark .stat.active{
+  background:linear-gradient(145deg,#25121A,#341522);
+  border:2px solid #C41E5C;
+  box-shadow:0 14px 30px rgba(196,30,92,.25)
+}
+html.dark .stat span,
+html.dark label,
+html.dark .sub,
+html.dark .hint,
+html.dark .foot,
+html.dark .empty,
+html.dark .report-row-label{
+  color:var(--muted)
+}
+html.dark .stat strong,
+html.dark .toolbar h2,
+html.dark .modalhead h2,
+html.dark .login-card h2,
+html.dark .dash-item-title,
+html.dark .report-sheet-title-group h3,
+html.dark .report-row-val,
+html.dark .client-name-trigger{
+  color:var(--ink)
+}
+html.dark .stat-icon{
+  background:#2D1520;
+  color:#FF7AA0
+}
+html.dark .stat-foot{
+  color:#E8DCE1;
+  border-top-color:#3A1F2B
+}
+html.dark .btn{
+  background:#28141D;
+  color:var(--ink);
+  border-color:#422331
+}
+html.dark .btn:hover{
+  background:#341925
+}
+html.dark .btn.primary{
+  background:linear-gradient(135deg,#C41E5C,#881144);
+  color:#fff;
+  border:0;
+  box-shadow:0 8px 20px rgba(196,30,92,.32)
+}
+html.dark .btn.danger{
+  background:#34131C;
+  border-color:#5E2332;
+  color:#FF8DA6
+}
+html.dark input,
+html.dark textarea,
+html.dark select,
+html.dark .search,
+html.dark .visit-status-select{
+  background:#26131B;
+  color:var(--ink);
+  border-color:#422331
+}
+html.dark input::placeholder,
+html.dark textarea::placeholder{
+  color:#957882
+}
+html.dark input:focus,
+html.dark textarea:focus,
+html.dark select:focus{
+  border-color:#D42A6A;
+  box-shadow:0 0 0 4px rgba(196,30,92,.22)
+}
+html.dark .tablewrap{
+  border-color:#3A1F2B;
+  background:#201017
+}
+html.dark table{
+  background:#201017
+}
+html.dark th{
+  background:#29151E;
+  color:#D8BAC4;
+  border-bottom-color:#3D212E
+}
+html.dark td{
+  border-bottom-color:#2F1822
+}
+html.dark tbody tr:hover{
+  background:#2B151F
+}
+html.dark .date-pill{
+  background:#2C1620;
+  color:#F5E2E8
+}
+html.dark .badge,
+html.dark .filter-chip,
+html.dark .part-total{
+  background:#2F1622;
+  color:#FF8CA8;
+  border-color:#502839
+}
+html.dark .part-row,
+html.dark .photo-box,
+html.dark .dash-item,
+html.dark .report-row-card,
+html.dark .report-visits-box{
+  background:#25121A;
+  border-color:#3C202D
+}
+html.dark .report-visit-item{
+  background:#2C1620;
+  border-color:#422331
+}
+html.dark .photo-pick{
+  background:#2F1622;
+  border-color:#52293B;
+  color:#FF8CA8
+}
+html.dark .photo-pick.gallery{
+  background:#26131B;
+  border-color:#422331;
+  color:var(--ink)
+}
+html.dark .dash-tab{
+  background:#26131B;
+  border-color:#3F222F;
+  color:#DEC0CA
+}
+html.dark .dash-tab.active{
+  background:#C41E5C;
+  border-color:#C41E5C;
+  color:#fff
+}
+html.dark .report-sheet-head,
+html.dark .report-sheet-handle-wrap{
+  background:#25121A;
+  border-bottom-color:#3C202D
+}
+html.dark .report-close-btn{
+  background:#341623;
+  border-color:#56293C;
+  color:#FF8CA8
+}
+html.dark .reminder-banner{
+  background:linear-gradient(120deg,#2D1720,#381624);
+  color:var(--ink)
+}
+html.dark .reminder-banner strong{
+  color:#FF8DA9
+}
+html.dark .reminder-banner span{
+  color:#DEC2CB
+}
+html.dark .quick-call-btn{
+  background:#192842;
+  color:#93C5FD;
+  border-color:#2B4570
+}
+html.dark .quick-wa-btn{
+  background:#132E25;
+  color:#6EE7B7;
+  border-color:#225443
+}
+html.dark .status-new{
+  background:#192842;
+  color:#93C5FD;
+  border-color:#2B4570
+}
+html.dark .status-followup{
+  background:#332410;
+  color:#FCD34D;
+  border-color:#5C411A
+}
+html.dark .status-completed{
+  background:#132E25;
+  color:#6EE7B7;
+  border-color:#225443
+}
+html.dark .login-screen{
+  background:radial-gradient(circle at 80% 10%,rgba(196,30,92,.26) 0,transparent 40%),radial-gradient(circle at 15% 90%,rgba(110,7,34,.36) 0,transparent 45%),#16090F
+}
+html.dark .toast{
+  background:#2C1620;
+  color:#FFF3F7;
+  border:1px solid #4E2839
+}
+
+
+/* Settings Header: Full Room for Title + Compact Close Button */
+.settings-modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.settings-title-wrap{flex:1;min-width:0}
+.settings-title-wrap h2{font-size:18px;line-height:1.4;margin:0;white-space:normal}
+.settings-title-wrap .sub{font-size:12px;line-height:1.6;margin-top:4px;white-space:normal}
+.settings-head-actions{flex-shrink:0;margin-top:2px}
+.settings-close-btn{padding:6px 12px;font-size:12px;font-weight:700;border-radius:10px;min-width:0;width:auto}
+@media(max-width:650px){
+  .settings-modal-head{gap:10px}
+  .settings-title-wrap h2{font-size:16px;line-height:1.4}
+  .settings-close-btn{padding:6px 11px;font-size:11px;width:auto}
+}
+#loginScreen .theme-toggle-btn,
+.top .theme-toggle-btn{display:none!important}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<style id="v3-4-settings-header-fix">
+.settings-modal-head{
+  display:flex !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:12px !important;
+  width:100% !important;
+}
+.settings-title-wrap{
+  flex:1 1 auto !important;
+  min-width:0 !important;
+  max-width:none !important;
+}
+.settings-title-wrap h2{
+  font-size:17px !important;
+  line-height:1.35 !important;
+  margin:0 !important;
+  white-space:normal !important;
+  word-break:break-word !important;
+}
+.settings-title-wrap .sub{
+  font-size:11.5px !important;
+  line-height:1.45 !important;
+  margin-top:3px !important;
+  white-space:normal !important;
+  word-break:break-word !important;
+}
+.settings-head-actions{
+  flex:0 0 auto !important;
+  width:auto !important;
+  display:inline-flex !important;
+  align-items:center !important;
+}
+.settings-close-btn{
+  padding:8px 14px !important;
+  font-size:12px !important;
+  font-weight:700 !important;
+  border-radius:11px !important;
+  min-width:0 !important;
+  width:auto !important;
+  flex:0 0 auto !important;
+  white-space:nowrap !important;
+}
+@media(max-width:650px){
+  .settings-modal-head{
+    gap:10px !important;
+  }
+  .settings-title-wrap h2{
+    font-size:15.5px !important;
+  }
+  .settings-title-wrap .sub{
+    font-size:11px !important;
+  }
+  .settings-close-btn{
+    padding:7px 12px !important;
+    font-size:11.5px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="loginScreen" class="login-screen">
@@ -173,7 +598,7 @@ tbody tr:hover{background:#fff9fa}
   <div class="field"><label for="loginUsername">اسم المستخدم</label><input id="loginUsername" type="text" autocomplete="username" autocapitalize="none" required></div>
   <div class="field"><label for="loginPassword">كلمة المرور</label><input id="loginPassword" type="password" autocomplete="current-password" required></div>
   <button class="btn primary" id="loginBtn" type="submit">دخول</button>
-  <p class="hint">لا يُسمح بتسجيل الدخول لنفس الحساب من جهاز آخر أثناء فتح الجلسة الحالية.</p>
+  <p id="loginStatusNote" class="login-status-note"></p>
  </form>
 </div>
 
@@ -183,9 +608,15 @@ tbody tr:hover{background:#fff9fa}
  <div class="userbar"><span id="userEmail"></span><button class="btn" id="logoutBtn">تسجيل الخروج</button></div>
 </header>
 <main class="wrap">
-<div id="reminderBanner" class="reminder-banner hidden">
- <div><strong id="reminderBannerTitle">تنبيه بمواعيد التذكير</strong><span id="reminderBannerText"></span></div>
- <button class="btn mini primary" type="button" id="enableNotifBtn">تفعيل إشعارات الجهاز</button>
+<div id="reminderSwipeWrap" class="reminder-swipe-wrap hidden">
+ <div id="reminderStopRail" class="reminder-stop-rail">
+  <button type="button" class="reminder-stop-btn" onclick="stopActiveReminders()">⛔ إيقاف</button>
+  <button type="button" class="reminder-stop-btn" onclick="stopActiveReminders()">⛔ إيقاف</button>
+ </div>
+ <div id="reminderBanner" class="reminder-banner" title="اسحب يمين أو شمال لإظهار زر الإيقاف">
+  <div><strong id="reminderBannerTitle">تنبيه بمواعيد التذكير</strong><span id="reminderBannerText"></span></div>
+  <button class="btn mini primary" type="button" id="enableNotifBtn">تفعيل إشعارات الجهاز</button>
+ </div>
 </div>
 
 <!-- Interactive Dashboard -->
@@ -205,7 +636,19 @@ tbody tr:hover{background:#fff9fa}
   <strong id="average">—</strong>
   <div class="stat-foot"><span>ترتيب التقييمات والتذكيرات</span><span>←</span></div>
  </button>
+ <button type="button" class="stat" id="statVisits" onclick="openVisitsReportModal()">
+  <div class="stat-top"><span>الزيارات</span><span class="stat-icon">🛠️</span></div>
+  <strong id="visitsCount">0</strong>
+  <div class="stat-foot"><span>تقرير الزيارات والأسباب والقطع</span><span>←</span></div>
+ </button>
+ <button type="button" class="stat" id="statSettings" onclick="openSettingsModal()">
+  <div class="stat-top"><span>الإعدادات</span><span class="stat-icon">⚙️</span></div>
+  <strong id="settingsVersionBadge">v10.2</strong>
+  <div class="stat-foot"><span>الإصدار، التحديثات، المظهر واللغة</span><span>←</span></div>
+ </button>
 </section>
+
+<input class="search" id="search" placeholder="بحث بالاسم، التليفون، الجهاز، العنوان..." aria-label="بحث في سجل العملاء">
 
 <section class="panel" id="editor">
  <div class="toolbar"><h2 id="formTitle">إضافة عميل جديد</h2><span class="badge">بيانات العميل</span></div>
@@ -257,8 +700,7 @@ tbody tr:hover{background:#fff9fa}
   </div>
   <div class="actions"><button class="btn" id="refreshBtn">تحديث البيانات</button><button class="btn" id="exportBtn">تصدير Excel</button></div>
  </div>
- <input class="search" id="search" placeholder="بحث بالاسم، التليفون، الجهاز، العنوان..." aria-label="بحث في سجل العملاء">
- <div class="tablewrap" style="margin-top:14px"><table><thead><tr><th>العميل</th><th>رقم التليفون</th><th>العنوان</th><th>آخر زيارة (يوم/شهر/سنة)</th><th>ميعاد التذكير</th><th>نوع الجهاز</th><th>صورة الجهاز</th><th>سبب المشكلة</th><th>التقييم</th><th>الإجراءات</th></tr></thead><tbody id="rows"></tbody></table><div class="empty hidden" id="empty">لا توجد بيانات لعرضها.</div></div>
+ <div id="recordsTableWrap" class="tablewrap" style="margin-top:14px"><table><thead><tr><th>العميل</th><th>رقم التليفون</th><th>العنوان</th><th>آخر زيارة (يوم/شهر/سنة)</th><th>ميعاد التذكير</th><th>نوع الجهاز</th><th>صورة الجهاز</th><th>سبب المشكلة</th><th>التقييم</th><th>الإجراءات</th></tr></thead><tbody id="rows"></tbody></table><div class="empty hidden" id="empty">لا توجد بيانات لعرضها.</div></div>
  <p class="hint">البيانات تُحفظ في قاعدة بيانات CLIENT PRO وتظهر بعد تسجيل الدخول من الأجهزة الأخرى.</p>
 </section>
 <div class="foot">CLIENT PRO · Customer Records</div>
@@ -279,6 +721,7 @@ tbody tr:hover{background:#fff9fa}
     </div>
    </div>
    <div><label for="visitReminderAt">ميعاد تذكير للزيارة</label><input id="visitReminderAt" type="datetime-local"><div class="sub" id="visitReminderFormatted"></div></div>
+   <div><label for="visitStatus">حالة الزيارة</label><select id="visitStatus"><option value="جديد">جديد</option><option value="قيد متابعة" selected>قيد متابعة</option><option value="مكتمل">مكتمل</option></select></div>
    <div class="full"><label for="visitProblem">سبب الزيارة أو المشكلة</label><textarea id="visitProblem" rows="2"></textarea></div>
    <div class="full"><label for="visitNotes">ملاحظات الزيارة</label><textarea id="visitNotes" rows="2"></textarea></div>
   </div>
@@ -319,6 +762,109 @@ tbody tr:hover{background:#fff9fa}
  <div id="dashModalList" class="dash-list"></div>
 </div></div>
 
+<div id="visitsReportModal" class="modal hidden" onclick="if(event.target===this)closeVisitsReportModal()"><div class="modalbox" style="width:min(860px,100%)">
+ <div class="modalhead">
+  <div><h2 id="visitsReportTitle">تقرير الزيارات</h2><div class="sub" id="visitsReportSub">سجل شامل لكل الزيارات وأسبابها وما تم فيها</div></div>
+  <div class="actions">
+   <select id="visitsStatusFilter" class="visit-status-select" onchange="refreshVisitsReport()" aria-label="تصفية حسب حالة الزيارة">
+    <option value="all">كل الحالات</option>
+    <option value="جديد">جديد</option>
+    <option value="قيد متابعة">قيد متابعة</option>
+    <option value="مكتمل">مكتمل</option>
+   </select>
+   <button class="btn mini primary" type="button" onclick="refreshVisitsReport()">تحديث التقرير</button>
+   <button class="btn mini" type="button" onclick="closeVisitsReportModal()">إغلاق</button>
+  </div>
+ </div>
+ <div id="visitsReportList" class="dash-list"></div>
+</div></div>
+
+
+<div id="settingsModal" class="modal hidden" onclick="if(event.target===this)closeSettingsModal()"><div class="modalbox settings-modal-box" style="width:min(760px,100%)">
+ <div class="modalhead settings-modal-head">
+  <div class="settings-title-wrap"><h2 id="settingsModalTitle">إعدادات التطبيق والنظام</h2><div class="sub" id="settingsModalSub">الإصدار · سجل التحديثات · الوضع الليلي · اللغة</div></div>
+  <div class="actions settings-head-actions">
+   <button type="button" class="btn settings-close-btn" onclick="closeSettingsModal()">إغلاق</button>
+  </div>
+ </div>
+
+ <div class="panel" style="margin-bottom:14px">
+  <div class="toolbar" style="margin-bottom:10px">
+   <h2 style="font-size:15px;margin:0">معلومات الإصدار والتحديثات</h2>
+   <span class="badge" id="appVersionTag">الإصدار v10.2</span>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+   <div>
+    <div id="updateStatusTitle" style="font-weight:800;font-size:14px">أنت تستخدم أحدث إصدار متاح (v10.2)</div>
+    <div id="updateStatusDesc" class="sub">يمكنك التحقق من التحديثات أو استعراض قائمة «ما الجديد» في أي وقت.</div>
+   </div>
+   <div class="actions">
+    <button type="button" class="btn mini primary" id="checkUpdateBtn" onclick="checkForAppUpdate()">التحقق من التحديثات</button>
+    <button type="button" class="btn mini" onclick="toggleWhatsNewDrawer()">ما الجديد</button>
+   </div>
+  </div>
+  <div id="whatsNewBox" class="report-visits-box" style="margin-top:8px">
+   <div class="report-visits-head"><span>✨ ما الجديد في الإصدار (WhatsApp-Style Changelog)</span><span class="badge">v10.2</span></div>
+   <div class="report-visit-item">
+    <div style="font-weight:800;font-size:13px">• لوحة الإعدادات الخامسة (الإعدادات)</div>
+    <div class="sub">تجميع الإصدار، فحص التحديثات وقائمة «ما الجديد»، الوضع الليلي/النهاري، واللغة في مكان واحد.</div>
+   </div>
+   <div class="report-visit-item">
+    <div style="font-weight:800;font-size:13px">• الوضع الليلي والنهاري الموحّد</div>
+    <div class="sub">مظهر داكن مريح للعين مع حفظ اختيارك تلقائياً وتوافق إعدادات النظام.</div>
+   </div>
+   <div class="report-visit-item">
+    <div style="font-weight:800;font-size:13px">• رسائل التذكير والواتساب باسم العميل</div>
+    <div class="sub">إدراج اسم العميل تلقائياً في رسائل المتابعة والواتساب مع زر اتصال وواتساب سريع.</div>
+   </div>
+  </div>
+ </div>
+
+ <div class="panel" style="margin-bottom:14px">
+  <div class="toolbar" style="margin-bottom:10px">
+   <h2 style="font-size:15px;margin:0">المظهر والوضع الليلي</h2>
+   <span class="badge" id="currentThemeBadge">الوضع الحالي</span>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+   <div class="sub" style="margin:0">التبديل بين الوضع الليلي الداكن والوضع النهاري الفاتح مع الحفظ التلقائي.</div>
+   <div class="actions">
+    <button type="button" class="btn mini" id="setLightModeBtn" onclick="setThemeModeExplicit('light')">☀️ الوضع النهاري</button>
+    <button type="button" class="btn mini primary" id="setDarkModeBtn" onclick="setThemeModeExplicit('dark')">🌙 الوضع الليلي</button>
+   </div>
+  </div>
+ </div>
+
+ <div class="panel" style="margin-bottom:0">
+  <div class="toolbar" style="margin-bottom:10px">
+   <h2 style="font-size:15px;margin:0">لغة الواجهة واتجاه العرض</h2>
+   <span class="badge" id="currentLangBadge">العربية (RTL)</span>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+   <div class="sub" style="margin:0">اختر لغة واجهة التطبيق (العربية أو English) مع ضبط الاتجاه تلقائياً.</div>
+   <div class="actions">
+    <button type="button" class="btn mini primary" id="langArBtn" onclick="setAppLanguage('ar')">العربية (عربي)</button>
+    <button type="button" class="btn mini" id="langEnBtn" onclick="setAppLanguage('en')">English (إنجليزي)</button>
+   </div>
+  </div>
+ </div>
+</div></div>
+
+<div id="clientReportSheet" class="report-sheet-backdrop" role="dialog" aria-modal="true" aria-labelledby="reportSheetTitle" onclick="if(event.target===this)closeClientReport()">
+ <div class="report-sheet" onclick="event.stopPropagation()">
+  <div class="report-sheet-handle-wrap" onclick="closeClientReport()" title="إغلاق">
+   <span class="report-sheet-handle"></span>
+  </div>
+  <div class="report-sheet-head">
+   <div class="report-sheet-title-group">
+    <h3 id="reportSheetTitle">تقرير بيانات العميل</h3>
+    <p id="reportSheetSub">عرض تفصيلي مرتب</p>
+   </div>
+   <button type="button" class="report-close-btn" onclick="closeClientReport()" aria-label="إغلاق التقرير">×</button>
+  </div>
+  <div id="reportSheetBody" class="report-sheet-body"></div>
+ </div>
+</div>
+
 <div id="toast" class="toast hidden"></div>
 <script src="./app-extras.js"></script>
 
@@ -329,13 +875,47 @@ const LOGIN_USERNAME='Mohamed helal';
 const LOGIN_EMAIL='mohamedkany1@gmail.com';
 const SESSION_STORAGE_KEY='clientpro_device_session_id';
 const notifiedReminderKeys=new Set();
+let dismissedReminderSig='';
+let activeBannerCustomerIds=[];
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const $=id=>document.getElementById(id);
-let customers=[],currentPhotoPath='',selectedPhotoFile=null,activeCustomer=null,heartbeatTimer=null,reminderTimer=null,dashboardFilter='all';
+let customers=[],currentPhotoPath='',selectedPhotoFile=null,activeCustomer=null,heartbeatTimer=null,reminderTimer=null,dashboardFilter='all',searchScrollTimer=null,visibleLimit=null,filteredCustomersCache=[];
+const INITIAL_RECORDS_LIMIT=null;
 
 function toast(message){$('toast').textContent=message;$('toast').classList.remove('hidden');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>$('toast').classList.add('hidden'),3500)}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function localDate(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+
+function setLoginNote(msg){
+  const el=$('loginStatusNote');
+  if(!el)return;
+  el.textContent=msg||'';
+}
+
+function isNetworkError(err){
+  if(typeof navigator!=='undefined'&&navigator.onLine===false)return true;
+  const raw=((err?.message||'')+' '+(err?.name||'')+' '+(err?.code||'')).toLowerCase();
+  return ['failed to fetch','networkerror','network request failed','load failed','err_internet_disconnected','err_name_not_resolved','timed out','timeout','fetcherror'].some(k=>raw.includes(k));
+}
+
+async function hasLiveInternetConnection(){
+  if(typeof navigator!=='undefined'&&navigator.onLine===false)return false;
+  const controller=typeof AbortController!=='undefined'?new AbortController():null;
+  const timer=controller?setTimeout(()=>controller.abort(),4000):null;
+  try{
+    await fetch(`${SUPABASE_URL}/auth/v1/health`,{
+      method:'GET',
+      mode:'no-cors',
+      cache:'no-store',
+      signal:controller?.signal
+    });
+    return true;
+  }catch(_){
+    return false;
+  }finally{
+    if(timer)clearTimeout(timer);
+  }
+}
 
 // Populate Day / Month / Year dropdowns (يوم / شهر / سنة)
 const ARABIC_MONTHS=['01 - يناير','02 - فبراير','03 - مارس','04 - أبريل','05 - مايو','06 - يونيو','07 - يوليو','08 - أغسطس','09 - سبتمبر','10 - أكتوبر','11 - نوفمبر','12 - ديسمبر'];
@@ -389,6 +969,7 @@ function formatDateTimeAR(dtStr){
 // Interactive Dashboard Filter
 window.setDashboardFilter=async mode=>{
   dashboardFilter=mode;
+  visibleLimit=null;
   $('statAll').classList.toggle('active',mode==='all');
   $('statMonth').classList.toggle('active',mode==='month');
   $('statRated').classList.toggle('active',mode==='rated');
@@ -405,6 +986,205 @@ window.setDashboardFilter=async mode=>{
   await render();
   $('recordsPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
 };
+
+
+let currentReportCustomerId = null;
+
+window.closeClientReport = () => {
+  const sheet = $('clientReportSheet');
+  if (!sheet) return;
+  sheet.classList.remove('open');
+  currentReportCustomerId = null;
+};
+
+window.openClientReport = id => {
+  const c = customers.find(x => x.id === id);
+  if (!c) return;
+  currentReportCustomerId = id;
+  if (!window._signedPhotoCache) window._signedPhotoCache = {};
+  const sheet = $('clientReportSheet');
+  const body = $('reportSheetBody');
+  $('reportSheetTitle').textContent = c.name || 'تقرير العميل';
+  $('reportSheetSub').textContent = c.device_type ? `الجهاز: ${c.device_type}` : 'ملف بيانات وتقرير العميل';
+
+  const cachedPhoto = c.device_photo ? (window._signedPhotoCache[c.device_photo] || '') : '';
+  const stars = c.rating ? ('★'.repeat(Number(c.rating)) + '☆'.repeat(5 - Number(c.rating)) + ` (${c.rating}/5)`) : 'بدون تقييم';
+  const remText = c.reminder_at ? formatDateTimeAR(c.reminder_at) : 'غير محدد';
+
+  const fields = [
+    ['اسم العميل', c.name || '—'],
+    ['رقم التليفون', c.phone || '—'],
+    ['العنوان', c.address || '—'],
+    ['نوع الجهاز', c.device_type || '—'],
+    ['ميعاد التذكير', remText],
+    ['سبب المشكلة', c.problem_description || '—'],
+    ['ملاحظات', c.notes || '—'],
+    ['التقييم', stars]
+  ];
+
+  body.innerHTML =
+    fields.map(([label, val]) => `
+      <div class="report-row-card">
+        <span class="report-row-label">${esc(label)}</span>
+        <span class="report-row-val" ${label === 'رقم التليفون' ? 'dir="ltr" style="text-align:right"' : ''}>${esc(val)}</span>
+        ${label === 'رقم التليفون' ? renderQuickContactButtons(c.phone, c.name, c) : ''}
+      </div>
+    `).join('') +
+    (c.device_photo ? `
+      <div id="reportPhotoCard" class="report-row-card ${cachedPhoto ? '' : 'hidden'}">
+        <span class="report-row-label">صورة الجهاز</span>
+        <img id="reportSheetPhotoImg" class="report-sheet-photo" src="${cachedPhoto}" alt="صورة الجهاز" onclick="openPhotoModal(this.src,'${esc(c.name)}','${esc(c.device_type || '')}')">
+      </div>
+    ` : '') +
+    `<div class="report-visits-box">
+      <div class="report-visits-head"><span>سجل الزيارات وقطع الغيار</span></div>
+      <div id="reportVisitsContent"><div class="sub">جاري تحميل الزيارات وقطع الغيار...</div></div>
+    </div>
+    <div class="report-sheet-actions">
+      <button type="button" class="btn primary" onclick="closeClientReport();editCustomer('${c.id}')">تعديل بيانات العميل</button>
+      <button type="button" class="btn" onclick="closeClientReport();openVisits('${c.id}')">إدارة الزيارات والقطع</button>
+    </div>`;
+
+  sheet.classList.add('open');
+
+  if (c.device_photo && !cachedPhoto) {
+    signedPhoto(c.device_photo).then(url => {
+      if (!url) return;
+      window._signedPhotoCache[c.device_photo] = url;
+      if (currentReportCustomerId !== id) return;
+      const card = $('reportPhotoCard');
+      const img = $('reportSheetPhotoImg');
+      if (card && img) {
+        img.src = url;
+        card.classList.remove('hidden');
+      }
+    }).catch(() => {});
+  }
+
+  (async () => {
+    let visitsHtml = '';
+    try {
+      const { data: vList, error: vErr } = await db.from('visits').select('*').eq('customer_id', id).order('visit_date', { ascending: false });
+      if (vErr) throw vErr;
+      if (!vList || !vList.length) {
+        visitsHtml = '<div class="sub">لا توجد زيارات مسجلة لهذا العميل.</div>';
+      } else {
+        const { data: pList } = await db.from('spare_parts').select('*').in('visit_id', vList.map(v => v.id));
+        const partsByVisit = {};
+        (pList || []).forEach(p => { (partsByVisit[p.visit_id] ??= []).push(p); });
+        visitsHtml = vList.map(v => {
+          const vp = partsByVisit[v.id] || [];
+          const vTotal = vp.reduce((s, p) => s + Number(p.quantity) * Number(p.unit_price), 0);
+          const partsSummary = vp.length
+            ? vp.map(p => `${esc(p.part_name)} (${esc(p.quantity)} × ${Number(p.unit_price).toFixed(2)})`).join('، ')
+            : 'لا توجد قطع غيار';
+          const vStatus=getStoredVisitStatus(v.id,v.status);
+          return `<div class="report-visit-item">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;font-weight:800;font-size:13px;color:var(--ink)"><span>📅 زيارة: ${esc(formatDMY(v.visit_date))}</span>${renderVisitStatusBadge(vStatus)}</div>
+            ${v.problem_description ? `<div class="sub" style="color:var(--ink);margin-top:3px">المشكلة: ${esc(v.problem_description)}</div>` : ''}
+            ${v.notes ? `<div class="sub" style="margin-top:2px">ملاحظات: ${esc(v.notes)}</div>` : ''}
+            <div class="sub" style="margin-top:4px">🔧 قطع الغيار: ${partsSummary} — <strong>الإجمالي: ${vTotal.toFixed(2)}</strong></div>
+          </div>`;
+        }).join('');
+      }
+    } catch (_) {
+      visitsHtml = '<div class="sub">تعذر تحميل سجل الزيارات حالياً.</div>';
+    }
+    if (currentReportCustomerId !== id) return;
+    const target = $('reportVisitsContent');
+    if (target) target.innerHTML = visitsHtml;
+  })();
+};
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && currentReportCustomerId) closeClientReport();
+});
+
+function initTableDragAndScroll(){
+  const wrap=$('recordsTableWrap');
+  let startY=0,startX=0,startScrollTop=0,startScrollLeft=0,dragging=false,mode=null,rubberOffset=0,revealLock=false;
+
+  const resetRubber=()=>{
+    wrap.classList.remove('drag-pulling');
+    wrap.style.transform='';
+    rubberOffset=0;
+  };
+
+  const revealMoreIfAvailable=async()=>{
+    // All records are already rendered directly without lazy batching
+  };
+
+  wrap.addEventListener('scroll',()=>{
+    if(visibleLimit>=filteredCustomersCache.length)return;
+    const nearBottom=wrap.scrollTop+wrap.clientHeight>=wrap.scrollHeight-28;
+    if(nearBottom){
+      revealMoreIfAvailable();
+    }
+  },{passive:true});
+
+  const onStart=(x,y)=>{
+    dragging=true;
+    mode=null;
+    startX=x;
+    startY=y;
+    startScrollTop=wrap.scrollTop;
+    startScrollLeft=wrap.scrollLeft;
+    rubberOffset=0;
+  };
+
+  const onMove=(x,y,ev)=>{
+    if(!dragging)return;
+    const dx=x-startX;
+    const dy=y-startY;
+    if(!mode){
+      if(Math.abs(dy)<8&&Math.abs(dx)<8)return;
+      mode=Math.abs(dy)>=Math.abs(dx)?'y':'x';
+    }
+    if(mode==='x'){
+      wrap.scrollLeft=startScrollLeft-dx;
+      return;
+    }
+    if(ev&&ev.cancelable)ev.preventDefault();
+    const desiredTop=startScrollTop-dy;
+    const maxScrollTop=Math.max(0,wrap.scrollHeight-wrap.clientHeight);
+
+    resetRubber();
+    wrap.scrollTop=Math.max(0,Math.min(maxScrollTop,desiredTop));
+  };
+
+  const onEnd=()=>{
+    if(!dragging)return;
+    const pulledDown=rubberOffset<-10;
+    dragging=false;
+    mode=null;
+    resetRubber();
+    if(pulledDown&&visibleLimit<filteredCustomersCache.length){
+      revealMoreIfAvailable();
+    }
+  };
+
+  wrap.addEventListener('touchstart',e=>{
+    if(e.touches.length===1)onStart(e.touches[0].clientX,e.touches[0].clientY);
+  },{passive:true});
+  wrap.addEventListener('touchmove',e=>{
+    if(e.touches.length===1)onMove(e.touches[0].clientX,e.touches[0].clientY,e);
+  },{passive:false});
+  wrap.addEventListener('touchend',onEnd);
+  wrap.addEventListener('touchcancel',onEnd);
+
+  wrap.addEventListener('mousedown',e=>{
+    if(e.button!==0||e.target.closest('button,img,a,input,select'))return;
+    onStart(e.clientX,e.clientY);
+    const moveHandler=ev=>onMove(ev.clientX,ev.clientY,ev);
+    const upHandler=()=>{
+      window.removeEventListener('mousemove',moveHandler);
+      window.removeEventListener('mouseup',upHandler);
+      onEnd();
+    };
+    window.addEventListener('mousemove',moveHandler);
+    window.addEventListener('mouseup',upHandler);
+  });
+}
 
 function getDeviceSessionId(){
   let sid=localStorage.getItem(SESSION_STORAGE_KEY);
@@ -431,7 +1211,7 @@ function startSessionGuards(){
         stopSessionGuards();
         await db.auth.signOut();
         showLogin();
-        toast('تم فتح الحساب من جهاز آخر، تم إنهاء الجلسة الحالية');
+        setLoginNote('لا يُسمح بتسجيل الدخول لنفس الحساب من جهاز آخر أثناء فتح الجلسة الحالية.');
       }
     }catch(e){console.warn('heartbeat error',e)}
   },25000);
@@ -450,7 +1230,7 @@ async function requireSession(){
   if(!error&&data&&data.ok===false&&data.reason==='already_logged_in_elsewhere'){
     await db.auth.signOut();
     showLogin();
-    toast('هذا الحساب مفتوح حالياً من جهاز آخر ولا يُسمح بتسجيل الدخول المزدوج');
+    setLoginNote('لا يُسمح بتسجيل الدخول لنفس الحساب من جهاز آخر أثناء فتح الجلسة الحالية.');
     return;
   }
   showApp(session);
@@ -460,34 +1240,68 @@ async function requireSession(){
 
 function showLogin(){$('loginScreen').classList.remove('hidden');$('app').classList.add('hidden')}
 function showApp(session){
+  setLoginNote('');
   $('loginScreen').classList.add('hidden');
   $('app').classList.remove('hidden');
   const email=session?.user?.email||'';
   $('userEmail').textContent=email.toLowerCase()===LOGIN_EMAIL.toLowerCase()?LOGIN_USERNAME:email;
 }
 
+$('loginUsername').addEventListener('input',()=>setLoginNote(''));
+$('loginPassword').addEventListener('input',()=>setLoginNote(''));
+
+function showLoginMessage(msg){
+  setLoginNote(msg);
+  const el=$('loginStatusNote');
+  if(el){
+    el.style.color='#a52836';
+    el.style.fontWeight='800';
+  }
+}
+
 $('loginForm').addEventListener('submit',async e=>{
   e.preventDefault();
-  $('loginBtn').disabled=true;
+  showLoginMessage('');
+  const btn=$('loginBtn');
+  if(btn)btn.disabled=true;
   try{
-    const rawUser=$('loginUsername').value.trim();
+    const rawUser=($('loginUsername')?.value||'').trim();
     const username=rawUser.toLowerCase().replace(/\s+/g,' ');
+    const password=$('loginPassword')?.value||'';
+
+    if(!rawUser||!password){
+      showLoginMessage('اكتب اسم المستخدم وكلمة المرور أولاً');
+      return;
+    }
+
+    const online=await hasLiveInternetConnection();
+    if(!online){
+      showLoginMessage('مفيش اتصال بالإنترنت — راجع الاتصال بالنت وحاول مرة أخرى');
+      return;
+    }
+
     if(username!==LOGIN_USERNAME.toLowerCase()){
-      toast('اسم المستخدم غير صحيح (اكتب: Mohamed helal)');
+      showLoginMessage('اسم المستخدم أو كلمة المرور خطأ — راجع البيانات وحاول مرة أخرى');
       return;
     }
-    const {data,error}=await db.auth.signInWithPassword({email:LOGIN_EMAIL,password:$('loginPassword').value});
+
+    const {data,error}=await db.auth.signInWithPassword({email:LOGIN_EMAIL,password});
     if(error){
-      toast('كلمة المرور غير صحيحة');
+      if(isNetworkError(error)||!(await hasLiveInternetConnection())){
+        showLoginMessage('مفيش اتصال بالإنترنت — راجع الاتصال بالنت وحاول مرة أخرى');
+      }else{
+        showLoginMessage('اسم المستخدم أو كلمة المرور خطأ — راجع البيانات وحاول مرة أخرى');
+      }
       return;
     }
+
     const sid=getDeviceSessionId();
     const {data:claim,error:claimError}=await db.rpc('clientpro_claim_session',{p_device_session_id:sid,p_device_info:getDeviceInfo(),p_force:false});
     if(claimError){
       console.warn('Session RPC notice:',claimError.message);
     }else if(claim&&claim.ok===false&&claim.reason==='already_logged_in_elsewhere'){
       await db.auth.signOut();
-      toast('هذا الحساب مفتوح بالفعل على جهاز آخر. أغلق الجلسة الأخرى أو انتظر دقيقتين.');
+      showLoginMessage('لا يُسمح بتسجيل الدخول لنفس الحساب من جهاز آخر أثناء فتح الجلسة الحالية.');
       return;
     }
     showApp(data);
@@ -496,8 +1310,14 @@ $('loginForm').addEventListener('submit',async e=>{
     toast('أهلاً بك Mohamed helal');
   }catch(err){
     console.error(err);
-    toast('تعذر تسجيل الدخول: '+(err?.message||'حاول مرة أخرى'));
-  }finally{$('loginBtn').disabled=false}
+    if(isNetworkError(err)||!(await hasLiveInternetConnection())){
+      showLoginMessage('مفيش اتصال بالإنترنت — راجع الاتصال بالنت وحاول مرة أخرى');
+    }else{
+      showLoginMessage('اسم المستخدم أو كلمة المرور خطأ — راجع البيانات وحاول مرة أخرى');
+    }
+  }finally{
+    if(btn)btn.disabled=false;
+  }
 });
 
 $('logoutBtn').onclick=async()=>{
@@ -532,6 +1352,23 @@ async function loadCustomers(){
     const {data,error}=await db.from('customers').select('*').order('created_at',{ascending:false});
     if(error)throw error;
     customers=data||[];
+    window._latestVisitMap={};
+    try{
+      let loadedSummary=false;
+      try{
+        const {data:sumRows,error:sumErr}=await db.rpc('clientpro_visits_summary');
+        const row=Array.isArray(sumRows)?sumRows[0]:sumRows;
+        if(!sumErr&&row&&typeof row.total_visits!=='undefined'){
+          if($('visitsCount'))$('visitsCount').textContent=Number(row.total_visits||0);
+          window._visitsSummaryCache=row;
+          loadedSummary=true;
+        }
+      }catch(_){}
+      if(!loadedSummary){
+        const {count,error:cntErr}=await db.from('visits').select('*',{count:'exact',head:true});
+        if(!cntErr&&typeof count==='number'&&$('visitsCount'))$('visitsCount').textContent=count;
+      }
+    }catch(_){}
     await render();
     checkReminders();
   }catch(err){
@@ -556,28 +1393,55 @@ async function render(){
     list=list.filter(c=>Number(c.rating)>0).sort((a,b)=>Number(b.rating)-Number(a.rating));
   }
 
-  const latest={};
-  if(list.length){
-    const ids=list.map(c=>c.id);
-    const {data}=await db.from('visits').select('customer_id,visit_date').in('customer_id',ids).order('visit_date',{ascending:false});
-    (data||[]).forEach(v=>{if(!latest[v.customer_id])latest[v.customer_id]=v.visit_date});
+  filteredCustomersCache=list;
+  const shownCount=list.length;
+  const visibleList=list.slice(0,shownCount);
+
+  if(!window._latestVisitMap)window._latestVisitMap={};
+  if(!window._signedPhotoCache)window._signedPhotoCache={};
+  if(visibleList.length){
+    const missingIds=visibleList.map(c=>c.id).filter(id=>!(id in window._latestVisitMap));
+    if(missingIds.length){
+      db.from('visits').select('customer_id,visit_date').in('customer_id',missingIds).order('visit_date',{ascending:false}).then(({data})=>{
+        (data||[]).forEach(v=>{if(!window._latestVisitMap[v.customer_id])window._latestVisitMap[v.customer_id]=v.visit_date});
+        missingIds.forEach(id=>{if(!(id in window._latestVisitMap))window._latestVisitMap[id]='';});
+        document.querySelectorAll('[data-latest-visit]').forEach(el=>{
+          const cid=el.getAttribute('data-latest-visit');
+          if(cid in window._latestVisitMap)el.textContent=formatDMY(window._latestVisitMap[cid]);
+        });
+      }).catch(()=>{});
+    }
   }
-  $('shown').textContent=`(${list.length})`;
+  $('shown').textContent=list.length>visibleList.length?`(${visibleList.length} من ${list.length})`:`(${list.length})`;
 
   const now=Date.now();
-  const rows=await Promise.all(list.map(async c=>{
-    const photo=await signedPhoto(c.device_photo);
+  const rowsHtml=visibleList.map(c=>{
+    const cachedPhoto=c.device_photo?(window._signedPhotoCache[c.device_photo]||''):'';
+    if(c.device_photo&&!(c.device_photo in window._signedPhotoCache)){
+      signedPhoto(c.device_photo).then(url=>{
+        if(url){
+          window._signedPhotoCache[c.device_photo]=url;
+          document.querySelectorAll(`[data-photo-path="${CSS.escape(c.device_photo)}"]`).forEach(img=>{
+            img.src=url;
+            img.classList.remove('hidden');
+          });
+        }
+      }).catch(()=>{});
+    }
     const remFormatted=formatDateTimeAR(c.reminder_at);
     const isDue=c.reminder_at&&(new Date(c.reminder_at).getTime()<=now);
     const remHtml=remFormatted?`<span class="reminder-pill ${isDue?'reminder-due':''}">${esc(remFormatted)}${isDue?' · مستحق':''}</span>`:'—';
-    return `<tr>
-      <td><div class="name">${esc(c.name)}</div><div class="sub">${esc(c.notes||'')}</div></td>
-      <td dir="ltr">${esc(c.phone||'—')}</td>
+    const photoHtml=c.device_photo
+      ? `<img class="device-thumb ${cachedPhoto?'':'hidden'}" data-photo-path="${esc(c.device_photo)}" src="${cachedPhoto}" alt="صورة الجهاز" title="اضغط لتكبير الصورة" onclick="openPhotoModal(this.src,'${esc(c.name)}','${esc(c.device_type||'')}')" onload="this.classList.remove('hidden')">`
+      : '—';
+    return `<tr class="client-row-clickable" data-customer-id="${c.id}">
+      <td><button type="button" class="client-name-trigger name" onclick="openClientReport('${c.id}')" title="عرض تقرير بيانات العميل">${esc(c.name)}</button><div class="sub">${esc(c.notes||'')}</div></td>
+      <td><div dir="ltr" style="text-align:right">${esc(c.phone||'—')}</div>${renderQuickContactButtons(c.phone,c.name,c)}</td>
       <td>${esc(c.address||'—')}</td>
-      <td><span class="date-pill">${esc(formatDMY(latest[c.id]))}</span></td>
+      <td><span class="date-pill" data-latest-visit="${c.id}">${esc(formatDMY(window._latestVisitMap[c.id]))}</span></td>
       <td>${remHtml}</td>
       <td>${esc(c.device_type||'—')}</td>
-      <td>${photo?`<img class="device-thumb" src="${photo}" alt="صورة الجهاز" title="اضغط لتكبير الصورة" onclick="openPhotoModal('${photo}','${esc(c.name)}','${esc(c.device_type||'')}')">`:'—'}</td>
+      <td>${photoHtml}</td>
       <td>${esc(c.problem_description||'—')}</td>
       <td class="rating">${c.rating?'★'.repeat(Number(c.rating))+'☆'.repeat(5-Number(c.rating)):'—'}</td>
       <td><div class="rowactions">
@@ -586,9 +1450,9 @@ async function render(){
         <button class="btn mini danger" onclick="deleteCustomer('${c.id}')">حذف</button>
       </div></td>
     </tr>`;
-  }));
-  $('rows').innerHTML=rows.join('');
-  $('empty').classList.toggle('hidden',list.length>0);
+  });
+  $('rows').innerHTML=rowsHtml.join('');
+  $('empty').classList.toggle('hidden',visibleList.length>0);
 }
 
 function syncReminderLabels(){
@@ -652,6 +1516,111 @@ function formatTimeOnlyAR(dtStr){
   return `${hours}:${mins} ${period}`;
 }
 
+function resetReminderBannerPosition(){
+  const banner=$('reminderBanner');
+  const rail=$('reminderStopRail');
+  banner.classList.remove('dragging');
+  banner.style.transform='';
+  if(rail)rail.style.opacity='0';
+}
+
+window.stopActiveReminders=async()=>{
+  const banner=$('reminderBanner');
+  const sig=banner.dataset.sig||'active';
+  const ids=[...activeBannerCustomerIds];
+  dismissedReminderSig=sig;
+  $('reminderSwipeWrap').classList.add('hidden');
+  resetReminderBannerPosition();
+  if(ids.length){
+    customers.forEach(c=>{
+      if(ids.includes(c.id))c.reminder_at=null;
+    });
+    await render();
+    try{
+      const {error}=await db.from('customers').update({reminder_at:null}).in('id',ids);
+      if(error)throw error;
+      toast('تم إيقاف التنبيه');
+      await loadCustomers();
+      return;
+    }catch(err){
+      console.warn('Stop reminder DB update notice:',err);
+    }
+  }
+  toast('تم إيقاف التنبيه');
+};
+
+function initSwipeableReminderBanner(){
+  const banner=$('reminderBanner');
+  const rail=$('reminderStopRail');
+  let startX=0,startY=0,currentDx=0,tracking=false,swipingHorizontally=false;
+
+  const onStart=(x,y)=>{
+    tracking=true;
+    swipingHorizontally=false;
+    startX=x;
+    startY=y;
+    currentDx=0;
+    banner.classList.add('dragging');
+  };
+
+  const onMove=(x,y,ev)=>{
+    if(!tracking)return;
+    const dx=x-startX;
+    const dy=y-startY;
+    if(!swipingHorizontally){
+      if(Math.abs(dx)>10&&Math.abs(dx)>Math.abs(dy)*1.25){
+        swipingHorizontally=true;
+      }else if(Math.abs(dy)>12){
+        tracking=false;
+        banner.classList.remove('dragging');
+        return;
+      }
+    }
+    if(swipingHorizontally){
+      if(ev&&ev.cancelable)ev.preventDefault();
+      currentDx=dx;
+      const clamped=Math.max(-130,Math.min(130,dx));
+      banner.style.transform=`translate3d(${clamped}px,0,0)`;
+      if(rail)rail.style.opacity=String(Math.min(1,Math.abs(clamped)/42));
+    }
+  };
+
+  const onEnd=()=>{
+    if(!tracking)return;
+    tracking=false;
+    banner.classList.remove('dragging');
+    if(swipingHorizontally&&Math.abs(currentDx)>=65){
+      const dir=currentDx>=0?1:-1;
+      banner.style.transform=`translate3d(${dir*108}px,0,0)`;
+      if(rail)rail.style.opacity='1';
+    }else{
+      resetReminderBannerPosition();
+    }
+  };
+
+  banner.addEventListener('touchstart',e=>{
+    if(e.touches.length===1)onStart(e.touches[0].clientX,e.touches[0].clientY);
+  },{passive:true});
+  banner.addEventListener('touchmove',e=>{
+    if(e.touches.length===1)onMove(e.touches[0].clientX,e.touches[0].clientY,e);
+  },{passive:false});
+  banner.addEventListener('touchend',onEnd);
+  banner.addEventListener('touchcancel',onEnd);
+
+  banner.addEventListener('mousedown',e=>{
+    if(e.button!==0)return;
+    onStart(e.clientX,e.clientY);
+    const moveHandler=ev=>onMove(ev.clientX,ev.clientY,ev);
+    const upHandler=()=>{
+      window.removeEventListener('mousemove',moveHandler);
+      window.removeEventListener('mouseup',upHandler);
+      onEnd();
+    };
+    window.addEventListener('mousemove',moveHandler);
+    window.addEventListener('mouseup',upHandler);
+  });
+}
+
 function checkReminders(){
   const now=Date.now();
   const todayStr=localDate();
@@ -669,21 +1638,40 @@ function checkReminders(){
     return itemDay===todayStr&&d.getTime()>now;
   });
 
+  const wrap=$('reminderSwipeWrap');
   const banner=$('reminderBanner');
   if(!due.length&&!todayUpcoming.length){
-    banner.classList.add('hidden');
+    activeBannerCustomerIds=[];
+    wrap.classList.add('hidden');
+    resetReminderBannerPosition();
     return;
   }
-  banner.classList.remove('hidden');
 
+  let titleTxt='',bodyTxt='',sig='',targetList=[];
   if(due.length){
+    targetList=due;
     const names=due.slice(0,3).map(c=>`زيارة للعميل ${c.name} (${formatTimeOnlyAR(c.reminder_at)})`).join('، ');
-    $('reminderBannerTitle').textContent=`تنبيه الآن: لديك ${due.length} زيارة مستحقة`;
-    $('reminderBannerText').textContent=names+(due.length>3?' ...':'');
+    titleTxt=`تنبيه الآن: لديك ${due.length} زيارة مستحقة`;
+    bodyTxt=names+(due.length>3?' ...':'');
+    sig='due:'+due.map(c=>`${c.id}_${c.reminder_at}`).join('|');
   }else{
+    targetList=todayUpcoming;
     const names=todayUpcoming.slice(0,3).map(c=>`العميل ${c.name} الساعة ${formatTimeOnlyAR(c.reminder_at)}`).join('، ');
-    $('reminderBannerTitle').textContent=`تذكيرات زيارات اليوم (${todayUpcoming.length})`;
-    $('reminderBannerText').textContent=names+(todayUpcoming.length>3?' ...':'');
+    titleTxt=`تذكيرات زيارات اليوم (${todayUpcoming.length})`;
+    bodyTxt=names+(todayUpcoming.length>3?' ...':'');
+    sig='today:'+todayUpcoming.map(c=>`${c.id}_${c.reminder_at}`).join('|');
+  }
+
+  activeBannerCustomerIds=targetList.map(c=>c.id);
+  banner.dataset.sig=sig;
+  $('reminderBannerTitle').textContent=titleTxt;
+  $('reminderBannerText').textContent=bodyTxt;
+
+  if(dismissedReminderSig===sig){
+    wrap.classList.add('hidden');
+  }else{
+    resetReminderBannerPosition();
+    wrap.classList.remove('hidden');
   }
 
   due.forEach(c=>{
@@ -868,8 +1856,20 @@ function resetForm(){
 
 $('cancelEdit').onclick=resetForm;
 $('clearBtn').onclick=()=>setTimeout(resetForm,0);
-$('search').oninput=()=>render();
-$('refreshBtn').onclick=loadCustomers;
+$('search').oninput=async()=>{
+  visibleLimit=null;
+  await render();
+  clearTimeout(searchScrollTimer);
+  if($('search').value.trim()){
+    searchScrollTimer=setTimeout(()=>{
+      $('recordsPanel').scrollIntoView({behavior:'smooth',block:'start'});
+    },450);
+  }
+};
+$('refreshBtn').onclick=()=>{
+  dismissedReminderSig='';
+  loadCustomers();
+};
 
 window.openVisits=async id=>{
   activeCustomer=customers.find(c=>c.id===id);
@@ -926,13 +1926,26 @@ $('visitForm').addEventListener('submit',async e=>{
   $('saveVisitBtn').disabled=true;
   try{
     const visitReminderIso=$('visitReminderAt').value?new Date($('visitReminderAt').value).toISOString():null;
-    const {data:visit,error}=await db.from('visits').insert({
+    const chosenStatus=normalizeVisitStatus($('visitStatus')?.value||'قيد متابعة');
+    let visit,error;
+    ({data:visit,error}=await db.from('visits').insert({
       customer_id:customerId,
       visit_date:vDate,
       problem_description:$('visitProblem').value.trim()||null,
       notes:$('visitNotes').value.trim()||null,
-      reminder_at:visitReminderIso
-    }).select().single();
+      reminder_at:visitReminderIso,
+      status:chosenStatus
+    }).select().single());
+    if(error&&String(error.message||'').toLowerCase().includes('status')){
+      ({data:visit,error}=await db.from('visits').insert({
+        customer_id:customerId,
+        visit_date:vDate,
+        problem_description:$('visitProblem').value.trim()||null,
+        notes:$('visitNotes').value.trim()||null,
+        reminder_at:visitReminderIso
+      }).select().single());
+    }
+    if(visit?.id){try{localStorage.setItem('clientpro_visit_status_'+visit.id,chosenStatus)}catch(_){}}
     if(error)throw error;
     if(visitReminderIso){
       await db.from('customers').update({reminder_at:visitReminderIso}).eq('id',customerId);
@@ -973,7 +1986,8 @@ async function loadVisitHistory(customerId){
       const parts=byVisit[v.id]||[];
       const sum=parts.reduce((s,p)=>s+Number(p.quantity)*Number(p.unit_price),0);
       const remTxt=v.reminder_at?`<div class="reminder-pill">تذكير: ${esc(formatDateTimeAR(v.reminder_at))}</div>`:'';
-      return `<div class="panel"><div class="toolbar"><strong>زيارة ${esc(formatDMY(v.visit_date))}</strong><span class="badge">${parts.length} قطعة</span></div>${remTxt}<div>${esc(v.problem_description||'')}</div><div class="sub">${esc(v.notes||'')}</div>${parts.length?`<div class="tablewrap" style="margin-top:10px"><table style="min-width:600px"><thead><tr><th>قطعة الغيار</th><th>الكمية</th><th>سعر القطعة</th><th>الإجمالي</th><th>ملاحظات</th></tr></thead><tbody>${parts.map(p=>`<tr><td>${esc(p.part_name)}</td><td>${esc(p.quantity)}</td><td>${Number(p.unit_price).toFixed(2)}</td><td>${(Number(p.quantity)*Number(p.unit_price)).toFixed(2)}</td><td>${esc(p.notes||'')}</td></tr>`).join('')}</tbody></table></div>`:'<div class="sub">لا توجد قطع غيار مسجلة في الزيارة.</div>'}<div class="part-total" style="margin-top:10px">إجمالي قطع الغيار: ${sum.toFixed(2)}</div></div>`;
+      const vStatus=getStoredVisitStatus(v.id,v.status);
+      return `<div class="panel"><div class="toolbar"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><strong>زيارة ${esc(formatDMY(v.visit_date))}</strong>${renderVisitStatusBadge(vStatus)}</div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><select class="visit-status-select" onchange="updateVisitStatus('${v.id}',this.value,'${customerId}')" aria-label="تغيير حالة الزيارة"><option value="جديد" ${vStatus==='جديد'?'selected':''}>جديد</option><option value="قيد متابعة" ${vStatus==='قيد متابعة'?'selected':''}>قيد متابعة</option><option value="مكتمل" ${vStatus==='مكتمل'?'selected':''}>مكتمل</option></select><span class="badge">${parts.length} قطعة</span></div></div>${remTxt}<div>${esc(v.problem_description||'')}</div><div class="sub">${esc(v.notes||'')}</div>${parts.length?`<div class="tablewrap" style="margin-top:10px"><table style="min-width:600px"><thead><tr><th>قطعة الغيار</th><th>الكمية</th><th>سعر القطعة</th><th>الإجمالي</th><th>ملاحظات</th></tr></thead><tbody>${parts.map(p=>`<tr><td>${esc(p.part_name)}</td><td>${esc(p.quantity)}</td><td>${Number(p.unit_price).toFixed(2)}</td><td>${(Number(p.quantity)*Number(p.unit_price)).toFixed(2)}</td><td>${esc(p.notes||'')}</td></tr>`).join('')}</tbody></table></div>`:'<div class="sub">لا توجد قطع غيار مسجلة في الزيارة.</div>'}<div class="part-total" style="margin-top:10px">إجمالي قطع الغيار: ${sum.toFixed(2)}</div></div>`;
     }).join('');
   }catch(err){console.error(err);$('visitHistory').innerHTML='<div class="empty">تعذر تحميل سجل الزيارات.</div>'}
 }
@@ -1165,6 +2179,305 @@ $('exportBtn').onclick=async()=>{
   }finally{btn.disabled=false;btn.textContent=oldText}
 };
 
+
+window.closeVisitsReportModal = () => {
+  const m = $('visitsReportModal');
+  if (m) m.classList.add('hidden');
+};
+
+window.refreshVisitsReport = async () => {
+  const listEl = $('visitsReportList');
+  if (!listEl) return;
+  listEl.innerHTML = '<div class="empty">جاري تحميل تقرير الزيارات...</div>';
+  try {
+    const { data: vList, error: vErr } = await db.from('visits').select('*').order('visit_date', { ascending: false }).limit(80);
+    if (vErr) throw vErr;
+    if ($('visitsCount')) $('visitsCount').textContent = (vList || []).length;
+    if (!vList || !vList.length) {
+      $('visitsReportSub').textContent = 'لا توجد زيارات مسجلة حتى الآن';
+      listEl.innerHTML = '<div class="empty">لا توجد زيارات مسجلة في النظام.</div>';
+      return;
+    }
+    const custMap = {};
+    customers.forEach(c => { custMap[c.id] = c; });
+    let partsByVisit = {};
+    try {
+      const { data: pList } = await db.from('spare_parts').select('*').in('visit_id', vList.map(v => v.id));
+      (pList || []).forEach(p => { (partsByVisit[p.visit_id] ??= []).push(p); });
+    } catch (_) {}
+
+    const sumObj = window._visitsSummaryCache;
+    const totalAmtTxt = sumObj && typeof sumObj.total_parts_amount !== 'undefined'
+      ? ` · إجمالي قطع الغيار بالنظام: ${Number(sumObj.total_parts_amount || 0).toFixed(2)}`
+      : '';
+    const statusFilterVal = $('visitsStatusFilter')?.value || 'all';
+    const filteredVisits = statusFilterVal === 'all'
+      ? vList
+      : vList.filter(v => getStoredVisitStatus(v.id, v.status) === statusFilterVal);
+
+    $('visitsReportSub').textContent = `إجمالي الزيارات المعروضة: ${filteredVisits.length} من ${vList.length} زيارة${totalAmtTxt}`;
+    if (!filteredVisits.length) {
+      listEl.innerHTML = '<div class="empty">لا توجد زيارات مطابقة للحالة المختارة.</div>';
+      return;
+    }
+    listEl.innerHTML = filteredVisits.map(v => {
+      const c = custMap[v.customer_id] || {};
+      const cname = c.name || 'عميل';
+      const cphone = c.phone || 'غير مسجل';
+      const caddress = c.address || 'غير مسجل';
+      const cdevice = c.device_type || 'غير محدد';
+      const vStatus = getStoredVisitStatus(v.id, v.status);
+      const vp = partsByVisit[v.id] || [];
+      const vTotal = vp.reduce((s, p) => s + Number(p.quantity) * Number(p.unit_price), 0);
+      const partsTxt = vp.length
+        ? vp.map(p => `${esc(p.part_name)} (${esc(p.quantity)} × ${Number(p.unit_price).toFixed(2)})`).join('، ')
+        : 'لا توجد قطع غيار';
+      const reasonTxt = v.problem_description || c.problem_description || 'غير محدد';
+      const notesTxt = v.notes || 'لا توجد ملاحظات';
+
+      return `<div class="dash-item" style="display:flex;flex-direction:column;align-items:stretch;gap:12px;padding:16px;background:#FFFDFC;border:1px solid #F0DCE0;border-radius:18px">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding-bottom:10px;border-bottom:2px solid #C41E5C">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span class="badge" style="font-size:12px;padding:6px 12px;background:#FFE8EE;color:#881144">📅 تاريخ الزيارة: ${esc(formatDMY(v.visit_date))}</span>
+            ${renderVisitStatusBadge(vStatus)}
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <select class="visit-status-select" onchange="updateVisitStatus('${v.id}',this.value,'${esc(v.customer_id)}')" aria-label="تغيير حالة الزيارة">
+              <option value="جديد" ${vStatus==='جديد'?'selected':''}>جديد</option>
+              <option value="قيد متابعة" ${vStatus==='قيد متابعة'?'selected':''}>قيد متابعة</option>
+              <option value="مكتمل" ${vStatus==='مكتمل'?'selected':''}>مكتمل</option>
+            </select>
+            <button type="button" class="btn mini primary" style="padding:7px 13px;font-size:12px" onclick="closeVisitsReportModal();openClientReport('${esc(v.customer_id)}')">تقرير العميل</button>
+            <button type="button" class="btn mini" style="padding:7px 13px;font-size:12px" onclick="closeVisitsReportModal();openVisits('${esc(v.customer_id)}')">إدارة الزيارات</button>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="padding:10px 12px;border-radius:12px;background:#FFF7F9;border:1px solid #F6E6E2">
+            <div style="font-size:11px;font-weight:700;color:#8E727C">العميل والجهاز</div>
+            <div style="font-size:16px;font-weight:800;color:#2B0F1B;margin-top:2px;word-break:break-word">${esc(cname)}</div>
+            <div style="font-size:13px;font-weight:700;color:#881144;margin-top:4px;word-break:break-word">🔧 الجهاز: ${esc(cdevice)}</div>
+          </div>
+
+          <div style="padding:10px 12px;border-radius:12px;background:#FFF9F8;border:1px solid #F6E6E2;display:flex;flex-direction:column;gap:6px;font-size:13px;color:#2B0F1B">
+            <div style="word-break:break-word"><strong>📞 رقم التليفون:</strong> <span dir="ltr">${esc(cphone)}</span> ${renderQuickContactButtons(c.phone, cname, c)}</div>
+            <div style="word-break:break-word"><strong>📍 العنوان:</strong> ${esc(caddress)}</div>
+            <div style="word-break:break-word"><strong>⚠️ السبب:</strong> ${esc(reasonTxt)}</div>
+            <div style="word-break:break-word"><strong>📝 ما تم / ملاحظات:</strong> ${esc(notesTxt)}</div>
+            <div style="word-break:break-word"><strong>🛠️ قطع الغيار:</strong> ${partsTxt} — <strong>الإجمالي: ${vTotal.toFixed(2)}</strong></div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch (err) {
+    console.error(err);
+    listEl.innerHTML = '<div class="empty">تعذر تحميل تقرير الزيارات حالياً.</div>';
+  }
+};
+
+window.openVisitsReportModal = async () => {
+  const m = $('visitsReportModal');
+  if (!m) return;
+  m.classList.remove('hidden');
+  await refreshVisitsReport();
+};
+
+
+function normalizePhoneForLink(phone){
+  if(!phone)return '';
+  const arabicDigits='٠١٢٣٤٥٦٧٨٩';
+  const converted=String(phone).replace(/[٠-٩]/g,d=>String(arabicDigits.indexOf(d)));
+  let digits=converted.replace(/[^0-9]/g,'');
+  if(!digits)return '';
+  if(digits.startsWith('00'))digits=digits.slice(2);
+  if(digits.length===11&&digits.startsWith('01'))digits='20'+digits.slice(1);
+  return digits;
+}
+function buildReminderWhatsAppMessage(clientName,customerObj=null){
+  const cleanName=String(clientName||customerObj?.name||'').trim();
+  const greetingName=cleanName?`أستاذ ${cleanName}`:'حضرتك';
+  const c=customerObj||(Array.isArray(customers)?customers.find(x=>cleanName&&String(x.name||'').trim()===cleanName):null);
+  const deviceTxt=c?.device_type?` بخصوص جهاز (${String(c.device_type).trim()})`:' بخصوص الجهاز';
+  const remFormatted=c?.reminder_at?formatDateTimeAR(c.reminder_at):'';
+  const timePart=remFormatted?` المحدد له موعد التذكير يوم ${remFormatted}`:'';
+  const problemPart=c?.problem_description?` (${String(c.problem_description).trim()})`:'';
+  return `مرحباً ${greetingName}، نذكّر حضرتك بمتابعة زيارة/صيانة${deviceTxt}${problemPart}${timePart}. يسعدنا تأكيد الموعد المناسب لحضرتك أو إخبارنا بأي تفاصيل إضافية.`;
+}
+function renderQuickContactButtons(phone,clientName,customerObj=null){
+  const raw=String(phone||'').trim();
+  if(!raw||raw==='—')return '';
+  const waNum=normalizePhoneForLink(raw);
+  if(!waNum)return '';
+  const telHref='tel:+'+waNum;
+  const msg=encodeURIComponent(buildReminderWhatsAppMessage(clientName,customerObj));
+  const waHref=`https://wa.me/${waNum}?text=${msg}`;
+  return `<div class="quick-contact-row" onclick="event.stopPropagation()">
+    <a class="quick-call-btn" href="${esc(telHref)}" onclick="event.stopPropagation()" title="اتصال سريع">📞 اتصال</a>
+    <a class="quick-wa-btn" href="${esc(waHref)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="مراسلة واتساب">💬 واتساب</a>
+  </div>`;
+}
+function normalizeVisitStatus(st){
+  const v=String(st||'').trim();
+  if(v==='مكتمل'||v==='completed'||v==='done')return 'مكتمل';
+  if(v==='جديد'||v==='new')return 'جديد';
+  return 'قيد متابعة';
+}
+function renderVisitStatusBadge(status){
+  const st=normalizeVisitStatus(status);
+  if(st==='مكتمل')return `<span class="status-pill status-completed">✅ مكتمل</span>`;
+  if(st==='جديد')return `<span class="status-pill status-new">🆕 جديد</span>`;
+  return `<span class="status-pill status-followup">⏳ قيد متابعة</span>`;
+}
+function getStoredVisitStatus(visitId,dbStatus){
+  try{
+    if(dbStatus)return normalizeVisitStatus(dbStatus);
+    const saved=localStorage.getItem('clientpro_visit_status_'+visitId);
+    if(saved)return normalizeVisitStatus(saved);
+  }catch(_){}
+  return 'قيد متابعة';
+}
+window.updateVisitStatus=async(visitId,newStatus,customerId=null)=>{
+  const st=normalizeVisitStatus(newStatus);
+  try{localStorage.setItem('clientpro_visit_status_'+visitId,st)}catch(_){}
+  try{
+    const {error}=await db.from('visits').update({status:st}).eq('id',visitId);
+    if(error)console.warn('visit status column notice:',error.message);
+  }catch(_){}
+  toast(`تم تحديث حالة الزيارة إلى: ${st}`);
+  if(customerId&&!$ ('visitModal').classList.contains('hidden')){
+    await loadVisitHistory(customerId);
+  }
+  if(!$ ('visitsReportModal').classList.contains('hidden')){
+    await refreshVisitsReport();
+  }
+  if(currentReportCustomerId){
+    openClientReport(currentReportCustomerId);
+  }
+};
+
+
+const THEME_STORAGE_KEY='clientpro_theme_mode_v3';
+function getPreferredTheme(){
+  try{
+    const saved=localStorage.getItem(THEME_STORAGE_KEY);
+    if(saved==='dark'||saved==='light')return saved;
+  }catch(_){}
+  return 'light';
+}
+function syncThemeUI(mode){
+  const isDark=mode==='dark';
+  document.documentElement.classList.toggle('dark',isDark);
+  document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
+  const metaTheme=document.querySelector('meta[name="theme-color"]');
+  if(metaTheme)metaTheme.setAttribute('content',isDark?'#800021':'#a92835');
+  const iconTxt=isDark?'☀️':'🌙';
+  const labelTxt=isDark?'نهاري':'ليلي';
+  if($('themeToggleIcon'))$('themeToggleIcon').textContent=iconTxt;
+  if($('themeToggleLabel'))$('themeToggleLabel').textContent=labelTxt;
+  if($('loginThemeToggleIcon'))$('loginThemeToggleIcon').textContent=iconTxt;
+  if($('loginThemeToggleLabel'))$('loginThemeToggleLabel').textContent=labelTxt;
+}
+window.toggleThemeMode=function(){
+  const next=document.documentElement.classList.contains('dark')?'light':'dark';
+  try{localStorage.setItem(THEME_STORAGE_KEY,next)}catch(_){}
+  syncThemeUI(next);
+  toast(next==='dark'?'تم تفعيل الوضع الليلي':'تم تفعيل الوضع النهاري');
+};
+syncThemeUI(getPreferredTheme());
+
+
+
+const APP_VERSION='v10.2';
+const LANG_STORAGE_KEY='clientpro_lang_mode';
+const UPDATE_SEEN_KEY='clientpro_seen_changelog_v10_2';
+
+window.openSettingsModal=function(){
+  const m=$('settingsModal');
+  if(!m)return;
+  syncSettingsModalState();
+  m.classList.remove('hidden');
+};
+window.closeSettingsModal=function(){
+  const m=$('settingsModal');
+  if(m)m.classList.add('hidden');
+};
+window.toggleWhatsNewDrawer=function(){
+  const box=$('whatsNewBox');
+  if(!box)return;
+  box.classList.toggle('hidden');
+};
+window.checkForAppUpdate=function(){
+  const btn=$('checkUpdateBtn');
+  const titleEl=$('updateStatusTitle');
+  const descEl=$('updateStatusDesc');
+  const box=$('whatsNewBox');
+  if(btn){btn.disabled=true;btn.textContent='جاري الفحص...';}
+  setTimeout(()=>{
+    try{localStorage.setItem(UPDATE_SEEN_KEY,'1')}catch(_){}
+    if(titleEl)titleEl.textContent=`تم التحقق: أنت على أحدث إصدار (${APP_VERSION})`;
+    if(descEl)descEl.textContent='لا توجد تحديثات معلقة حالياً — إليك قائمة «ما الجديد» في هذا الإصدار.';
+    if(box)box.classList.remove('hidden');
+    if(btn){btn.disabled=false;btn.textContent='التحقق من التحديثات';}
+    toast(`إصدار التطبيق الحالي ${APP_VERSION} — تم عرض قائمة ما الجديد`);
+  },450);
+};
+window.setThemeModeExplicit=function(mode){
+  const target=(mode==='dark')?'dark':'light';
+  try{localStorage.setItem(THEME_STORAGE_KEY,target)}catch(_){}
+  syncThemeUI(target);
+  syncSettingsModalState();
+  toast(target==='dark'?'تم تفعيل الوضع الليلي':'تم تفعيل الوضع النهاري');
+};
+
+function applyLanguageDirection(lang){
+  const isEn=lang==='en';
+  document.documentElement.lang=isEn?'en':'ar';
+  document.documentElement.dir=isEn?'ltr':'rtl';
+  if($('langArBtn')){
+    $('langArBtn').className=isEn?'btn mini':'btn mini primary';
+  }
+  if($('langEnBtn')){
+    $('langEnBtn').className=isEn?'btn mini primary':'btn mini';
+  }
+  if($('currentLangBadge')){
+    $('currentLangBadge').textContent=isEn?'English (LTR)':'العربية (RTL)';
+  }
+}
+
+window.setAppLanguage=function(lang){
+  const chosen=(lang==='en')?'en':'ar';
+  try{localStorage.setItem(LANG_STORAGE_KEY,chosen)}catch(_){}
+  applyLanguageDirection(chosen);
+  syncSettingsModalState();
+  toast(chosen==='en'?'Interface direction switched to English (LTR)':'تم ضبط اللغة إلى العربية (RTL)');
+};
+
+function syncSettingsModalState(){
+  const isDark=document.documentElement.classList.contains('dark');
+  if($('settingsVersionBadge'))$('settingsVersionBadge').textContent=APP_VERSION;
+  if($('appVersionTag'))$('appVersionTag').textContent=`الإصدار ${APP_VERSION}`;
+  if($('currentThemeBadge'))$('currentThemeBadge').textContent=isDark?'الوضع الليلي':'الوضع النهاري';
+  if($('setDarkModeBtn'))$('setDarkModeBtn').className=isDark?'btn mini primary':'btn mini';
+  if($('setLightModeBtn'))$('setLightModeBtn').className=isDark?'btn mini':'btn mini primary';
+  let savedLang='ar';
+  try{savedLang=localStorage.getItem(LANG_STORAGE_KEY)||'ar';}catch(_){}
+  applyLanguageDirection(savedLang);
+}
+
+try{
+  const initLang=localStorage.getItem(LANG_STORAGE_KEY)||'ar';
+  applyLanguageDirection(initLang);
+}catch(_){}
+
+initTableDragAndScroll();
+$('rows').addEventListener('click', ev => {
+  if (ev.target.closest('button, a, input, select, textarea, img')) return;
+  const tr = ev.target.closest('tr[data-customer-id]');
+  if (!tr) return;
+  const cid = tr.getAttribute('data-customer-id');
+  if (cid) openClientReport(cid);
+});
+initSwipeableReminderBanner();
 initDMYSelectors('initDay','initMonth','initYear');
 initDMYSelectors('vDay','vMonth','vYear');
 setDMYValue('initDay','initMonth','initYear',localDate());
@@ -1174,5 +2487,297 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.se
 </script>
 <script>
 try{var C=window.Capacitor;if(C&&C.nativePromise){C.nativePromise('SystemBars','setStyle',{style:'DARK',bar:'StatusBar'}).catch(function(){})}}catch(e){}
+</script>
+
+
+
+<script id="v3-5-clean-i18n">
+(function(){
+  const AR_TO_EN = {
+    "CLIENT PRO | إدارة العملاء": "CLIENT PRO | Client Management",
+    "إدارة العملاء والزيارات وقطع الغيار": "Client, Visit & Spare Parts Management",
+    "تسجيل الدخول": "Sign In",
+    "اسم المستخدم": "Username",
+    "كلمة المرور": "Password",
+    "دخول": "Sign In",
+    "تسجيل الخروج": "Sign Out",
+    "تفعيل إشعارات الجهاز": "Enable Device Notifications",
+    "تنبيه بمواعيد التذكير": "Reminder Alerts",
+    "اسحب يمين أو شمال لإظهار زر الإيقاف": "Swipe left or right to show the Stop button",
+    "⛔ إيقاف": "⛔ Stop",
+
+    "إجمالي العملاء": "Total Clients",
+    "عرض القائمة والتفاصيل": "View list & details",
+    "عملاء هذا الشهر": "Clients This Month",
+    "استعراض عملاء الشهر": "Browse this month's clients",
+    "متوسط التقييم": "Average Rating",
+    "ترتيب التقييمات والتذكيرات": "Ratings & reminders order",
+    "الزيارات": "Visits",
+    "تقرير الزيارات والأسباب والقطع": "Visits, issues & parts report",
+    "الإعدادات": "Settings",
+    "الإصدار، التحديثات، المظهر واللغة": "Version, updates, theme & language",
+
+    "بحث بالاسم، التليفون، الجهاز، العنوان...": "Search by name, phone, device, address...",
+    "بحث في سجل العملاء": "Search client records",
+    "إضافة عميل جديد": "Add New Client",
+    "تعديل بيانات العميل": "Edit Client Details",
+    "بيانات العميل": "Client Info",
+    "رقم التليفون": "Phone Number",
+    "اسم العميل *": "Client Name *",
+    "العنوان": "Address",
+    "نوع الجهاز": "Device Type",
+    "صورة الجهاز": "Device Photo",
+    "تصوير بالكاميرا": "Take Photo",
+    "اختيار صورة من الجهاز": "Choose from Device",
+    "معاينة صورة الجهاز": "Device photo preview",
+    "إزالة الصورة": "Remove Photo",
+    "التقييم": "Rating",
+    "بدون تقييم": "No rating",
+    "5 ممتاز": "5 - Excellent",
+    "4 جيد جداً": "4 - Very Good",
+    "3 جيد": "3 - Good",
+    "2 مقبول": "2 - Fair",
+    "1 ضعيف": "1 - Poor",
+    "تاريخ الزيارة (يوم / شهر / سنة)": "Visit Date (DD / MM / YYYY)",
+    "اليوم": "Day",
+    "الشهر": "Month",
+    "السنة": "Year",
+    "ميعاد التذكير": "Reminder Time",
+    "سبب المشكلة": "Issue Description",
+    "ملاحظات": "Notes",
+    "قطع الغيار": "Spare Parts",
+    "+ إضافة قطعة غيار": "+ Add Spare Part",
+    "إجمالي قطع الغيار: 0": "Spare Parts Total: 0",
+    "حفظ العميل": "Save Client",
+    "حفظ التعديلات": "Save Changes",
+    "إلغاء التعديل": "Cancel Edit",
+    "مسح الخانات": "Clear Fields",
+
+    "سجل العملاء": "Client Records",
+    "تحديث البيانات": "Refresh Data",
+    "تصدير Excel": "Export Excel",
+    "العميل": "Client",
+    "آخر زيارة (يوم/شهر/سنة)": "Last Visit (DD/MM/YYYY)",
+    "ميعاد التذكير": "Reminder",
+    "سبب المشكلة": "Issue",
+    "الإجراءات": "Actions",
+    "لا توجد بيانات لعرضها.": "No records to display.",
+    "البيانات تُحفظ في قاعدة بيانات CLIENT PRO وتظهر بعد تسجيل الدخول من الأجهزة الأخرى.": "Data is saved in the CLIENT PRO database and appears after signing in from other devices.",
+    "CLIENT PRO · Customer Records": "CLIENT PRO · Customer Records",
+
+    "سجل زيارات العميل": "Client Visit History",
+    "إغلاق": "Close",
+    "إضافة زيارة": "Add Visit",
+    "ميعاد تذكير للزيارة": "Visit Reminder Time",
+    "حالة الزيارة": "Visit Status",
+    "جديد": "New",
+    "قيد متابعة": "In Progress",
+    "مكتمل": "Completed",
+    "سبب الزيارة أو المشكلة": "Visit Reason or Issue",
+    "ملاحظات الزيارة": "Visit Notes",
+    "قطع الغيار المستخدمة": "Spare Parts Used",
+    "إضافة قطعة": "+ Add Part",
+    "حفظ الزيارة وقطع الغيار": "Save Visit & Spare Parts",
+    "سجل الزيارات السابق": "Previous Visits",
+
+    "فتح / تنزيل": "Open / Download",
+    "صورة الجهاز مكبرة": "Enlarged device photo",
+
+    "لوحة البيانات التفاعلية": "Interactive Data Dashboard",
+    "تطبيق على الجدول الرئيسي": "Apply to Main Table",
+    "قائمة جميع العملاء": "All Clients List",
+    "تقييمات العملاء": "Client Ratings",
+    "جدول مواعيد التذكير": "Reminder Schedule",
+
+    "تقرير الزيارات": "Visits Report",
+    "سجل شامل لكل الزيارات وأسبابها وما تم فيها": "Complete log of all visits, reasons, and actions taken",
+    "كل الحالات": "All Statuses",
+    "تحديث التقرير": "Refresh Report",
+
+    "إعدادات التطبيق والنظام": "App & System Settings",
+    "الإصدار · سجل التحديثات · الوضع الليلي · اللغة": "Version · Changelog · Dark Mode · Language",
+    "معلومات الإصدار والتحديثات": "Version & Updates Info",
+    "الإصدار v10.2": "Version v10.2",
+    "أنت تستخدم أحدث إصدار متاح (v10.2)": "You are using the latest version (v10.2)",
+    "يمكنك التحقق من التحديثات أو استعراض قائمة «ما الجديد» في أي وقت.": "You can check for updates or view the \"What's New\" list anytime.",
+    "التحقق من التحديثات": "Check for Updates",
+    "ما الجديد": "What's New",
+    "✨ ما الجديد في الإصدار (WhatsApp-Style Changelog)": "✨ What's New in This Release",
+    "• لوحة الإعدادات الخامسة (الإعدادات)": "• Fifth Dashboard Card (Settings)",
+    "تجميع الإصدار، فحص التحديثات وقائمة «ما الجديد»، الوضع الليلي/النهاري، واللغة في مكان واحد.": "Version info, update checks, \"What's New\", dark/light mode, and language in one place.",
+    "• الوضع الليلي والنهاري الموحّد": "• Unified Dark & Light Mode",
+    "مظهر داكن مريح للعين مع حفظ اختيارك تلقائياً وتوافق إعدادات النظام.": "Eye-friendly dark appearance with automatic saving and system preference support.",
+    "• رسائل التذكير والواتساب باسم العميل": "• Personalized Reminders & WhatsApp Messages",
+    "إدراج اسم العميل تلقائياً في رسائل المتابعة والواتساب مع زر اتصال وواتساب سريع.": "Automatically includes the client's name in follow-up and WhatsApp messages with quick call/WhatsApp actions.",
+    "المظهر والوضع الليلي": "Appearance & Dark Mode",
+    "الوضع الحالي": "Current Mode",
+    "التبديل بين الوضع الليلي الداكن والوضع النهاري الفاتح مع الحفظ التلقائي.": "Switch between dark mode and light mode with automatic saving.",
+    "☀️ الوضع النهاري": "☀️ Light Mode",
+    "🌙 الوضع الليلي": "🌙 Dark Mode",
+    "لغة الواجهة واتجاه العرض": "Interface Language & Direction",
+    "العربية (RTL)": "Arabic (RTL)",
+    "اختر لغة واجهة التطبيق (العربية أو English) مع ضبط الاتجاه تلقائياً.": "Choose the app language (Arabic or English) with automatic text direction.",
+    "العربية (عربي)": "Arabic (العربية)",
+    "English (إنجليزي)": "English",
+
+    "تقرير بيانات العميل": "Client Data Report",
+    "عرض تفصيلي مرتب": "Structured detailed view",
+    "إغلاق التقرير": "Close Report",
+    "تعديل بيانات العميل": "Edit Client Details",
+    "إدارة الزيارات والقطع": "Manage Visits & Parts",
+    "سجل الزيارات وقطع الغيار": "Visits & Spare Parts Log",
+    "تقرير العميل": "Client Report"
+  };
+
+  const EN_TO_AR = {};
+  Object.entries(AR_TO_EN).forEach(([ar, en]) => {
+    if (!EN_TO_AR[en]) EN_TO_AR[en] = ar;
+  });
+
+  const MONTH_AR_TO_EN = {
+    "01 - يناير": "01 - January",
+    "02 - فبراير": "02 - February",
+    "03 - مارس": "03 - March",
+    "04 - أبريل": "04 - April",
+    "05 - مايو": "05 - May",
+    "06 - يونيو": "06 - June",
+    "07 - يوليو": "07 - July",
+    "08 - أغسطس": "08 - August",
+    "09 - سبتمبر": "09 - September",
+    "10 - أكتوبر": "10 - October",
+    "11 - نوفمبر": "11 - November",
+    "12 - ديسمبر": "12 - December"
+  };
+  const MONTH_EN_TO_AR = Object.fromEntries(Object.entries(MONTH_AR_TO_EN).map(([k, v]) => [v, k]));
+
+  function normSpace(s) {
+    return String(s || "").replace(/\s+/g, " ").trim();
+  }
+
+  function translateString(str, lang) {
+    if (typeof str !== "string") return str;
+    const normalized = normSpace(str);
+    if (!normalized) return str;
+
+    const map = lang === "en" ? AR_TO_EN : EN_TO_AR;
+    const mMap = lang === "en" ? MONTH_AR_TO_EN : MONTH_EN_TO_AR;
+
+    if (mMap[normalized]) return mMap[normalized];
+    if (map[normalized]) return map[normalized];
+
+    if (lang === "en") {
+      return normalized
+        .replace(/^إجمالي قطع الغيار:\s*/g, "Spare Parts Total: ")
+        .replace(/^الميعاد المحدد:\s*/g, "Selected Time: ")
+        .replace(/^ميعاد التذكير:\s*/g, "Reminder Time: ")
+        .replace(/^زيارة\s+/g, "Visit ")
+        .replace(/(\d+)\s*قطعة/g, "$1 part(s)")
+        .replace(/أنت تستخدم أحدث إصدار متاح\s*\(([^)]+)\)/g, "You are using the latest version ($1)")
+        .replace(/تم التحقق: أنت على أحدث إصدار\s*\(([^)]+)\)/g, "Verified: You are on the latest version ($1)")
+        .replace(/^الإصدار\s+/g, "Version ");
+    } else {
+      return normalized
+        .replace(/^Spare Parts Total:\s*/g, "إجمالي قطع الغيار: ")
+        .replace(/^Selected Time:\s*/g, "الميعاد المحدد: ")
+        .replace(/^Reminder Time:\s*/g, "ميعاد التذكير: ")
+        .replace(/^Visit\s+/g, "زيارة ")
+        .replace(/(\d+)\s*part\(s\)/g, "$1 قطعة")
+        .replace(/You are using the latest version\s*\(([^)]+)\)/g, "أنت تستخدم أحدث إصدار متاح ($1)")
+        .replace(/Verified: You are on the latest version\s*\(([^)]+)\)/g, "تم التحقق: أنت على أحدث إصدار ($1)")
+        .replace(/^Version\s+/g, "الإصدار ");
+    }
+  }
+
+  function translateDOM(lang) {
+    if (!document.body) return;
+    if (document.title) {
+      document.title = translateString(document.title, lang);
+    }
+
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+      acceptNode(node) {
+        const p = node.parentElement;
+        if (!p) return NodeFilter.FILTER_REJECT;
+        const tag = p.tagName;
+        if (tag === "SCRIPT" || tag === "STYLE") return NodeFilter.FILTER_REJECT;
+        if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_SKIP;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+
+    const textNodes = [];
+    let n;
+    while ((n = walker.nextNode())) textNodes.push(n);
+    for (const tn of textNodes) {
+      const nextVal = translateString(tn.nodeValue, lang);
+      if (nextVal !== tn.nodeValue) tn.nodeValue = nextVal;
+    }
+
+    const attrTargets = document.querySelectorAll("input[placeholder], textarea[placeholder], [aria-label], [title], img[alt]");
+    for (const el of attrTargets) {
+      for (const attr of ["placeholder", "aria-label", "title", "alt"]) {
+        if (el.hasAttribute(attr)) {
+          const cur = el.getAttribute(attr);
+          const next = translateString(cur, lang);
+          if (next !== cur) el.setAttribute(attr, next);
+        }
+      }
+    }
+
+    const options = document.querySelectorAll("option");
+    for (const opt of options) {
+      const next = translateString(opt.textContent, lang);
+      if (next !== opt.textContent) opt.textContent = next;
+    }
+  }
+
+  window.translateCurrentPage = function(lang) {
+    const chosen = lang || (document.documentElement.lang === "en" ? "en" : "ar");
+    translateDOM(chosen);
+  };
+
+  const prevApplyLang = window.applyLanguageDirection;
+  window.applyLanguageDirection = function(lang) {
+    if (typeof prevApplyLang === "function") {
+      prevApplyLang(lang);
+    } else {
+      const isEn = lang === "en";
+      document.documentElement.lang = isEn ? "en" : "ar";
+      document.documentElement.dir = isEn ? "ltr" : "rtl";
+    }
+    translateDOM(lang);
+  };
+
+  const prevSetAppLanguage = window.setAppLanguage;
+  if (typeof prevSetAppLanguage === "function") {
+    window.setAppLanguage = function(lang) {
+      prevSetAppLanguage(lang);
+      translateDOM(lang === "en" ? "en" : "ar");
+    };
+  }
+
+  let obsTimer = null;
+  const observer = new MutationObserver(() => {
+    clearTimeout(obsTimer);
+    obsTimer = setTimeout(() => {
+      const curLang = document.documentElement.lang === "en" ? "en" : "ar";
+      translateDOM(curLang);
+    }, 30);
+  });
+
+  function runInit() {
+    const curLang = document.documentElement.lang === "en" ? "en" : "ar";
+    translateDOM(curLang);
+    if (document.body) {
+      observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+    }
+  }
+
+  if (document.readyState === "loading") {
+    window.addEventListener("DOMContentLoaded", runInit);
+  } else {
+    runInit();
+  }
+})();
 </script>
 </body></html>
