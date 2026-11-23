@@ -586,6 +586,32 @@ html.dark .toast{
 }
 </style>
 
+<style id="v3-7-visit-swipe-delete">
+.visit-swipe-container{position:relative;overflow:hidden;border-radius:18px;background:#dc2626;border:1px solid #b91c1c;box-shadow:0 8px 22px rgba(220,38,38,.16)}
+.visit-swipe-rail{position:absolute;top:0;right:0;bottom:0;width:104px;z-index:1;display:flex;align-items:center;justify-content:center;padding:8px;background:linear-gradient(180deg,#dc2626 0%,#b91c1c 100%)}
+.visit-swipe-delete-btn{width:76px;height:76px;border:1.5px solid rgba(255,255,255,.35);border-radius:18px;background:rgba(127,29,29,.92);color:#fff;padding:6px;font:inherit;font-size:11px;font-weight:800;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.28);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:transform .15s,background .15s}
+.visit-swipe-delete-btn .trash-ico{font-size:20px;line-height:1}
+.visit-swipe-delete-btn:active{transform:scale(.94);background:#450a0a}
+.visit-swipe-card{position:relative;z-index:2;transition:transform .22s ease;touch-action:pan-y;user-select:none;will-change:transform}
+.visit-swipe-card.swiping{transition:none}
+</style>
+
+<style id="v3-8-grouped-visits-clear">
+.client-visits-group-card{display:flex;flex-direction:column;gap:12px;padding:16px;background:#FFFDFC;border:1.5px solid #ECC9D2;border-radius:20px;box-shadow:0 8px 22px rgba(128,0,33,.06)}
+html.dark .client-visits-group-card{background:#221118;border-color:#4A2535;box-shadow:0 10px 24px rgba(0,0,0,.35)}
+.client-visits-group-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding-bottom:10px;border-bottom:2px solid #C41E5C}
+.client-visits-group-title{font-size:16px;font-weight:800;color:#2B0F1B}
+html.dark .client-visits-group-title{color:#F7EDF0}
+.client-visits-group-sub{font-size:12px;font-weight:700;color:#881144;margin-top:2px}
+html.dark .client-visits-group-sub{color:#FF8CA8}
+.client-visit-entries{display:flex;flex-direction:column;gap:10px}
+.client-visit-entry-box{padding:12px 14px;border-radius:14px;background:#FFF7F9;border:1px solid #F3DCE2;display:flex;flex-direction:column;gap:7px}
+html.dark .client-visit-entry-box{background:#2A151E;border-color:#442332}
+.client-visit-entry-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.client-visit-date-tag{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:10px;background:#FFE8EE;color:#881144;font-size:12px;font-weight:800}
+html.dark .client-visit-date-tag{background:#3A1927;color:#FF9BB2}
+</style>
+
 </head>
 <body>
 <div id="loginScreen" class="login-screen">
@@ -772,6 +798,7 @@ html.dark .toast{
     <option value="قيد متابعة">قيد متابعة</option>
     <option value="مكتمل">مكتمل</option>
    </select>
+   <button class="btn mini danger" type="button" onclick="clearAllVisits()">🗑️ مسح الكل</button>
    <button class="btn mini primary" type="button" onclick="refreshVisitsReport()">تحديث التقرير</button>
    <button class="btn mini" type="button" onclick="closeVisitsReportModal()">إغلاق</button>
   </div>
@@ -2190,7 +2217,9 @@ window.refreshVisitsReport = async () => {
   if (!listEl) return;
   listEl.innerHTML = '<div class="empty">جاري تحميل تقرير الزيارات...</div>';
   try {
-    const { data: vList, error: vErr } = await db.from('visits').select('*').order('visit_date', { ascending: false }).limit(80);
+    const { data: vListRaw, error: vErr } = await db.from('visits').select('*').order('visit_date', { ascending: false }).limit(120);
+    const vList = (vListRaw || []).map(v => ({ ...v, status: getStoredVisitStatus(v.id, v.status) }));
+    window._lastLoadedVisits = vList;
     if (vErr) throw vErr;
     if ($('visitsCount')) $('visitsCount').textContent = (vList || []).length;
     if (!vList || !vList.length) {
@@ -2215,58 +2244,85 @@ window.refreshVisitsReport = async () => {
       ? vList
       : vList.filter(v => getStoredVisitStatus(v.id, v.status) === statusFilterVal);
 
-    $('visitsReportSub').textContent = `إجمالي الزيارات المعروضة: ${filteredVisits.length} من ${vList.length} زيارة${totalAmtTxt}`;
+    // Group visits by customer_id so each client has their own dedicated card with all their visits inside it
+    const groupedMap = new Map();
+    filteredVisits.forEach(v => {
+      const cid = v.customer_id || 'unknown';
+      if (!groupedMap.has(cid)) groupedMap.set(cid, []);
+      groupedMap.get(cid).push(v);
+    });
+
+    $('visitsReportSub').textContent = `إجمالي الزيارات المعروضة: ${filteredVisits.length} زيارة عبر ${groupedMap.size} عميل${totalAmtTxt}`;
     if (!filteredVisits.length) {
       listEl.innerHTML = '<div class="empty">لا توجد زيارات مطابقة للحالة المختارة.</div>';
       return;
     }
-    listEl.innerHTML = filteredVisits.map(v => {
-      const c = custMap[v.customer_id] || {};
+
+    listEl.innerHTML = [...groupedMap.entries()].map(([cid, clientVisits]) => {
+      const c = custMap[cid] || {};
       const cname = c.name || 'عميل';
       const cphone = c.phone || 'غير مسجل';
       const caddress = c.address || 'غير مسجل';
       const cdevice = c.device_type || 'غير محدد';
-      const vStatus = getStoredVisitStatus(v.id, v.status);
-      const vp = partsByVisit[v.id] || [];
-      const vTotal = vp.reduce((s, p) => s + Number(p.quantity) * Number(p.unit_price), 0);
-      const partsTxt = vp.length
-        ? vp.map(p => `${esc(p.part_name)} (${esc(p.quantity)} × ${Number(p.unit_price).toFixed(2)})`).join('، ')
-        : 'لا توجد قطع غيار';
-      const reasonTxt = v.problem_description || c.problem_description || 'غير محدد';
-      const notesTxt = v.notes || 'لا توجد ملاحظات';
+      const clientAllPartsTotal = clientVisits.reduce((acc, vv) => {
+        const vp = partsByVisit[vv.id] || [];
+        return acc + vp.reduce((s, p) => s + Number(p.quantity) * Number(p.unit_price), 0);
+      }, 0);
 
-      return `<div class="dash-item" style="display:flex;flex-direction:column;align-items:stretch;gap:12px;padding:16px;background:#FFFDFC;border:1px solid #F0DCE0;border-radius:18px">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding-bottom:10px;border-bottom:2px solid #C41E5C">
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <span class="badge" style="font-size:12px;padding:6px 12px;background:#FFE8EE;color:#881144">📅 تاريخ الزيارة: ${esc(formatDMY(v.visit_date))}</span>
-            ${renderVisitStatusBadge(vStatus)}
+      const visitsHtml = clientVisits.map((v, idx) => {
+        const vStatus = getStoredVisitStatus(v.id, v.status);
+        const vp = partsByVisit[v.id] || [];
+        const vTotal = vp.reduce((s, p) => s + Number(p.quantity) * Number(p.unit_price), 0);
+        const partsTxt = vp.length
+          ? vp.map(p => `${esc(p.part_name)} (${esc(p.quantity)} × ${Number(p.unit_price).toFixed(2)})`).join('، ')
+          : 'لا توجد قطع غيار';
+        const reasonTxt = v.problem_description || c.problem_description || 'غير محدد';
+        const notesTxt = v.notes || 'لا توجد ملاحظات';
+        const remTxt = v.reminder_at ? ` · ⏰ تذكير: ${esc(formatDateTimeAR(v.reminder_at))}` : '';
+
+        return `<div class="visit-swipe-container" data-visit-swipe-id="${esc(v.id)}">
+          <div class="visit-swipe-rail">
+            <button type="button" class="visit-swipe-delete-btn" onclick="event.stopPropagation();deleteVisitEntry('${esc(v.id)}','${esc(cid)}')" title="حذف الزيارة"><span class="trash-ico">🗑️</span><span>حذف</span></button>
           </div>
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <select class="visit-status-select" onchange="updateVisitStatus('${v.id}',this.value,'${esc(v.customer_id)}')" aria-label="تغيير حالة الزيارة">
-              <option value="جديد" ${vStatus==='جديد'?'selected':''}>جديد</option>
-              <option value="قيد متابعة" ${vStatus==='قيد متابعة'?'selected':''}>قيد متابعة</option>
-              <option value="مكتمل" ${vStatus==='مكتمل'?'selected':''}>مكتمل</option>
-            </select>
-            <button type="button" class="btn mini primary" style="padding:7px 13px;font-size:12px" onclick="closeVisitsReportModal();openClientReport('${esc(v.customer_id)}')">تقرير العميل</button>
-            <button type="button" class="btn mini" style="padding:7px 13px;font-size:12px" onclick="closeVisitsReportModal();openVisits('${esc(v.customer_id)}')">إدارة الزيارات</button>
+          <div class="client-visit-entry-box visit-swipe-card">
+            <div class="client-visit-entry-top">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                <span class="client-visit-date-tag">📅 زيارة #${idx + 1} · تاريخ: ${esc(formatDMY(v.visit_date))}</span>
+                ${renderVisitStatusBadge(vStatus)}
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                <select class="visit-status-select" onchange="updateVisitStatus('${v.id}',this.value,'${esc(cid)}')" aria-label="تغيير حالة الزيارة">
+                  <option value="جديد" ${vStatus==='جديد'?'selected':''}>جديد</option>
+                  <option value="قيد متابعة" ${vStatus==='قيد متابعة'?'selected':''}>قيد متابعة</option>
+                  <option value="مكتمل" ${vStatus==='مكتمل'?'selected':''}>مكتمل</option>
+                </select>
+                <button type="button" class="btn mini danger" onclick="deleteVisitEntry('${esc(v.id)}','${esc(cid)}')" title="حذف هذه الزيارة">حذف</button>
+              </div>
+            </div>
+            <div style="font-size:13px;word-break:break-word"><strong>⚠️ السبب:</strong> ${esc(reasonTxt)}${remTxt}</div>
+            <div style="font-size:13px;word-break:break-word"><strong>📝 ما تم / ملاحظات:</strong> ${esc(notesTxt)}</div>
+            <div style="font-size:13px;word-break:break-word"><strong>🛠️ قطع الغيار:</strong> ${partsTxt} — <strong>إجمالي الزيارة: ${vTotal.toFixed(2)}</strong></div>
+          </div>
+        </div>`;
+      }).join('');
+
+      return `<div class="client-visits-group-card">
+        <div class="client-visits-group-head">
+          <div>
+            <div class="client-visits-group-title">👤 ${esc(cname)} <span class="badge" style="margin-right:6px">${clientVisits.length} ${clientVisits.length === 1 ? 'زيارة' : 'زيارات'}</span></div>
+            <div class="client-visits-group-sub">🔧 الجهاز: ${esc(cdevice)} · إجمالي قطع العميل: ${clientAllPartsTotal.toFixed(2)}</div>
+          </div>
+          <div class="actions">
+            <button type="button" class="btn mini primary" onclick="closeVisitsReportModal();openClientReport('${esc(cid)}')">تقرير العميل</button>
+            <button type="button" class="btn mini" onclick="closeVisitsReportModal();openVisits('${esc(cid)}')">إضافة / إدارة زيارة</button>
           </div>
         </div>
-
-        <div style="display:flex;flex-direction:column;gap:8px">
-          <div style="padding:10px 12px;border-radius:12px;background:#FFF7F9;border:1px solid #F6E6E2">
-            <div style="font-size:11px;font-weight:700;color:#8E727C">العميل والجهاز</div>
-            <div style="font-size:16px;font-weight:800;color:#2B0F1B;margin-top:2px;word-break:break-word">${esc(cname)}</div>
-            <div style="font-size:13px;font-weight:700;color:#881144;margin-top:4px;word-break:break-word">🔧 الجهاز: ${esc(cdevice)}</div>
-          </div>
-
-          <div style="padding:10px 12px;border-radius:12px;background:#FFF9F8;border:1px solid #F6E6E2;display:flex;flex-direction:column;gap:6px;font-size:13px;color:#2B0F1B">
-            <div style="word-break:break-word"><strong>📞 رقم التليفون:</strong> <span dir="ltr">${esc(cphone)}</span> ${renderQuickContactButtons(c.phone, cname, c)}</div>
-            <div style="word-break:break-word"><strong>📍 العنوان:</strong> ${esc(caddress)}</div>
-            <div style="word-break:break-word"><strong>⚠️ السبب:</strong> ${esc(reasonTxt)}</div>
-            <div style="word-break:break-word"><strong>📝 ما تم / ملاحظات:</strong> ${esc(notesTxt)}</div>
-            <div style="word-break:break-word"><strong>🛠️ قطع الغيار:</strong> ${partsTxt} — <strong>الإجمالي: ${vTotal.toFixed(2)}</strong></div>
-          </div>
+        <div style="font-size:12.5px;display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+          <span><strong>📞 التليفون:</strong> <span dir="ltr">${esc(cphone)}</span></span>
+          <span><strong>📍 العنوان:</strong> ${esc(caddress)}</span>
+          ${renderQuickContactButtons(c.phone, cname, c)}
         </div>
+        <div class="client-visit-entries">${visitsHtml}</div>
       </div>`;
     }).join('');
   } catch (err) {
@@ -2330,21 +2386,25 @@ function renderVisitStatusBadge(status){
 }
 function getStoredVisitStatus(visitId,dbStatus){
   try{
-    if(dbStatus)return normalizeVisitStatus(dbStatus);
     const saved=localStorage.getItem('clientpro_visit_status_'+visitId);
     if(saved)return normalizeVisitStatus(saved);
   }catch(_){}
+  if(dbStatus)return normalizeVisitStatus(dbStatus);
   return 'قيد متابعة';
 }
 window.updateVisitStatus=async(visitId,newStatus,customerId=null)=>{
   const st=normalizeVisitStatus(newStatus);
   try{localStorage.setItem('clientpro_visit_status_'+visitId,st)}catch(_){}
+  if(Array.isArray(window._lastLoadedVisits)){
+    const target=window._lastLoadedVisits.find(item=>String(item.id)===String(visitId));
+    if(target)target.status=st;
+  }
   try{
     const {error}=await db.from('visits').update({status:st}).eq('id',visitId);
     if(error)console.warn('visit status column notice:',error.message);
   }catch(_){}
   toast(`تم تحديث حالة الزيارة إلى: ${st}`);
-  if(customerId&&!$ ('visitModal').classList.contains('hidden')){
+  if(customerId&&!$('visitModal').classList.contains('hidden')){
     await loadVisitHistory(customerId);
   }
   if(!$ ('visitsReportModal').classList.contains('hidden')){
@@ -2777,6 +2837,155 @@ try{var C=window.Capacitor;if(C&&C.nativePromise){C.nativePromise('SystemBars','
     window.addEventListener("DOMContentLoaded", runInit);
   } else {
     runInit();
+  }
+})();
+</script>
+<script id="v3-7-visit-swipe-script">
+(function(){
+  window.deleteVisitEntry = async function(visitId, customerId){
+    if(!visitId) return;
+    if(!confirm('تأكيد حذف هذه الزيارة بالكامل وقطع الغيار المرتبطة بها؟')) return;
+    try{
+      try{ await db.from('spare_parts').delete().eq('visit_id', visitId); }catch(_){}
+      const { error } = await db.from('visits').delete().eq('id', visitId);
+      if(error) throw error;
+      try{ localStorage.removeItem('clientpro_visit_status_' + visitId); }catch(_){}
+      if(Array.isArray(window._lastLoadedVisits)){
+        window._lastLoadedVisits = window._lastLoadedVisits.filter(x => String(x.id) !== String(visitId));
+      }
+      toast('تم حذف الزيارة بالكامل');
+      if(typeof refreshVisitsReport === 'function') await refreshVisitsReport();
+      if(customerId && typeof loadVisitHistory === 'function' && !$('visitModal').classList.contains('hidden')){
+        await loadVisitHistory(customerId);
+      }
+      if(typeof loadCustomers === 'function') await loadCustomers();
+    }catch(err){
+      console.error('deleteVisitEntry error:', err);
+      toast('تعذر حذف الزيارة: ' + (err?.message || 'حاول مرة أخرى'));
+    }
+  };
+
+  function bindVisitSwipeHandlers(){
+    const container = $('visitsReportList');
+    if(!container || container.dataset.swipeBound === '1') return;
+    container.dataset.swipeBound = '1';
+
+    let activeCard = null;
+    let startX = 0, startY = 0, currentDx = 0, isHoriz = false;
+
+    const resetOtherCards = (exceptCard) => {
+      container.querySelectorAll('.visit-swipe-card').forEach(c => {
+        if(c !== exceptCard) c.style.transform = '';
+      });
+    };
+
+    const onPointerDown = (x, y, target) => {
+      if(target.closest('button, select, input, textarea, a')) return;
+      const card = target.closest('.visit-swipe-card');
+      if(!card) return;
+      resetOtherCards(card);
+      activeCard = card;
+      startX = x;
+      startY = y;
+      currentDx = 0;
+      isHoriz = false;
+      activeCard.classList.add('swiping');
+    };
+
+    const onPointerMove = (x, y, ev) => {
+      if(!activeCard) return;
+      const dx = x - startX;
+      const dy = y - startY;
+      if(!isHoriz){
+        if(Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy) * 1.2){
+          isHoriz = true;
+        }else if(Math.abs(dy) > 12){
+          activeCard.classList.remove('swiping');
+          activeCard.style.transform = '';
+          activeCard = null;
+          return;
+        }
+      }
+      if(isHoriz){
+        if(ev && ev.cancelable) ev.preventDefault();
+        // Swipe left -> negative dx
+        const clamped = Math.max(-120, Math.min(0, dx));
+        currentDx = clamped;
+        activeCard.style.transform = `translate3d(${clamped}px, 0, 0)`;
+      }
+    };
+
+    const onPointerUp = () => {
+      if(!activeCard) return;
+      activeCard.classList.remove('swiping');
+      if(isHoriz && currentDx <= -48){
+        activeCard.style.transform = 'translate3d(-104px, 0, 0)';
+      }else{
+        activeCard.style.transform = '';
+      }
+      activeCard = null;
+      isHoriz = false;
+      currentDx = 0;
+    };
+
+    container.addEventListener('touchstart', e => {
+      if(e.touches.length === 1) onPointerDown(e.touches[0].clientX, e.touches[0].clientY, e.target);
+    }, { passive: true });
+    container.addEventListener('touchmove', e => {
+      if(e.touches.length === 1) onPointerMove(e.touches[0].clientX, e.touches[0].clientY, e);
+    }, { passive: false });
+    container.addEventListener('touchend', onPointerUp);
+    container.addEventListener('touchcancel', onPointerUp);
+
+    container.addEventListener('mousedown', e => {
+      if(e.button !== 0) return;
+      onPointerDown(e.clientX, e.clientY, e.target);
+      const mm = ev => onPointerMove(ev.clientX, ev.clientY, ev);
+      const mu = () => {
+        window.removeEventListener('mousemove', mm);
+        window.removeEventListener('mouseup', mu);
+        onPointerUp();
+      };
+      window.addEventListener('mousemove', mm);
+      window.addEventListener('mouseup', mu);
+    });
+  }
+
+  window.clearAllVisits = async function(){
+    const list = Array.isArray(window._lastLoadedVisits) && window._lastLoadedVisits.length
+      ? window._lastLoadedVisits
+      : null;
+    if(!confirm('تأكيد مسح جميع الزيارات وقطع الغيار المرتبطة بها بالكامل (Clear All Visits)؟ لا يمكن التراجع عن هذا الإجراء.')) return;
+    try{
+      let visitIds = (list || []).map(v => v.id).filter(Boolean);
+      if(!visitIds.length){
+        const { data: allV } = await db.from('visits').select('id');
+        visitIds = (allV || []).map(v => v.id).filter(Boolean);
+      }
+      if(!visitIds.length){
+        toast('لا توجد زيارات لمسحها');
+        return;
+      }
+      try{ await db.from('spare_parts').delete().in('visit_id', visitIds); }catch(_){}
+      const { error } = await db.from('visits').delete().in('id', visitIds);
+      if(error) throw error;
+      visitIds.forEach(vid => {
+        try{ localStorage.removeItem('clientpro_visit_status_' + vid); }catch(_){}
+      });
+      window._lastLoadedVisits = [];
+      toast('تم مسح جميع الزيارات بنجاح');
+      if(typeof refreshVisitsReport === 'function') await refreshVisitsReport();
+      if(typeof loadCustomers === 'function') await loadCustomers();
+    }catch(err){
+      console.error('clearAllVisits error:', err);
+      toast('تعذر مسح جميع الزيارات: ' + (err?.message || 'حاول مرة أخرى'));
+    }
+  };
+
+  if(document.readyState === 'loading'){
+    window.addEventListener('DOMContentLoaded', bindVisitSwipeHandlers);
+  }else{
+    bindVisitSwipeHandlers();
   }
 })();
 </script>
