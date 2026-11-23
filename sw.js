@@ -1,4 +1,5 @@
-const CACHE_NAME = 'client-pro-shell-v8';
+const CACHE_NAME = 'client-pro-shell-v9';
+const APP_VERSION = 'v3.9';
 const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', event => {
@@ -11,6 +12,15 @@ self.addEventListener('activate', event => {
     caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))))
   );
   self.clients.claim();
+});
+
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+  if (event.data && event.data.type === 'GET_VERSION') {
+    event.source?.postMessage({ type: 'VERSION_INFO', version: APP_VERSION, cache: CACHE_NAME });
+  }
 });
 
 self.addEventListener('fetch', event => {
