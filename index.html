@@ -607,14 +607,14 @@ html.dark .client-visit-date-tag{background:#3A1927;color:#FF9BB2}
 </head>
 <body>
 <div id="loginScreen" class="login-screen">
- <form id="loginForm" class="login-card">
+ <form id="loginForm" class="login-card" autocomplete="off">
   <div class="brand">
    <svg class="brandmark" viewBox="0 0 64 64" role="img" aria-label="CLIENT PRO"><circle cx="32" cy="32" r="31" fill="#fff" stroke="#eee"/><path d="M39 13c-4-3-8-4-13-4C13 9 4 19 4 32s9 23 22 23c5 0 9-1 13-4l-8-9c-2 2-4 3-7 3-7 0-11-5-11-13s4-13 11-13c3 0 5 1 7 3z" fill="#a92835"/><path d="M39 23h19v7H39zm0 12h19v7H39z" fill="#a92835"/></svg>
    <div><h1>CLIENT PRO</h1><p>إدارة العملاء والزيارات وقطع الغيار</p></div>
   </div>
   <h2>تسجيل الدخول</h2>
-  <div class="field"><label for="loginUsername">اسم المستخدم</label><input id="loginUsername" type="text" autocomplete="username" autocapitalize="none" required></div>
-  <div class="field"><label for="loginPassword">كلمة المرور</label><input id="loginPassword" type="password" autocomplete="current-password" required></div>
+  <div class="field"><label for="loginUsername">اسم المستخدم</label><input id="loginUsername" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" required></div>
+  <div class="field"><label for="loginPassword">كلمة المرور</label><input id="loginPassword" type="password" autocomplete="new-password" required></div>
   <button class="btn primary" id="loginBtn" type="submit">دخول</button>
   <p id="loginStatusNote" class="login-status-note"></p>
  </form>
@@ -1354,7 +1354,10 @@ async function requireSession(){
   }
 
   const {data:{session}}=await db.auth.getSession();
-  if(!session){showLogin();return}
+  if(!session || !session.user){
+    showLogin();
+    return;
+  }
 
   try{
     await registerAndVerifyDeviceSession(session.user.id);
@@ -1380,14 +1383,19 @@ async function requireSession(){
   await loadCustomers();
 }
 
-function showLogin(){$('loginScreen').classList.remove('hidden');$('app').classList.add('hidden')}
+function showLogin(){
+  $('loginScreen').classList.remove('hidden');
+  $('app').classList.add('hidden');
+}
+
 function showApp(session){
+  if(!session || !session.user)return;
   setLoginNote('');
   $('loginScreen').classList.add('hidden');
   $('app').classList.remove('hidden');
   lastActivityAt=Date.now();
   hiddenSinceAt=null;
-  const email=session?.user?.email||'';
+  const email=session.user.email||'';
   $('userEmail').textContent=email.toLowerCase()===LOGIN_EMAIL.toLowerCase()?LOGIN_USERNAME:email;
 }
 
@@ -1405,15 +1413,23 @@ function showLoginMessage(msg){
 
 $('loginForm').addEventListener('submit',async e=>{
   e.preventDefault();
+  e.stopPropagation();
+
+  const submitter=e.submitter;
+  if(submitter&&submitter.id!=='loginBtn'){
+    return;
+  }
+
   showLoginMessage('');
   const btn=$('loginBtn');
   if(btn)btn.disabled=true;
+
   try{
     const rawUser=($('loginUsername')?.value||'').trim();
     const username=rawUser.toLowerCase().replace(/\s+/g,' ');
     const password=$('loginPassword')?.value||'';
 
-    if(!rawUser||!password){
+    if(!rawUser||!password.trim()){
       showLoginMessage('اكتب اسم المستخدم وكلمة المرور أولاً');
       return;
     }
@@ -1430,8 +1446,8 @@ $('loginForm').addEventListener('submit',async e=>{
     }
 
     const {data,error}=await db.auth.signInWithPassword({email:LOGIN_EMAIL,password});
-    if(error){
-      if(isNetworkError(error)||!(await hasLiveInternetConnection())){
+    if(error||!data?.session){
+      if(error&&(isNetworkError(error)||!(await hasLiveInternetConnection()))){
         showLoginMessage('مفيش اتصال بالإنترنت — راجع الاتصال بالنت وحاول مرة أخرى');
       }else{
         showLoginMessage('اسم المستخدم أو كلمة المرور خطأ — راجع البيانات وحاول مرة أخرى');
@@ -1439,7 +1455,7 @@ $('loginForm').addEventListener('submit',async e=>{
       return;
     }
 
-    await registerAndVerifyDeviceSession(data?.user?.id);
+    await registerAndVerifyDeviceSession(data.user.id);
 
     const sid=getDeviceSessionId();
     try{
@@ -1451,7 +1467,7 @@ $('loginForm').addEventListener('submit',async e=>{
       }
     }catch(_){}
 
-    showApp(data);
+    showApp(data.session);
     startSessionGuards();
     await loadCustomers();
     toast('أهلاً بك Mohamed helal');
@@ -1479,7 +1495,7 @@ $('logoutBtn').onclick=async()=>{
 
 db.auth.onAuthStateChange((event,session)=>{
   if(event==='SIGNED_OUT'){stopSessionGuards();showLogin()}
-  if(event==='TOKEN_REFRESHED'&&session)showApp(session)
+  if(event==='TOKEN_REFRESHED'&&session&&!$ ('app').classList.contains('hidden'))showApp(session)
 });
 
 async function uploadPhoto(file,customerId){
