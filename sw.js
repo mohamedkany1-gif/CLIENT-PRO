@@ -1,5 +1,5 @@
-const CACHE_NAME = 'client-pro-shell-v9';
-const APP_VERSION = 'v3.9';
+const CACHE_NAME = 'client-pro-shell-v10';
+const APP_VERSION = 'v4.0';
 const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', event => {
