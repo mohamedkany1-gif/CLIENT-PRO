@@ -79,7 +79,7 @@ label{font-size:12px;font-weight:700;color:#59616d;display:block;margin:0 0 8px}
 .dmy-grid{display:grid;grid-template-columns:1fr 1.25fr 1.15fr;gap:8px;direction:rtl}
 .dmy-grid select{padding:11px 8px;text-align:center;font-weight:650}
 
-.tablewrap{overflow:auto;max-height:330px;border:1px solid #e9ebf0;border-radius:14px;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;transition:transform .16s ease}
+.tablewrap{overflow:auto;max-height:330px;border:1px solid #e9ebf0;border-radius:14px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-x pan-y;will-change:scroll-position}
 .tablewrap.drag-pulling{transition:none}
 table{width:100%;border-collapse:collapse;min-width:920px;background:#fff}
 th,td{padding:13px 12px;text-align:right;border-bottom:1px solid var(--line);font-size:13px;vertical-align:top}
@@ -665,7 +665,7 @@ html.dark .client-visit-date-tag{background:#3A1927;color:#FF9BB2}
  </button>
  <button type="button" class="stat" id="statSettings" onclick="openSettingsModal()">
   <div class="stat-top"><span>الإعدادات</span><span class="stat-icon">⚙️</span></div>
-  <strong id="settingsVersionBadge">v3.9</strong>
+  <strong id="settingsVersionBadge">v4.0</strong>
   <div class="stat-foot"><span id="settingsCardFootText">الإصدار، التحديثات، المظهر واللغة</span><span>←</span></div>
  </button>
 </section>
@@ -735,7 +735,7 @@ html.dark .client-visit-date-tag{background:#3A1927;color:#FF9BB2}
   <h3 style="font-size:15px;margin-top:0">إضافة زيارة</h3>
   <form id="visitForm"><input type="hidden" id="visitCustomerId"><div class="formgrid">
    <div>
-    <label>تاريخ الزيارة (يوم / شهر / سنة)</label>
+    <label>تاريخ الزيارة (يوم / شهر / سنة) *</label>
     <div class="dmy-grid">
      <select id="vDay" aria-label="اليوم"></select>
      <select id="vMonth" aria-label="الشهر"></select>
@@ -816,12 +816,12 @@ html.dark .client-visit-date-tag{background:#3A1927;color:#FF9BB2}
     <h2 style="font-size:15px;margin:0">معلومات الإصدار والتحديثات</h2>
     <span id="updateAvailableBadge" class="update-pill-alert hidden">🔔 تحديث جديد متاح</span>
    </div>
-   <span class="badge" id="appVersionTag">الإصدار v3.9</span>
+   <span class="badge" id="appVersionTag">الإصدار v4.0</span>
   </div>
   <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px">
    <div>
     <div id="updateStatusTitle" style="font-weight:800;font-size:14px">جاري التحقق من حالة التحديثات...</div>
-    <div id="updateStatusDesc" class="sub">النسخة المثبتة حالياً: v3.9 — عند توفر إصدار أحدث سيظهر هنا مع زر تطبيق التحديث.</div>
+    <div id="updateStatusDesc" class="sub">النسخة المثبتة حالياً: v4.0 — عند توفر إصدار أحدث سيظهر هنا مع زر تطبيق التحديث.</div>
    </div>
    <div class="actions">
     <button type="button" class="btn mini" id="checkUpdateBtn" onclick="checkForAppUpdate(true)">فحص التحديثات</button>
@@ -830,14 +830,14 @@ html.dark .client-visit-date-tag{background:#3A1927;color:#FF9BB2}
    </div>
   </div>
   <div id="whatsNewBox" class="report-visits-box" style="margin-top:8px">
-   <div class="report-visits-head"><span>✨ ما الجديد في الإصدار</span><span class="badge" id="whatsNewVersionBadge">v3.9</span></div>
+   <div class="report-visits-head"><span>✨ ما الجديد في الإصدار</span><span class="badge" id="whatsNewVersionBadge">v4.0</span></div>
    <div class="report-visit-item">
-    <div style="font-weight:800;font-size:13px">• تنبيه التحديثات داخل الإعدادات</div>
-    <div class="sub">فحص وجود إصدار أحدث تلقائياً وعند الطلب، مع إظهار حالة التحديث وزر «تحديث الآن» لتطبيق النسخة الجديدة مباشرة.</div>
+    <div style="font-weight:800;font-size:13px">• تأمين الجلسة على مستوى السيرفر وقفل الخمول</div>
+    <div class="sub">ربط توكن الجهاز مع السيرفر بنظام Fail-Closed، إيقاف التشغيل عند انقطاع الإنترنت، والقفل التلقائي بعد دقيقتين من عدم النشاط أو البقاء في الخلفية.</div>
    </div>
    <div class="report-visit-item">
-    <div style="font-weight:800;font-size:13px">• تجميع الزيارات لكل عميل ومسح الكل</div>
-    <div class="sub">عرض زيارات كل عميل في بطاقة مستقلة واضحة داخل تقرير الزيارات مع إمكانية إدارة أو مسح الزيارات.</div>
+    <div style="font-weight:800;font-size:13px">• اختيار تاريخ الزيارة يدوياً وسلاسة حركة الجدول</div>
+    <div class="sub">عدم تعبئة تاريخ الزيارة الجديدة تلقائياً لتجنب اللبس، وتسريع تمرير سجل العملاء باليد.</div>
    </div>
    <div class="report-visit-item">
     <div style="font-weight:800;font-size:13px">• الوضع الليلي والنهاري وتعدد اللغة</div>
@@ -900,12 +900,31 @@ const SUPABASE_KEY='sb_publishable_LCdc9EPosGfewwDJYQFNog_OLXOMlph';
 const LOGIN_USERNAME='Mohamed helal';
 const LOGIN_EMAIL='mohamedkany1@gmail.com';
 const SESSION_STORAGE_KEY='clientpro_device_session_id';
+const DEVICE_TOKEN_KEY='cp_device_token';
+const IDLE_LOCK_MS=2*60*1000;
 const notifiedReminderKeys=new Set();
 let dismissedReminderSig='';
 let activeBannerCustomerIds=[];
-const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+function getDeviceToken(){
+  let tok=localStorage.getItem(DEVICE_TOKEN_KEY);
+  if(!tok){
+    tok=(crypto.randomUUID?crypto.randomUUID():(Date.now()+'-'+Math.random().toString(36).slice(2)));
+    localStorage.setItem(DEVICE_TOKEN_KEY,tok);
+  }
+  return tok;
+}
+const DEVICE_TOKEN=getDeviceToken();
+
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
+  global:{
+    headers:{
+      'x-device-token':DEVICE_TOKEN
+    }
+  }
+});
 const $=id=>document.getElementById(id);
-let customers=[],currentPhotoPath='',selectedPhotoFile=null,activeCustomer=null,heartbeatTimer=null,reminderTimer=null,dashboardFilter='all',searchScrollTimer=null,visibleLimit=null,filteredCustomersCache=[];
+let customers=[],currentPhotoPath='',selectedPhotoFile=null,activeCustomer=null,heartbeatTimer=null,reminderTimer=null,idleCheckTimer=null,lastActivityAt=Date.now(),hiddenSinceAt=null,securityLockInProgress=false,dashboardFilter='all',searchScrollTimer=null,visibleLimit=null,filteredCustomersCache=[];
 const INITIAL_RECORDS_LIMIT=null;
 
 function toast(message){$('toast').textContent=message;$('toast').classList.remove('hidden');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>$('toast').classList.add('hidden'),3500)}
@@ -941,6 +960,137 @@ async function hasLiveInternetConnection(){
   }finally{
     if(timer)clearTimeout(timer);
   }
+}
+
+async function registerAndVerifyDeviceSession(userId){
+  if(!userId||!DEVICE_TOKEN){
+    await db.auth.signOut().catch(()=>{});
+    throw new Error('تعذر تحديد هوية الجهاز.');
+  }
+  const {error}=await db
+    .from('user_active_sessions')
+    .upsert(
+      {
+        user_id:userId,
+        device_token:DEVICE_TOKEN,
+        updated_at:new Date().toISOString()
+      },
+      {onConflict:'user_id'}
+    );
+  if(error){
+    await db.auth.signOut().catch(()=>{});
+    throw new Error('تعذر تأكيد جلسة الجهاز من السيرفر، تم تسجيل الخروج.');
+  }
+}
+
+async function checkServerDeviceSessionValid(userId){
+  if(!userId||!DEVICE_TOKEN)return false;
+  try{
+    const {data,error}=await db
+      .from('user_active_sessions')
+      .select('device_token')
+      .eq('user_id',userId)
+      .maybeSingle();
+    if(error||!data)return false;
+    return data.device_token===DEVICE_TOKEN;
+  }catch(_){
+    return false;
+  }
+}
+
+async function forceSecurityLogout(reasonMsg){
+  if(securityLockInProgress)return;
+  securityLockInProgress=true;
+  try{
+    stopSessionGuards();
+    try{await db.rpc('clientpro_release_session',{p_device_session_id:getDeviceSessionId()})}catch(_){}
+    await db.auth.signOut().catch(()=>{});
+    customers=[];
+    window._lastLoadedVisits=[];
+    window._latestVisitMap={};
+    closeClientReport();
+    closeVisits();
+    closeDashboardModal();
+    closeVisitsReportModal();
+    closeSettingsModal();
+    closePhotoModal();
+    showLogin();
+    if(reasonMsg)showLoginMessage(reasonMsg);
+  }finally{
+    securityLockInProgress=false;
+  }
+}
+
+function recordUserActivity(){
+  if($('app').classList.contains('hidden'))return;
+  if(!document.hidden){
+    lastActivityAt=Date.now();
+  }
+}
+
+function initActivityAndBackgroundWatchers(){
+  if(window._securityWatchersBound)return;
+  window._securityWatchersBound=true;
+
+  ['mousemove','mousedown','keydown','touchstart','scroll','click'].forEach(evt=>{
+    document.addEventListener(evt,recordUserActivity,{passive:true});
+  });
+
+  document.addEventListener('visibilitychange',async()=>{
+    if($('app').classList.contains('hidden'))return;
+    if(document.hidden){
+      hiddenSinceAt=Date.now();
+    }else{
+      const now=Date.now();
+      const hiddenDuration=hiddenSinceAt?(now-hiddenSinceAt):0;
+      const idleDuration=now-lastActivityAt;
+      hiddenSinceAt=null;
+      if(hiddenDuration>=IDLE_LOCK_MS||idleDuration>=IDLE_LOCK_MS){
+        await forceSecurityLogout('تم قفل التطبيق تلقائياً بعد مرور دقيقتين في الخلفية أو بدون نشاط.');
+        return;
+      }
+      lastActivityAt=now;
+      const online=await hasLiveInternetConnection();
+      if(!online){
+        await forceSecurityLogout('انقطع الاتصال بالإنترنت — التطبيق لا يعمل بدون اتصال.');
+        return;
+      }
+      checkReminders();
+    }
+  });
+
+  window.addEventListener('blur',()=>{
+    if(!$('app').classList.contains('hidden')&&!hiddenSinceAt){
+      hiddenSinceAt=Date.now();
+    }
+  });
+
+  window.addEventListener('focus',async()=>{
+    if($('app').classList.contains('hidden'))return;
+    const now=Date.now();
+    const hiddenDuration=hiddenSinceAt?(now-hiddenSinceAt):0;
+    const idleDuration=now-lastActivityAt;
+    hiddenSinceAt=null;
+    if(hiddenDuration>=IDLE_LOCK_MS||idleDuration>=IDLE_LOCK_MS){
+      await forceSecurityLogout('تم قفل التطبيق تلقائياً بعد مرور دقيقتين في الخلفية أو بدون نشاط.');
+      return;
+    }
+    lastActivityAt=now;
+    const online=await hasLiveInternetConnection();
+    if(!online){
+      await forceSecurityLogout('انقطع الاتصال بالإنترنت — التطبيق لا يعمل بدون اتصال.');
+      return;
+    }
+    checkReminders();
+  });
+
+  window.addEventListener('offline',async()=>{
+    if(!$('app').classList.contains('hidden')){
+      await forceSecurityLogout('انقطع الاتصال بالإنترنت — التطبيق لا يعمل بدون اتصال.');
+    }else{
+      showLoginMessage('مفيش اتصال بالإنترنت — راجع الاتصال بالنت وحاول مرة أخرى');
+    }
+  });
 }
 
 // Populate Day / Month / Year dropdowns (يوم / شهر / سنة)
@@ -1127,86 +1277,9 @@ document.addEventListener('keydown', e => {
 
 function initTableDragAndScroll(){
   const wrap=$('recordsTableWrap');
-  let startY=0,startX=0,startScrollTop=0,startScrollLeft=0,dragging=false,mode=null,rubberOffset=0;
-
-  const resetRubber=()=>{
-    wrap.classList.remove('drag-pulling');
-    wrap.style.transform='';
-    rubberOffset=0;
-  };
-
-  const revealMoreIfAvailable=async()=>{};
-
-  wrap.addEventListener('scroll',()=>{
-    if(visibleLimit>=filteredCustomersCache.length)return;
-    const nearBottom=wrap.scrollTop+wrap.clientHeight>=wrap.scrollHeight-28;
-    if(nearBottom){
-      revealMoreIfAvailable();
-    }
-  },{passive:true});
-
-  const onStart=(x,y)=>{
-    dragging=true;
-    mode=null;
-    startX=x;
-    startY=y;
-    startScrollTop=wrap.scrollTop;
-    startScrollLeft=wrap.scrollLeft;
-    rubberOffset=0;
-  };
-
-  const onMove=(x,y,ev)=>{
-    if(!dragging)return;
-    const dx=x-startX;
-    const dy=y-startY;
-    if(!mode){
-      if(Math.abs(dy)<8&&Math.abs(dx)<8)return;
-      mode=Math.abs(dy)>=Math.abs(dx)?'y':'x';
-    }
-    if(mode==='x'){
-      wrap.scrollLeft=startScrollLeft-dx;
-      return;
-    }
-    if(ev&&ev.cancelable)ev.preventDefault();
-    const desiredTop=startScrollTop-dy;
-    const maxScrollTop=Math.max(0,wrap.scrollHeight-wrap.clientHeight);
-
-    resetRubber();
-    wrap.scrollTop=Math.max(0,Math.min(maxScrollTop,desiredTop));
-  };
-
-  const onEnd=()=>{
-    if(!dragging)return;
-    const pulledDown=rubberOffset<-10;
-    dragging=false;
-    mode=null;
-    resetRubber();
-    if(pulledDown&&visibleLimit<filteredCustomersCache.length){
-      revealMoreIfAvailable();
-    }
-  };
-
-  wrap.addEventListener('touchstart',e=>{
-    if(e.touches.length===1)onStart(e.touches[0].clientX,e.touches[0].clientY);
-  },{passive:true});
-  wrap.addEventListener('touchmove',e=>{
-    if(e.touches.length===1)onMove(e.touches[0].clientX,e.touches[0].clientY,e);
-  },{passive:false});
-  wrap.addEventListener('touchend',onEnd);
-  wrap.addEventListener('touchcancel',onEnd);
-
-  wrap.addEventListener('mousedown',e=>{
-    if(e.button!==0||e.target.closest('button,img,a,input,select'))return;
-    onStart(e.clientX,e.clientY);
-    const moveHandler=ev=>onMove(ev.clientX,ev.clientY,ev);
-    const upHandler=()=>{
-      window.removeEventListener('mousemove',moveHandler);
-      window.removeEventListener('mouseup',upHandler);
-      onEnd();
-    };
-    window.addEventListener('mousemove',moveHandler);
-    window.addEventListener('mouseup',upHandler);
-  });
+  if(!wrap)return;
+  wrap.style.transform='';
+  wrap.classList.remove('drag-pulling');
 }
 
 function getDeviceSessionId(){
@@ -1224,38 +1297,96 @@ function getDeviceInfo(){
 }
 function startSessionGuards(){
   stopSessionGuards();
+  lastActivityAt=Date.now();
+  hiddenSinceAt=document.hidden?Date.now():null;
   const sid=getDeviceSessionId();
+
+  idleCheckTimer=setInterval(async()=>{
+    if($('app').classList.contains('hidden'))return;
+    const now=Date.now();
+    const idleDuration=now-lastActivityAt;
+    const hiddenDuration=hiddenSinceAt?(now-hiddenSinceAt):0;
+    if(idleDuration>=IDLE_LOCK_MS||hiddenDuration>=IDLE_LOCK_MS){
+      await forceSecurityLogout('تم قفل التطبيق تلقائياً بعد مرور دقيقتين في الخلفية أو بدون نشاط.');
+      return;
+    }
+    const online=await hasLiveInternetConnection();
+    if(!online){
+      await forceSecurityLogout('انقطع الاتصال بالإنترنت — التطبيق لا يعمل بدون اتصال.');
+    }
+  },5000);
+
   heartbeatTimer=setInterval(async()=>{
     try{
+      const online=await hasLiveInternetConnection();
+      if(!online){
+        await forceSecurityLogout('انقطع الاتصال بالإنترنت — التطبيق لا يعمل بدون اتصال.');
+        return;
+      }
       const {data:{session}}=await db.auth.getSession();
-      if(!session)return;
+      if(!session){
+        await forceSecurityLogout('انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى.');
+        return;
+      }
+      const tokenOk=await checkServerDeviceSessionValid(session.user.id);
+      if(!tokenOk){
+        await forceSecurityLogout('تم تسجيل الدخول من جهاز آخر أو انتهت صلاحية جلسة هذا الجهاز.');
+        return;
+      }
       const {data,error}=await db.rpc('clientpro_heartbeat_session',{p_device_session_id:sid});
       if(!error&&data&&data.ok===false&&data.reason==='taken_over_by_another_device'){
-        stopSessionGuards();
-        await db.auth.signOut();
-        showLogin();
-        setLoginNote('لا يُسمح بتسجيل الدخول لنفس الحساب من جهاز آخر أثناء فتح الجلسة الحالية.');
+        await forceSecurityLogout('لا يُسمح بتسجيل الدخول لنفس الحساب من جهاز آخر أثناء فتح الجلسة الحالية.');
       }
-    }catch(e){console.warn('heartbeat error',e)}
-  },25000);
-  reminderTimer=setInterval(checkReminders,10000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkReminders()});window.addEventListener('focus',checkReminders);
+    }catch(e){
+      console.warn('heartbeat error',e);
+      if(isNetworkError(e)||!(await hasLiveInternetConnection())){
+        await forceSecurityLogout('انقطع الاتصال بالإنترنت — التطبيق لا يعمل بدون اتصال.');
+      }
+    }
+  },20000);
+
+  reminderTimer=setInterval(checkReminders,10000);
 }
 function stopSessionGuards(){
   if(heartbeatTimer){clearInterval(heartbeatTimer);heartbeatTimer=null}
   if(reminderTimer){clearInterval(reminderTimer);reminderTimer=null}
+  if(idleCheckTimer){clearInterval(idleCheckTimer);idleCheckTimer=null}
 }
 
 async function requireSession(){
-  const {data:{session}}=await db.auth.getSession();
-  if(!session){showLogin();return}
-  const sid=getDeviceSessionId();
-  const {data,error}=await db.rpc('clientpro_claim_session',{p_device_session_id:sid,p_device_info:getDeviceInfo(),p_force:false});
-  if(!error&&data&&data.ok===false&&data.reason==='already_logged_in_elsewhere'){
-    await db.auth.signOut();
+  const online=await hasLiveInternetConnection();
+  if(!online){
     showLogin();
-    setLoginNote('لا يُسمح بتسجيل الدخول لنفس الحساب من جهاز آخر أثناء فتح الجلسة الحالية.');
+    showLoginMessage('مفيش اتصال بالإنترنت — التطبيق لا يعمل بدون اتصال.');
     return;
   }
+
+  const {data:{session}}=await db.auth.getSession();
+  if(!session){showLogin();return}
+
+  try{
+    await registerAndVerifyDeviceSession(session.user.id);
+  }catch(err){
+    showLogin();
+    showLoginMessage(err?.message||'تعذر تأكيد جلسة الجهاز من السيرفر، تم تسجيل الخروج.');
+    return;
+  }
+
+  const sid=getDeviceSessionId();
+  const {data,error}=await db.rpc('clientpro_claim_session',{p_device_session_id:sid,p_device_info:getDeviceInfo(),p_force:false});
+  if(error){
+    await db.auth.signOut().catch(()=>{});
+    showLogin();
+    showLoginMessage('تعذر التحقق من الجلسة مع السيرفر، حاول مرة أخرى.');
+    return;
+  }
+  if(data&&data.ok===false&&data.reason==='already_logged_in_elsewhere'){
+    await db.auth.signOut().catch(()=>{});
+    showLogin();
+    showLoginMessage('لا يُسمح بتسجيل الدخول لنفس الحساب من جهاز آخر أثناء فتح الجلسة الحالية.');
+    return;
+  }
+
   showApp(session);
   startSessionGuards();
   await loadCustomers();
@@ -1266,6 +1397,8 @@ function showApp(session){
   setLoginNote('');
   $('loginScreen').classList.add('hidden');
   $('app').classList.remove('hidden');
+  lastActivityAt=Date.now();
+  hiddenSinceAt=null;
   const email=session?.user?.email||'';
   $('userEmail').textContent=email.toLowerCase()===LOGIN_EMAIL.toLowerCase()?LOGIN_USERNAME:email;
 }
@@ -1318,12 +1451,17 @@ $('loginForm').addEventListener('submit',async e=>{
       return;
     }
 
+    await registerAndVerifyDeviceSession(data?.user?.id);
+
     const sid=getDeviceSessionId();
     const {data:claim,error:claimError}=await db.rpc('clientpro_claim_session',{p_device_session_id:sid,p_device_info:getDeviceInfo(),p_force:false});
     if(claimError){
-      console.warn('Session RPC notice:',claimError.message);
-    }else if(claim&&claim.ok===false&&claim.reason==='already_logged_in_elsewhere'){
-      await db.auth.signOut();
+      await db.auth.signOut().catch(()=>{});
+      showLoginMessage('تعذر التحقق من الجلسة مع السيرفر، تم تسجيل الخروج لحماية البيانات.');
+      return;
+    }
+    if(claim&&claim.ok===false&&claim.reason==='already_logged_in_elsewhere'){
+      await db.auth.signOut().catch(()=>{});
       showLoginMessage('لا يُسمح بتسجيل الدخول لنفس الحساب من جهاز آخر أثناء فتح الجلسة الحالية.');
       return;
     }
@@ -1333,10 +1471,11 @@ $('loginForm').addEventListener('submit',async e=>{
     toast('أهلاً بك Mohamed helal');
   }catch(err){
     console.error(err);
+    await db.auth.signOut().catch(()=>{});
     if(isNetworkError(err)||!(await hasLiveInternetConnection())){
       showLoginMessage('مفيش اتصال بالإنترنت — راجع الاتصال بالنت وحاول مرة أخرى');
     }else{
-      showLoginMessage('اسم المستخدم أو كلمة المرور خطأ — راجع البيانات وحاول مرة أخرى');
+      showLoginMessage(err?.message||'تعذر تسجيل الدخول — راجع البيانات وحاول مرة أخرى');
     }
   }finally{
     if(btn)btn.disabled=false;
@@ -1372,6 +1511,10 @@ async function signedPhoto(path){
 
 async function loadCustomers(){
   try{
+    if(!(await hasLiveInternetConnection())){
+      await forceSecurityLogout('انقطع الاتصال بالإنترنت — التطبيق لا يعمل بدون اتصال.');
+      return;
+    }
     const {data,error}=await db.from('customers').select('*').order('created_at',{ascending:false});
     if(error)throw error;
     customers=data||[];
@@ -1396,6 +1539,10 @@ async function loadCustomers(){
     checkReminders();
   }catch(err){
     console.error(err);
+    if(isNetworkError(err)||!(await hasLiveInternetConnection())){
+      await forceSecurityLogout('انقطع الاتصال بالإنترنت — التطبيق لا يعمل بدون اتصال.');
+      return;
+    }
     toast('تعذر تحميل العملاء. راجع اتصال قاعدة البيانات والصلاحيات');
   }
 }
@@ -1899,7 +2046,7 @@ window.openVisits=async id=>{
   if(!activeCustomer)return;
   $('visitTitle').textContent=`زيارات وقطع غيار: ${activeCustomer.name}`;
   $('visitCustomerId').value=id;
-  setDMYValue('vDay','vMonth','vYear',localDate());
+  setDMYValue('vDay','vMonth','vYear','');
   $('visitReminderAt').value='';
   $('visitProblem').value='';
   $('visitNotes').value='';
@@ -1944,7 +2091,7 @@ $('visitForm').addEventListener('submit',async e=>{
   const customerId=$('visitCustomerId').value;
   const parts=collectParts('partsEditor');
   const vDate=getDMYValue('vDay','vMonth','vYear');
-  if(!vDate){toast('اختر اليوم والشهر والسنة للزيارة');return}
+  if(!vDate){toast('اختر اليوم والشهر والسنة للزيارة أولاً');return}
   if([...$('partsEditor').querySelectorAll('.part-row')].some(r=>r.querySelector('.p-name').value.trim()&&(!(Number(r.querySelector('.p-qty').value)>0)||Number(r.querySelector('.p-price').value)<0))){toast('راجع كمية وسعر قطع الغيار');return}
   $('saveVisitBtn').disabled=true;
   try{
@@ -1980,7 +2127,7 @@ $('visitForm').addEventListener('submit',async e=>{
     }
     await logActivity(customerId,'visited','تسجيل زيارة وقطع غيار');
     toast('تم حفظ الزيارة وقطع الغيار');
-    setDMYValue('vDay','vMonth','vYear',localDate());
+    setDMYValue('vDay','vMonth','vYear','');
     $('visitReminderAt').value='';
     $('visitProblem').value='';
     $('visitNotes').value='';
@@ -2436,8 +2583,8 @@ window.toggleThemeMode=function(){
 };
 syncThemeUI(getPreferredTheme());
 
-/* ===== نظام التحديثات والإعدادات (v3.9) ===== */
-const APP_VERSION='v3.9';
+/* ===== نظام التحديثات والإعدادات (v4.0) ===== */
+const APP_VERSION='v4.0';
 const LANG_STORAGE_KEY='clientpro_lang_mode';
 let pendingRemoteVersion=null;
 let waitingSWWorker=null;
@@ -2648,6 +2795,7 @@ try{
   applyLanguageDirection(initLang);
 }catch(_){}
 
+initActivityAndBackgroundWatchers();
 initTableDragAndScroll();
 $('rows').addEventListener('click', ev => {
   if (ev.target.closest('button, a, input, select, textarea, img')) return;
@@ -2660,6 +2808,7 @@ initSwipeableReminderBanner();
 initDMYSelectors('initDay','initMonth','initYear');
 initDMYSelectors('vDay','vMonth','vYear');
 setDMYValue('initDay','initMonth','initYear',localDate());
+setDMYValue('vDay','vMonth','vYear','');
 syncReminderLabels();
 requireSession();
 
@@ -2739,6 +2888,7 @@ try{var C=window.Capacitor;if(C&&C.nativePromise){C.nativePromise('SystemBars','
     "2 مقبول": "2 - Fair",
     "1 ضعيف": "1 - Poor",
     "تاريخ الزيارة (يوم / شهر / سنة)": "Visit Date (DD / MM / YYYY)",
+    "تاريخ الزيارة (يوم / شهر / سنة) *": "Visit Date (DD / MM / YYYY) *",
     "اليوم": "Day",
     "الشهر": "Month",
     "السنة": "Year",
@@ -3114,7 +3264,7 @@ try{var C=window.Capacitor;if(C&&C.nativePromise){C.nativePromise('SystemBars','
     }
   };
 
-  if(document.readyState === 'loading'){
+  if(document.readyState === "loading"){
     window.addEventListener('DOMContentLoaded', bindVisitSwipeHandlers);
   }else{
     bindVisitSwipeHandlers();
