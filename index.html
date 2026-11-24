@@ -75,10 +75,6 @@ label{font-size:12px;font-weight:700;color:#59616d;display:block;margin:0 0 8px}
 .form-actions .btn{min-width:130px}
 .hidden{display:none!important}
 
-/* Custom Day/Month/Year Date Selects */
-.dmy-grid{display:grid;grid-template-columns:1fr 1.25fr 1.15fr;gap:8px;direction:rtl}
-.dmy-grid select{padding:11px 8px;text-align:center;font-weight:650}
-
 .tablewrap{overflow:auto;max-height:330px;border:1px solid #e9ebf0;border-radius:14px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-x pan-y;will-change:scroll-position}
 .tablewrap.drag-pulling{transition:none}
 table{width:100%;border-collapse:collapse;min-width:920px;background:#fff}
@@ -665,7 +661,7 @@ html.dark .client-visit-date-tag{background:#3A1927;color:#FF9BB2}
  </button>
  <button type="button" class="stat" id="statSettings" onclick="openSettingsModal()">
   <div class="stat-top"><span>الإعدادات</span><span class="stat-icon">⚙️</span></div>
-  <strong id="settingsVersionBadge">v4.0</strong>
+  <strong id="settingsVersionBadge">v4.1</strong>
   <div class="stat-foot"><span id="settingsCardFootText">الإصدار، التحديثات، المظهر واللغة</span><span>←</span></div>
  </button>
 </section>
@@ -692,12 +688,8 @@ html.dark .client-visit-date-tag{background:#3A1927;color:#FF9BB2}
   </div>
   <div><label for="rating">التقييم</label><select id="rating"><option value="">بدون تقييم</option><option value="5">5 ممتاز</option><option value="4">4 جيد جداً</option><option value="3">3 جيد</option><option value="2">2 مقبول</option><option value="1">1 ضعيف</option></select></div>
   <div>
-   <label>تاريخ الزيارة (يوم / شهر / سنة)</label>
-   <div class="dmy-grid">
-    <select id="initDay" aria-label="اليوم"></select>
-    <select id="initMonth" aria-label="الشهر"></select>
-    <select id="initYear" aria-label="السنة"></select>
-   </div>
+   <label for="initDateInput">تاريخ الزيارة (اكتبه أو اتركه فارغاً لتاريخ اليوم)</label>
+   <input id="initDateInput" type="text" dir="ltr" inputmode="numeric" placeholder="DD/MM/YYYY">
   </div>
   <div>
    <label for="reminderAt">ميعاد التذكير</label>
@@ -735,12 +727,8 @@ html.dark .client-visit-date-tag{background:#3A1927;color:#FF9BB2}
   <h3 style="font-size:15px;margin-top:0">إضافة زيارة</h3>
   <form id="visitForm"><input type="hidden" id="visitCustomerId"><div class="formgrid">
    <div>
-    <label>تاريخ الزيارة (يوم / شهر / سنة) *</label>
-    <div class="dmy-grid">
-     <select id="vDay" aria-label="اليوم"></select>
-     <select id="vMonth" aria-label="الشهر"></select>
-     <select id="vYear" aria-label="السنة"></select>
-    </div>
+    <label for="visitDateInput">تاريخ الزيارة (اكتبه أو اتركه فارغاً لتاريخ اليوم)</label>
+    <input id="visitDateInput" type="text" dir="ltr" inputmode="numeric" placeholder="DD/MM/YYYY">
    </div>
    <div><label for="visitReminderAt">ميعاد تذكير للزيارة</label><input id="visitReminderAt" type="datetime-local"><div class="sub" id="visitReminderFormatted"></div></div>
    <div><label for="visitStatus">حالة الزيارة</label><select id="visitStatus"><option value="جديد">جديد</option><option value="قيد متابعة" selected>قيد متابعة</option><option value="مكتمل">مكتمل</option></select></div>
@@ -814,14 +802,14 @@ html.dark .client-visit-date-tag{background:#3A1927;color:#FF9BB2}
   <div class="toolbar" style="margin-bottom:10px">
    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
     <h2 style="font-size:15px;margin:0">معلومات الإصدار والتحديثات</h2>
-    <span id="updateAvailableBadge" class="update-pill-alert hidden">🔔 تحديث جديد متاح</span>
+    <span id="updateAvailableBadge" class="update-pill-alert hidden">🔔 نسخة جديدة متاحة</span>
    </div>
-   <span class="badge" id="appVersionTag">الإصدار v4.0</span>
+   <span class="badge" id="appVersionTag">الإصدار v4.1</span>
   </div>
   <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px">
    <div>
     <div id="updateStatusTitle" style="font-weight:800;font-size:14px">جاري التحقق من حالة التحديثات...</div>
-    <div id="updateStatusDesc" class="sub">النسخة المثبتة حالياً: v4.0 — عند توفر إصدار أحدث سيظهر هنا مع زر تطبيق التحديث.</div>
+    <div id="updateStatusDesc" class="sub">النسخة المثبتة حالياً: v4.1 — عند توفر نسخة أحدث سيظهر إشعار هنا للتحميل والتحديث.</div>
    </div>
    <div class="actions">
     <button type="button" class="btn mini" id="checkUpdateBtn" onclick="checkForAppUpdate(true)">فحص التحديثات</button>
@@ -830,18 +818,18 @@ html.dark .client-visit-date-tag{background:#3A1927;color:#FF9BB2}
    </div>
   </div>
   <div id="whatsNewBox" class="report-visits-box" style="margin-top:8px">
-   <div class="report-visits-head"><span>✨ ما الجديد في الإصدار</span><span class="badge" id="whatsNewVersionBadge">v4.0</span></div>
+   <div class="report-visits-head"><span>✨ ما الجديد في الإصدار</span><span class="badge" id="whatsNewVersionBadge">v4.1</span></div>
    <div class="report-visit-item">
-    <div style="font-weight:800;font-size:13px">• تأمين الجلسة على مستوى السيرفر وقفل الخمول</div>
-    <div class="sub">ربط توكن الجهاز مع السيرفر بنظام Fail-Closed، إيقاف التشغيل عند انقطاع الإنترنت، والقفل التلقائي بعد دقيقتين من عدم النشاط أو البقاء في الخلفية.</div>
+    <div style="font-weight:800;font-size:13px">• إشعار التحديث داخل الإعدادات وتأكيد «تم التحديث»</div>
+    <div class="sub">يظهر إشعار التحديث داخل الإعدادات دون تغيير تلقائي قبل ضغطك على «تحديث الآن»، وعند التحميل يظهر «تم التحديث».</div>
    </div>
    <div class="report-visit-item">
-    <div style="font-weight:800;font-size:13px">• اختيار تاريخ الزيارة يدوياً وسلاسة حركة الجدول</div>
-    <div class="sub">عدم تعبئة تاريخ الزيارة الجديدة تلقائياً لتجنب اللبس، وتسريع تمرير سجل العملاء باليد.</div>
+    <div style="font-weight:800;font-size:13px">• إدخال تاريخ الزيارة يدوياً وتسجيل تاريخ اليوم تلقائياً عند تركه فارغاً</div>
+    <div class="sub">اكتب التاريخ بإيدك في الخانة الفاضية، ولو تركتها فارغة يتم تسجيل تاريخ اليوم تلقائياً.</div>
    </div>
    <div class="report-visit-item">
-    <div style="font-weight:800;font-size:13px">• الوضع الليلي والنهاري وتعدد اللغة</div>
-    <div class="sub">تبديل سلس بين الوضع الليلي والنهاري، وضبط اتجاه ولغة الواجهة بين العربية والإنجليزية.</div>
+    <div style="font-weight:800;font-size:13px">• تأمين الجلسة وقفل الخمول والمظهر واللغة</div>
+    <div class="sub">تأمين جلسة الجهاز، القفل التلقائي بعد دقيقتين من الخمول أو الخلفية، الوضع الليلي والنهاري، وتبديل اللغة.</div>
    </div>
   </div>
  </div>
@@ -925,11 +913,29 @@ const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
 });
 const $=id=>document.getElementById(id);
 let customers=[],currentPhotoPath='',selectedPhotoFile=null,activeCustomer=null,heartbeatTimer=null,reminderTimer=null,idleCheckTimer=null,lastActivityAt=Date.now(),hiddenSinceAt=null,securityLockInProgress=false,dashboardFilter='all',searchScrollTimer=null,visibleLimit=null,filteredCustomersCache=[];
-const INITIAL_RECORDS_LIMIT=null;
 
 function toast(message){$('toast').textContent=message;$('toast').classList.remove('hidden');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>$('toast').classList.add('hidden'),3500)}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function localDate(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+
+function parseManualDate(rawVal){
+  const txt=String(rawVal||'').trim();
+  if(!txt)return '';
+  const arabicDigits='٠١٢٣٤٥٦٧٨٩';
+  const norm=txt.replace(/[٠-٩]/g,d=>String(arabicDigits.indexOf(d))).replace(/\s+/g,'');
+
+  let m=norm.match(/^(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})$/);
+  if(m){
+    return `${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`;
+  }
+
+  m=norm.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/);
+  if(m){
+    return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+  }
+
+  return '';
+}
 
 function setLoginNote(msg){
   const el=$('loginStatusNote');
@@ -978,8 +984,20 @@ async function registerAndVerifyDeviceSession(userId){
       {onConflict:'user_id'}
     );
   if(error){
+    console.warn('Session upsert warning:',error);
+  }
+  const {data,error:readError}=await db
+    .from('user_active_sessions')
+    .select('device_token')
+    .eq('user_id',userId)
+    .maybeSingle();
+  if(readError){
+    console.warn('Session verify warning:',readError);
+    return;
+  }
+  if(data&&data.device_token&&data.device_token!==DEVICE_TOKEN){
     await db.auth.signOut().catch(()=>{});
-    throw new Error('تعذر تأكيد جلسة الجهاز من السيرفر، تم تسجيل الخروج.');
+    throw new Error('لا يُسمح بتسجيل الدخول لنفس الحساب من جهاز آخر أثناء فتح الجلسة الحالية.');
   }
 }
 
@@ -991,10 +1009,11 @@ async function checkServerDeviceSessionValid(userId){
       .select('device_token')
       .eq('user_id',userId)
       .maybeSingle();
-    if(error||!data)return false;
+    if(error)return true;
+    if(!data||!data.device_token)return true;
     return data.device_token===DEVICE_TOKEN;
   }catch(_){
-    return false;
+    return true;
   }
 }
 
@@ -1093,32 +1112,6 @@ function initActivityAndBackgroundWatchers(){
   });
 }
 
-// Populate Day / Month / Year dropdowns (يوم / شهر / سنة)
-const ARABIC_MONTHS=['01 - يناير','02 - فبراير','03 - مارس','04 - أبريل','05 - مايو','06 - يونيو','07 - يوليو','08 - أغسطس','09 - سبتمبر','10 - أكتوبر','11 - نوفمبر','12 - ديسمبر'];
-function initDMYSelectors(dayId,monthId,yearId){
-  const dSel=$(dayId),mSel=$(monthId),ySel=$(yearId);
-  dSel.innerHTML='<option value="">يوم</option>'+Array.from({length:31},(_,i)=>{const v=String(i+1).padStart(2,'0');return `<option value="${v}">${v}</option>`}).join('');
-  mSel.innerHTML='<option value="">شهر</option>'+ARABIC_MONTHS.map((label,i)=>{const v=String(i+1).padStart(2,'0');return `<option value="${v}">${label}</option>`}).join('');
-  const curYear=new Date().getFullYear();
-  let years='<option value="">سنة</option>';
-  for(let y=curYear+2;y>=2020;y--)years+=`<option value="${y}">${y}</option>`;
-  ySel.innerHTML=years;
-}
-function setDMYValue(dayId,monthId,yearId,isoDate){
-  if(!isoDate){$(dayId).value='';$(monthId).value='';$(yearId).value='';return}
-  const parts=String(isoDate).slice(0,10).split('-');
-  if(parts.length===3){
-    $(yearId).value=parts[0];
-    $(monthId).value=parts[1];
-    $(dayId).value=parts[2];
-  }
-}
-function getDMYValue(dayId,monthId,yearId){
-  const d=$(dayId).value,m=$(monthId).value,y=$(yearId).value;
-  if(!d||!m||!y)return '';
-  return `${y}-${m}-${d}`;
-}
-
 function formatDMY(dateStr){
   if(!dateStr)return '—';
   const clean=String(dateStr).slice(0,10);
@@ -1142,7 +1135,6 @@ function formatDateTimeAR(dtStr){
   return `${day}/${month}/${year} · ${hours}:${mins} ${period}`;
 }
 
-// Interactive Dashboard Filter
 window.setDashboardFilter=async mode=>{
   dashboardFilter=mode;
   visibleLimit=null;
@@ -1373,19 +1365,15 @@ async function requireSession(){
   }
 
   const sid=getDeviceSessionId();
-  const {data,error}=await db.rpc('clientpro_claim_session',{p_device_session_id:sid,p_device_info:getDeviceInfo(),p_force:false});
-  if(error){
-    await db.auth.signOut().catch(()=>{});
-    showLogin();
-    showLoginMessage('تعذر التحقق من الجلسة مع السيرفر، حاول مرة أخرى.');
-    return;
-  }
-  if(data&&data.ok===false&&data.reason==='already_logged_in_elsewhere'){
-    await db.auth.signOut().catch(()=>{});
-    showLogin();
-    showLoginMessage('لا يُسمح بتسجيل الدخول لنفس الحساب من جهاز آخر أثناء فتح الجلسة الحالية.');
-    return;
-  }
+  try{
+    const {data,error}=await db.rpc('clientpro_claim_session',{p_device_session_id:sid,p_device_info:getDeviceInfo(),p_force:false});
+    if(!error&&data&&data.ok===false&&data.reason==='already_logged_in_elsewhere'){
+      await db.auth.signOut().catch(()=>{});
+      showLogin();
+      showLoginMessage('لا يُسمح بتسجيل الدخول لنفس الحساب من جهاز آخر أثناء فتح الجلسة الحالية.');
+      return;
+    }
+  }catch(_){}
 
   showApp(session);
   startSessionGuards();
@@ -1454,17 +1442,15 @@ $('loginForm').addEventListener('submit',async e=>{
     await registerAndVerifyDeviceSession(data?.user?.id);
 
     const sid=getDeviceSessionId();
-    const {data:claim,error:claimError}=await db.rpc('clientpro_claim_session',{p_device_session_id:sid,p_device_info:getDeviceInfo(),p_force:false});
-    if(claimError){
-      await db.auth.signOut().catch(()=>{});
-      showLoginMessage('تعذر التحقق من الجلسة مع السيرفر، تم تسجيل الخروج لحماية البيانات.');
-      return;
-    }
-    if(claim&&claim.ok===false&&claim.reason==='already_logged_in_elsewhere'){
-      await db.auth.signOut().catch(()=>{});
-      showLoginMessage('لا يُسمح بتسجيل الدخول لنفس الحساب من جهاز آخر أثناء فتح الجلسة الحالية.');
-      return;
-    }
+    try{
+      const {data:claim,error:claimError}=await db.rpc('clientpro_claim_session',{p_device_session_id:sid,p_device_info:getDeviceInfo(),p_force:false});
+      if(!claimError&&claim&&claim.ok===false&&claim.reason==='already_logged_in_elsewhere'){
+        await db.auth.signOut().catch(()=>{});
+        showLoginMessage('لا يُسمح بتسجيل الدخول لنفس الحساب من جهاز آخر أثناء فتح الجلسة الحالية.');
+        return;
+      }
+    }catch(_){}
+
     showApp(data);
     startSessionGuards();
     await loadCustomers();
@@ -1634,7 +1620,6 @@ function syncReminderLabels(){
 $('reminderAt').addEventListener('input',syncReminderLabels);
 $('visitReminderAt').addEventListener('input',syncReminderLabels);
 
-// Photo handlers (Camera + Device Gallery)
 function handlePickedPhoto(file){
   if(!file)return;
   selectedPhotoFile=file;
@@ -1916,7 +1901,15 @@ $('customerForm').addEventListener('submit',async e=>{
     else if(!currentPhotoPath)photoPath=null;
 
     const reminderVal=$('reminderAt').value?new Date($('reminderAt').value).toISOString():null;
-    const initDateVal=getDMYValue('initDay','initMonth','initYear');
+    const rawInitDate=($('initDateInput')?.value||'').trim();
+    const parsedInitDate=parseManualDate(rawInitDate);
+    if(rawInitDate&&!parsedInitDate){
+      toast('صيغة التاريخ غير صحيحة — اكتبها مثل 24/11/2026 أو اتركها فارغة');
+      $('saveBtn').disabled=false;
+      return;
+    }
+    const initDateVal=parsedInitDate||localDate();
+
     const payload={
       id,
       name:formValue('name'),
@@ -1932,8 +1925,8 @@ $('customerForm').addEventListener('submit',async e=>{
     if(old){
       const result=await db.from('customers').update(payload).eq('id',id).select().single();
       if(result.error)throw result.error;
-      if(initDateVal||parts.length){
-        const {data:visit,error:visitError}=await db.from('visits').insert({customer_id:id,visit_date:initDateVal||localDate(),problem_description:payload.problem_description,notes:payload.notes}).select().single();
+      if(parsedInitDate||parts.length){
+        const {data:visit,error:visitError}=await db.from('visits').insert({customer_id:id,visit_date:initDateVal,problem_description:payload.problem_description,notes:payload.notes}).select().single();
         if(visitError)throw visitError;
         if(parts.length){const {error:partsError}=await db.from('spare_parts').insert(parts.map(p=>({...p,visit_id:visit.id})));if(partsError){await db.from('visits').delete().eq('id',visit.id);throw partsError}}
         await logActivity(id,'visited','تسجيل زيارة وقطع غيار');
@@ -1941,7 +1934,7 @@ $('customerForm').addEventListener('submit',async e=>{
       await logActivity(id,'updated','تعديل بيانات العميل');
       toast('تم تحديث بيانات العميل');
     }else{
-      const visit={visit_date:initDateVal||localDate(),problem_description:payload.problem_description,notes:payload.notes};
+      const visit={visit_date:initDateVal,problem_description:payload.problem_description,notes:payload.notes};
       const {data,error}=await db.rpc('clientpro_create_customer_visit',{p_customer:payload,p_parts:parts,p_visit:visit});
       if(error)throw error;
       const savedId=typeof data==='string'?data:(data?.id||id);
@@ -1976,7 +1969,7 @@ window.editCustomer=async id=>{
     $('reminderAt').value='';
   }
   $('editId').value=id;
-  setDMYValue('initDay','initMonth','initYear','');
+  if($('initDateInput'))$('initDateInput').value='';
   $('initialPartsEditor').innerHTML='';
   updatePartsTotal('initialPartsEditor','initialPartsTotal');
   currentPhotoPath=c.device_photo||'';
@@ -2016,7 +2009,7 @@ function resetForm(){
   $('removePhoto').classList.add('hidden');
   $('initialPartsEditor').innerHTML='';
   updatePartsTotal('initialPartsEditor','initialPartsTotal');
-  setDMYValue('initDay','initMonth','initYear',localDate());
+  if($('initDateInput'))$('initDateInput').value='';
   $('reminderAt').value='';
   $('formTitle').textContent='إضافة عميل جديد';
   $('saveBtn').textContent='حفظ العميل';
@@ -2046,7 +2039,7 @@ window.openVisits=async id=>{
   if(!activeCustomer)return;
   $('visitTitle').textContent=`زيارات وقطع غيار: ${activeCustomer.name}`;
   $('visitCustomerId').value=id;
-  setDMYValue('vDay','vMonth','vYear','');
+  if($('visitDateInput'))$('visitDateInput').value='';
   $('visitReminderAt').value='';
   $('visitProblem').value='';
   $('visitNotes').value='';
@@ -2090,8 +2083,10 @@ $('visitForm').addEventListener('submit',async e=>{
   e.preventDefault();
   const customerId=$('visitCustomerId').value;
   const parts=collectParts('partsEditor');
-  const vDate=getDMYValue('vDay','vMonth','vYear');
-  if(!vDate){toast('اختر اليوم والشهر والسنة للزيارة أولاً');return}
+  const rawVDate=($('visitDateInput')?.value||'').trim();
+  const parsedVDate=parseManualDate(rawVDate);
+  if(rawVDate&&!parsedVDate){toast('صيغة التاريخ غير صحيحة — اكتبها مثل 24/11/2026 أو اتركها فارغة');return}
+  const vDate=parsedVDate||localDate();
   if([...$('partsEditor').querySelectorAll('.part-row')].some(r=>r.querySelector('.p-name').value.trim()&&(!(Number(r.querySelector('.p-qty').value)>0)||Number(r.querySelector('.p-price').value)<0))){toast('راجع كمية وسعر قطع الغيار');return}
   $('saveVisitBtn').disabled=true;
   try{
@@ -2127,7 +2122,7 @@ $('visitForm').addEventListener('submit',async e=>{
     }
     await logActivity(customerId,'visited','تسجيل زيارة وقطع غيار');
     toast('تم حفظ الزيارة وقطع الغيار');
-    setDMYValue('vDay','vMonth','vYear','');
+    if($('visitDateInput'))$('visitDateInput').value='';
     $('visitReminderAt').value='';
     $('visitProblem').value='';
     $('visitNotes').value='';
@@ -2162,7 +2157,6 @@ async function loadVisitHistory(customerId){
   }catch(err){console.error(err);$('visitHistory').innerHTML='<div class="empty">تعذر تحميل سجل الزيارات.</div>'}
 }
 
-// Photo Lightbox Modal
 window.openPhotoModal=(url,clientName,deviceType)=>{
   if(!url)return;
   $('photoModalImg').src=url;
@@ -2176,7 +2170,6 @@ window.closePhotoModal=()=>{
   $('photoModalImg').src='';
 };
 
-// Interactive Dashboard Modal
 let currentDashTab='all';
 window.openDashboardModal=tab=>{
   currentDashTab=tab||'all';
@@ -2583,8 +2576,8 @@ window.toggleThemeMode=function(){
 };
 syncThemeUI(getPreferredTheme());
 
-/* ===== نظام التحديثات والإعدادات (v4.0) ===== */
-const APP_VERSION='v4.0';
+/* ===== نظام التحديثات والإعدادات (v4.1) ===== */
+const APP_VERSION='v4.1';
 const LANG_STORAGE_KEY='clientpro_lang_mode';
 let pendingRemoteVersion=null;
 let waitingSWWorker=null;
@@ -2601,31 +2594,50 @@ function compareVersionStrings(v1,v2){
   return 0;
 }
 
-function setUpdateNoticeUI({hasUpdate=false,remoteVer=null,titleText='',descText='',isError=false}){
+function setUpdateNoticeUI({hasUpdate=false,remoteVer=null,titleText='',descText='',isError=false,isUpdatedDone=false}){
   const badge=$('updateAvailableBadge');
   const applyBtn=$('applyUpdateBtn');
   const titleEl=$('updateStatusTitle');
   const descEl=$('updateStatusDesc');
   const footText=$('settingsCardFootText');
   const verBadge=$('whatsNewVersionBadge');
+  const verTag=$('appVersionTag');
+  const statVer=$('settingsVersionBadge');
 
-  if(badge)badge.classList.toggle('hidden',!hasUpdate);
-  if(applyBtn)applyBtn.classList.toggle('hidden',!hasUpdate);
-  if(verBadge&&remoteVer)verBadge.textContent=remoteVer;
+  if(badge)badge.classList.toggle('hidden',!hasUpdate||isUpdatedDone);
+  if(applyBtn){
+    applyBtn.classList.toggle('hidden',!hasUpdate||isUpdatedDone);
+    applyBtn.disabled=false;
+    applyBtn.textContent='تحديث الآن';
+  }
+  if(remoteVer&&verBadge)verBadge.textContent=remoteVer;
+  if(isUpdatedDone&&remoteVer){
+    if(verTag)verTag.textContent=`الإصدار ${remoteVer}`;
+    if(statVer)statVer.textContent=remoteVer;
+  }
 
   if(titleEl){
-    titleEl.textContent=titleText||(hasUpdate
-      ? `يوجد تحديث جديد متاح (${remoteVer||APP_VERSION})`
-      : `أنت تستخدم أحدث إصدار متاح (${APP_VERSION})`);
-    titleEl.style.color=isError?'#c62828':(hasUpdate?'#047857':'');
+    if(isUpdatedDone){
+      titleEl.textContent=`تم التحديث إلى ${remoteVer||APP_VERSION}`;
+      titleEl.style.color='#047857';
+    }else{
+      titleEl.textContent=titleText||(hasUpdate
+        ? `نسخة جديدة متاحة (${remoteVer||APP_VERSION})`
+        : `أنت تستخدم أحدث إصدار متاح (${APP_VERSION})`);
+      titleEl.style.color=isError?'#c62828':(hasUpdate?'#047857':'');
+    }
   }
   if(descEl&&descText){
     descEl.textContent=descText;
   }
   if(footText){
-    footText.textContent=hasUpdate
-      ? `يوجد تحديث جديد (${remoteVer}) · اضغط لفتح الإعدادات`
-      : 'الإصدار، التحديثات، المظهر واللغة';
+    if(isUpdatedDone){
+      footText.textContent=`تم التحديث (${remoteVer||APP_VERSION})`;
+    }else if(hasUpdate){
+      footText.textContent=`نسخة جديدة متاحة (${remoteVer}) · افتح التحديثات`;
+    }else{
+      footText.textContent='الإصدار، التحديثات، المظهر واللغة';
+    }
   }
 }
 
@@ -2644,8 +2656,8 @@ window.checkForAppUpdate=async function(manual=false){
     setUpdateNoticeUI({
       hasUpdate:Boolean(pendingRemoteVersion||waitingSWWorker),
       remoteVer:pendingRemoteVersion,
-      titleText:'جاري التحقق من وجود نسخة أحدث...',
-      descText:'يتم فحص السيرفر وخدمة التحديثات...'
+      titleText:'جاري فحص التحديثات...',
+      descText:'يتم التحقق من وجود نسخة جديدة على السيرفر.'
     });
   }
 
@@ -2668,17 +2680,17 @@ window.checkForAppUpdate=async function(manual=false){
       setUpdateNoticeUI({
         hasUpdate:true,
         remoteVer:pendingRemoteVersion,
-        titleText:`يوجد تحديث جديد متاح (${pendingRemoteVersion})`,
-        descText:`النسخة الحالية هي ${APP_VERSION} والنسخة الجديدة ${pendingRemoteVersion} متاحة. اضغط «تحديث الآن» لتطبيقها.`
+        titleText:`نسخة جديدة متاحة (${pendingRemoteVersion})`,
+        descText:`النسخة الحالية ${APP_VERSION} — اضغط «تحديث الآن» لتحميل وتطبيق النسخة الجديدة.`
       });
-      if(manual)toast(`يتوفر تحديث جديد (${pendingRemoteVersion}) — اضغط تحديث الآن`);
+      if(manual)toast(`توجد نسخة جديدة (${pendingRemoteVersion}) داخل الإعدادات`);
     }else{
       pendingRemoteVersion=null;
       setUpdateNoticeUI({
         hasUpdate:false,
         remoteVer:APP_VERSION,
         titleText:`أنت تستخدم أحدث إصدار متاح (${APP_VERSION})`,
-        descText:'لا توجد تحديثات جديدة حالياً؛ التطبيق محدّث بآخر نسخة.'
+        descText:'لا توجد نسخ أحدث متاحة حالياً.'
       });
       if(manual)toast(`أنت على أحدث إصدار (${APP_VERSION})`);
     }
@@ -2687,11 +2699,11 @@ window.checkForAppUpdate=async function(manual=false){
     setUpdateNoticeUI({
       hasUpdate:Boolean(pendingRemoteVersion||waitingSWWorker),
       remoteVer:pendingRemoteVersion,
-      titleText:manual?'تعذر التحقق من التحديثات الآن':`أنت على أحدث إصدار متاح (${APP_VERSION})`,
-      descText:manual?'تأكد من الاتصال بالإنترنت ثم أعد المحاولة.':'النسخة الحالية المثبتة: '+APP_VERSION,
+      titleText:manual?'تعذر فحص التحديثات الآن':`أنت على أحدث إصدار متاح (${APP_VERSION})`,
+      descText:manual?'راجع الاتصال بالإنترنت ثم حاول مرة أخرى.':'النسخة الحالية المثبتة: '+APP_VERSION,
       isError:manual
     });
-    if(manual)toast('تعذر التحقق من التحديثات، راجع الاتصال بالإنترنت');
+    if(manual)toast('تعذر فحص التحديثات، راجع الاتصال بالإنترنت');
   }finally{
     if(btn){btn.disabled=false;btn.textContent='فحص التحديثات';}
   }
@@ -2699,14 +2711,15 @@ window.checkForAppUpdate=async function(manual=false){
 
 window.applyAppUpdate=async function(){
   const applyBtn=$('applyUpdateBtn');
-  if(applyBtn){applyBtn.disabled=true;applyBtn.textContent='جاري التحديث...';}
+  const targetVer=pendingRemoteVersion||APP_VERSION;
+  if(applyBtn){applyBtn.disabled=true;applyBtn.textContent='جاري التحميل والتحديث...';}
   setUpdateNoticeUI({
     hasUpdate:true,
-    remoteVer:pendingRemoteVersion||APP_VERSION,
-    titleText:'جاري تطبيق التحديث وتحديث الكاش...',
-    descText:'سيتم إعادة تحميل التطبيق بالنسخة الجديدة خلال لحظات.'
+    remoteVer:targetVer,
+    titleText:`جاري تحميل وتطبيق النسخة (${targetVer})...`,
+    descText:'يرجى الانتظار لحين الانتهاء من تحديث الملفات والكاش.'
   });
-  toast('جاري تطبيق التحديث...');
+  toast('جاري تحميل وتطبيق التحديث...');
 
   try{
     if('caches' in window){
@@ -2723,12 +2736,20 @@ window.applyAppUpdate=async function(){
         await reg.update();
       }
     }
+    try{
+      await fetch(`./index.html?t=${Date.now()}`,{cache:'no-store'});
+    }catch(_){}
   }catch(_){}
 
-  setTimeout(()=>{
-    const baseUrl=window.location.href.split('#')[0].split('?')[0];
-    window.location.replace(`${baseUrl}?v=${Date.now()}`);
-  },450);
+  pendingRemoteVersion=null;
+  waitingSWWorker=null;
+  setUpdateNoticeUI({
+    hasUpdate:false,
+    remoteVer:targetVer,
+    isUpdatedDone:true,
+    descText:'تم تحميل وتطبيق النسخة الجديدة بنجاح. يمكنك إعادة فتح أو تحديث الصفحة لتشغيلها بالكامل.'
+  });
+  toast('تم التحديث');
 };
 
 window.openSettingsModal=function(){
@@ -2805,10 +2826,8 @@ $('rows').addEventListener('click', ev => {
   if (cid) openClientReport(cid);
 });
 initSwipeableReminderBanner();
-initDMYSelectors('initDay','initMonth','initYear');
-initDMYSelectors('vDay','vMonth','vYear');
-setDMYValue('initDay','initMonth','initYear',localDate());
-setDMYValue('vDay','vMonth','vYear','');
+if($('initDateInput'))$('initDateInput').value='';
+if($('visitDateInput'))$('visitDateInput').value='';
 syncReminderLabels();
 requireSession();
 
@@ -2887,11 +2906,7 @@ try{var C=window.Capacitor;if(C&&C.nativePromise){C.nativePromise('SystemBars','
     "3 جيد": "3 - Good",
     "2 مقبول": "2 - Fair",
     "1 ضعيف": "1 - Poor",
-    "تاريخ الزيارة (يوم / شهر / سنة)": "Visit Date (DD / MM / YYYY)",
-    "تاريخ الزيارة (يوم / شهر / سنة) *": "Visit Date (DD / MM / YYYY) *",
-    "اليوم": "Day",
-    "الشهر": "Month",
-    "السنة": "Year",
+    "تاريخ الزيارة (اكتبه أو اتركه فارغاً لتاريخ اليوم)": "Visit Date (Enter or leave blank for today)",
     "ميعاد التذكير": "Reminder Time",
     "سبب المشكلة": "Issue Description",
     "ملاحظات": "Notes",
@@ -2949,7 +2964,7 @@ try{var C=window.Capacitor;if(C&&C.nativePromise){C.nativePromise('SystemBars','
     "معلومات الإصدار والتحديثات": "Version & Updates Info",
     "فحص التحديثات": "Check for Updates",
     "تحديث الآن": "Update Now",
-    "🔔 تحديث جديد متاح": "🔔 New Update Available",
+    "🔔 نسخة جديدة متاحة": "🔔 New Version Available",
     "ما الجديد": "What's New",
     "✨ ما الجديد في الإصدار": "✨ What's New in This Release",
     "المظهر والوضع الليلي": "Appearance & Dark Mode",
@@ -2977,22 +2992,6 @@ try{var C=window.Capacitor;if(C&&C.nativePromise){C.nativePromise('SystemBars','
     if (!EN_TO_AR[en]) EN_TO_AR[en] = ar;
   });
 
-  const MONTH_AR_TO_EN = {
-    "01 - يناير": "01 - January",
-    "02 - فبراير": "02 - February",
-    "03 - مارس": "03 - March",
-    "04 - أبريل": "04 - April",
-    "05 - مايو": "05 - May",
-    "06 - يونيو": "06 - June",
-    "07 - يوليو": "07 - July",
-    "08 - أغسطس": "08 - August",
-    "09 - سبتمبر": "09 - September",
-    "10 - أكتوبر": "10 - October",
-    "11 - نوفمبر": "11 - November",
-    "12 - ديسمبر": "12 - December"
-  };
-  const MONTH_EN_TO_AR = Object.fromEntries(Object.entries(MONTH_AR_TO_EN).map(([k, v]) => [v, k]));
-
   function normSpace(s) {
     return String(s || "").replace(/\s+/g, " ").trim();
   }
@@ -3003,9 +3002,6 @@ try{var C=window.Capacitor;if(C&&C.nativePromise){C.nativePromise('SystemBars','
     if (!normalized) return str;
 
     const map = lang === "en" ? AR_TO_EN : EN_TO_AR;
-    const mMap = lang === "en" ? MONTH_AR_TO_EN : MONTH_EN_TO_AR;
-
-    if (mMap[normalized]) return mMap[normalized];
     if (map[normalized]) return map[normalized];
 
     if (lang === "en") {
@@ -3016,7 +3012,7 @@ try{var C=window.Capacitor;if(C&&C.nativePromise){C.nativePromise('SystemBars','
         .replace(/^زيارة\s+/g, "Visit ")
         .replace(/(\d+)\s*قطعة/g, "$1 part(s)")
         .replace(/أنت تستخدم أحدث إصدار متاح\s*\(([^)]+)\)/g, "You are using the latest version ($1)")
-        .replace(/يوجد تحديث جديد متاح\s*\(([^)]+)\)/g, "New update available ($1)")
+        .replace(/نسخة جديدة متاحة\s*\(([^)]+)\)/g, "New version available ($1)")
         .replace(/^الإصدار\s+/g, "Version ");
     } else {
       return normalized
@@ -3026,7 +3022,7 @@ try{var C=window.Capacitor;if(C&&C.nativePromise){C.nativePromise('SystemBars','
         .replace(/^Visit\s+/g, "زيارة ")
         .replace(/(\d+)\s*part\(s\)/g, "$1 قطعة")
         .replace(/You are using the latest version\s*\(([^)]+)\)/g, "أنت تستخدم أحدث إصدار متاح ($1)")
-        .replace(/New update available\s*\(([^)]+)\)/g, "يوجد تحديث جديد متاح ($1)")
+        .replace(/New version available\s*\(([^)]+)\)/g, "نسخة جديدة متاحة ($1)")
         .replace(/^Version\s+/g, "الإصدار ");
     }
   }
