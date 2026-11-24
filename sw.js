@@ -1,15 +1,26 @@
-const CACHE_NAME = 'client-pro-shell-v10';
-const APP_VERSION = 'v4.0';
-const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png'];
+const APP_VERSION = 'v4.1';
+const CACHE_NAME = `client-pro-${APP_VERSION}`;
+const ASSETS_TO_CACHE = [
+  './',
+  './index.html',
+  './manifest.webmanifest',
+  './app-extras.js'
+];
 
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)));
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS_TO_CACHE))
+  );
   self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))))
+    caches.keys().then(keys =>
+      Promise.all(
+        keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
+      )
+    )
   );
   self.clients.claim();
 });
@@ -18,61 +29,17 @@ self.addEventListener('message', event => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
-  if (event.data && event.data.type === 'GET_VERSION') {
-    event.source?.postMessage({ type: 'VERSION_INFO', version: APP_VERSION, cache: CACHE_NAME });
-  }
 });
 
 self.addEventListener('fetch', event => {
-  const request = event.request;
-  const url = new URL(request.url);
-  if (request.method !== 'GET' || url.origin !== self.location.origin) return;
+  if (event.request.method !== 'GET') return;
   event.respondWith(
-    fetch(request).then(response => {
-      if (response && response.ok) {
+    fetch(event.request)
+      .then(response => {
         const copy = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
-      }
-      return response;
-    }).catch(() => caches.match(request).then(cached => cached || caches.match('./index.html')))
-  );
-});
-
-self.addEventListener('push', event => {
-  let data = {
-    title: 'تذكير زيارة · CLIENT PRO',
-    body: 'عندك ميعاد زيارة الآن',
-    url: './'
-  };
-
-  if (event.data) {
-    try {
-      data = { ...data, ...event.data.json() };
-    } catch (_) {
-      data.body = event.data.text() || data.body;
-    }
-  }
-
-  event.waitUntil(
-    self.registration.showNotification(data.title, {
-      body: data.body,
-      icon: './icon-192.png',
-      badge: './icon-192.png',
-      vibrate: [200, 100, 200],
-      data: { url: data.url }
-    })
-  );
-});
-
-self.addEventListener('notificationclick', event => {
-  event.notification.close();
-  const targetUrl = event.notification?.data?.url || './';
-  event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
-      for (const client of list) {
-        if ('focus' in client) return client.focus();
-      }
-      if (clients.openWindow) return clients.openWindow(targetUrl);
-    })
+        caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy)).catch(() => {});
+        return response;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
