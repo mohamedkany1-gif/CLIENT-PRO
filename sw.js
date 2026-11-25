@@ -1,4 +1,4 @@
-const APP_VERSION = 'v4.3';
+const APP_VERSION = 'v4.5';
 const CACHE_NAME = `client-pro-${APP_VERSION}`;
 const ASSETS_TO_CACHE = [
   './',
