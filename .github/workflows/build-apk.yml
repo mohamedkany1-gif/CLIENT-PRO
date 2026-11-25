@@ -269,6 +269,214 @@ jobs:
           path.write_text(content)
           PY
 
+      - name: Configure Switchable App Icons
+        run: |
+          python3 -m pip install --quiet Pillow || true
+          python3 - <<'PY'
+          import base64, io, json, re
+          from pathlib import Path
+          from PIL import Image, ImageDraw
+
+          KEYS = ["original", "atlas", "studio", "barq", "pulse", "royal", "nile", "sahara", "layl"]
+
+          pack_path = Path("app-icons.json")
+          if not pack_path.exists():
+              raise SystemExit("app-icons.json is missing from the repo")
+          pack = json.loads(pack_path.read_text(encoding="utf-8"))
+          art = {}
+          for k in KEYS:
+              if k not in pack:
+                  raise SystemExit("icon missing in app-icons.json: " + k)
+              art[k] = Image.open(io.BytesIO(base64.b64decode(pack[k]))).convert("RGB")
+
+          RES = Path("android/app/src/main/res")
+          SS = 4
+
+
+          def put(rel, data):
+              f = RES / rel
+              f.parent.mkdir(parents=True, exist_ok=True)
+              if hasattr(data, "save"):
+                  data.save(f)
+              else:
+                  f.write_text(data, encoding="utf-8")
+
+
+          def legacy(img, size, round_shape):
+              base = img.resize((size, size), Image.LANCZOS).convert("RGBA")
+              big = size * SS
+              mask = Image.new("L", (big, big), 0)
+              d = ImageDraw.Draw(mask)
+              if round_shape:
+                  d.ellipse((0, 0, big - 1, big - 1), fill=255)
+              else:
+                  d.rounded_rectangle((0, 0, big - 1, big - 1), radius=int(big * 0.22), fill=255)
+              mask = mask.resize((size, size), Image.LANCZOS)
+              out = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+              out.paste(base, (0, 0), mask)
+              return out
+
+
+          def foreground(img, canvas):
+              inner = round(canvas * 74 / 108)
+              layer = Image.new("RGBA", (canvas, canvas), (0, 0, 0, 0))
+              layer.paste(img.resize((inner, inner), Image.LANCZOS).convert("RGBA"), ((canvas - inner) // 2, (canvas - inner) // 2))
+              return layer
+
+
+          LEGACY = dict(mdpi=48, hdpi=72, xhdpi=96, xxhdpi=144, xxxhdpi=192)
+          ADAPT = dict(mdpi=108, hdpi=162, xhdpi=216, xxhdpi=324, xxxhdpi=432)
+
+          for k in KEYS:
+              img = art[k]
+              for dn, s in LEGACY.items():
+                  put("mipmap-" + dn + "/ic_" + k + ".png", legacy(img, s, False))
+                  put("mipmap-" + dn + "/ic_" + k + "_round.png", legacy(img, s, True))
+              for dn, s in ADAPT.items():
+                  put("mipmap-" + dn + "/ic_" + k + "_fg.png", foreground(img, s))
+              r, g, b = img.getpixel((6, 6))
+              color = "#%02X%02X%02X" % (r, g, b)
+              put("values/ic_" + k + "_bg.xml",
+                  '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_' + k + '_bg">' + color + '</color>\n</resources>\n')
+              adaptive = ('<?xml version="1.0" encoding="utf-8"?>\n'
+                          '<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\n'
+                          '    <background android:drawable="@color/ic_' + k + '_bg"/>\n'
+                          '    <foreground android:drawable="@mipmap/ic_' + k + '_fg"/>\n'
+                          '</adaptive-icon>\n')
+              put("mipmap-anydpi-v26/ic_" + k + ".xml", adaptive)
+              put("mipmap-anydpi-v26/ic_" + k + "_round.xml", adaptive)
+
+          manifest = Path("android/app/src/main/AndroidManifest.xml")
+          text = manifest.read_text(encoding="utf-8")
+
+          main_java = list(Path("android/app/src/main/java").rglob("MainActivity.java"))
+          if len(main_java) != 1:
+              raise SystemExit("MainActivity.java not found exactly once")
+          main_java = main_java[0]
+          pkg = re.search(r"^\s*package\s+([\w.]+)\s*;", main_java.read_text(encoding="utf-8"), re.M).group(1)
+
+          if "IconSwitcher" in text:
+              print("icon aliases already present, skipping manifest patch")
+          else:
+              m = re.search(r'(<activity\b[^>]*android:name="[^"]*MainActivity"[^>]*>)(.*?)(</activity>)', text, re.S)
+              if not m:
+                  raise SystemExit("MainActivity element not found in manifest")
+
+              def drop_launcher(mm):
+                  s = mm.group(0)
+                  return "" if "android.intent.category.LAUNCHER" in s else s
+
+              inner = re.sub(r"<intent-filter\b.*?</intent-filter>", drop_launcher, m.group(2), flags=re.S)
+              aliases = ""
+              for k in KEYS:
+                  aliases += (
+                      '\n        <activity-alias android:name="' + pkg + '.Icon' + k.capitalize() + '"'
+                      ' android:targetActivity="' + pkg + '.MainActivity"'
+                      ' android:enabled="' + ("true" if k == "original" else "false") + '"'
+                      ' android:exported="true"'
+                      ' android:icon="@mipmap/ic_' + k + '"'
+                      ' android:roundIcon="@mipmap/ic_' + k + '_round"'
+                      ' android:label="@string/app_name">\n'
+                      '            <intent-filter>\n'
+                      '                <action android:name="android.intent.action.MAIN" />\n'
+                      '                <category android:name="android.intent.category.LAUNCHER" />\n'
+                      '            </intent-filter>\n'
+                      '        </activity-alias>\n')
+              text = text[:m.start()] + m.group(1) + inner + m.group(3) + aliases + text[m.end():]
+              text = text.replace("<application", "<application", 1)
+              manifest.write_text(text, encoding="utf-8")
+              print("manifest patched with 9 icon aliases")
+
+          plugin = """package __PKG__;
+
+          import android.content.ComponentName;
+          import android.content.pm.PackageManager;
+
+          import com.getcapacitor.JSObject;
+          import com.getcapacitor.Plugin;
+          import com.getcapacitor.PluginCall;
+          import com.getcapacitor.PluginMethod;
+          import com.getcapacitor.annotation.CapacitorPlugin;
+
+          @CapacitorPlugin(name = "IconSwitcher")
+          public class IconSwitcherPlugin extends Plugin {
+              private static final String[] KEYS = {"original", "atlas", "studio", "barq", "pulse", "royal", "nile", "sahara", "layl"};
+
+              private ComponentName alias(String key) {
+                  String cls = "__PKG__.Icon" + Character.toUpperCase(key.charAt(0)) + key.substring(1);
+                  return new ComponentName(getContext().getPackageName(), cls);
+              }
+
+              private boolean isEnabled(String key) {
+                  PackageManager pm = getContext().getPackageManager();
+                  int state = pm.getComponentEnabledSetting(alias(key));
+                  if (state == PackageManager.COMPONENT_ENABLED_STATE_ENABLED) return true;
+                  return state == PackageManager.COMPONENT_ENABLED_STATE_DEFAULT && "original".equals(key);
+              }
+
+              @PluginMethod
+              public void getIcon(PluginCall call) {
+                  String current = "original";
+                  for (String k : KEYS) {
+                      if (isEnabled(k)) {
+                          current = k;
+                          break;
+                      }
+                  }
+                  JSObject res = new JSObject();
+                  res.put("key", current);
+                  call.resolve(res);
+              }
+
+              @PluginMethod
+              public void setIcon(PluginCall call) {
+                  String key = call.getString("key");
+                  boolean valid = false;
+                  for (String k : KEYS) {
+                      if (k.equals(key)) valid = true;
+                  }
+                  if (!valid) {
+                      call.reject("unknown icon");
+                      return;
+                  }
+                  try {
+                      PackageManager pm = getContext().getPackageManager();
+                      pm.setComponentEnabledSetting(alias(key), PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+                      for (String k : KEYS) {
+                          if (!k.equals(key)) {
+                              pm.setComponentEnabledSetting(alias(k), PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+                          }
+                      }
+                      JSObject res = new JSObject();
+                      res.put("key", key);
+                      call.resolve(res);
+                  } catch (Exception e) {
+                      call.reject("could not switch icon: " + e.getMessage());
+                  }
+              }
+          }
+          """.replace("__PKG__", pkg)
+
+          main = """package __PKG__;
+
+          import android.os.Bundle;
+
+          import com.getcapacitor.BridgeActivity;
+
+          public class MainActivity extends BridgeActivity {
+              @Override
+              public void onCreate(Bundle savedInstanceState) {
+                  registerPlugin(IconSwitcherPlugin.class);
+                  super.onCreate(savedInstanceState);
+              }
+          }
+          """.replace("__PKG__", pkg)
+
+          (main_java.parent / "IconSwitcherPlugin.java").write_text(plugin, encoding="utf-8")
+          main_java.write_text(main, encoding="utf-8")
+          print("switchable icons done, package " + pkg)
+          PY
+
       - name: Build APK
         run: |
           cd android
