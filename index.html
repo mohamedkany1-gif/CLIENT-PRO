@@ -75,7 +75,11 @@ label{font-size:12px;font-weight:700;color:#59616d;display:block;margin:0 0 8px}
 .form-actions .btn{min-width:130px}
 .hidden{display:none!important}
 
-.tablewrap{overflow:auto;max-height:330px;border:1px solid #e9ebf0;border-radius:14px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-x pan-y;will-change:scroll-position}
+/* Custom Day/Month/Year Date Selects */
+.dmy-grid{display:grid;grid-template-columns:1fr 1.25fr 1.15fr;gap:8px;direction:rtl}
+.dmy-grid select{padding:11px 8px;text-align:center;font-weight:650}
+
+.tablewrap{overflow:auto;max-height:330px;border:1px solid #e9ebf0;border-radius:14px;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;transition:transform .16s ease}
 .tablewrap.drag-pulling{transition:none}
 table{width:100%;border-collapse:collapse;min-width:920px;background:#fff}
 th,td{padding:13px 12px;text-align:right;border-bottom:1px solid var(--line);font-size:13px;vertical-align:top}
@@ -93,8 +97,6 @@ tbody tr:hover{background:#fff9fa}
 .empty{text-align:center;color:var(--muted);padding:42px 18px;font-size:13px}
 .foot{text-align:center;color:#9298a2;font-size:11px;padding:8px 0 calc(28px + var(--sab))}
 .badge{background:#f9ecee;color:#962a37;border:1px solid #f2dadd;border-radius:30px;padding:6px 11px;font-weight:700;font-size:11px}
-.update-pill-alert{display:inline-flex;align-items:center;gap:6px;background:#ecfdf5;color:#047857;border:1px solid #a7f3d0;border-radius:20px;padding:4px 10px;font-size:11px;font-weight:800}
-html.dark .update-pill-alert{background:#123026;color:#6ee7b7;border-color:#225443}
 .filter-chip{display:inline-flex;align-items:center;gap:6px;background:#fff0f1;color:#962a37;border:1px solid #f2cfd3;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700}
 .filter-chip button{border:0;background:transparent;color:#962a37;font-weight:800;cursor:pointer;font-size:14px;padding:0 2px}
 .toast{position:fixed;bottom:calc(20px + var(--sab));left:50%;transform:translateX(-50%);background:#252932;color:#fff;padding:13px 19px;border-radius:13px;box-shadow:0 10px 35px #11182735;z-index:40;font-size:13px;max-width:92%;text-align:center}
@@ -118,6 +120,7 @@ html.dark .update-pill-alert{background:#123026;color:#6ee7b7;border-color:#2254
 .photo-pick.gallery{background:#fff;border-color:#dce0e8;color:#30343b}
 .photo-pick input{display:none}
 .photo-preview{display:none;width:100%;max-width:260px;max-height:190px;object-fit:contain;border:1px solid var(--line);border-radius:12px;margin-top:12px;padding:6px;background:#fff}
+
 
 .hint{font-size:11px;color:var(--muted);line-height:1.8;margin-top:10px}
 .login-status-note{font-size:11px;color:var(--muted);line-height:1.8;margin-top:12px;text-align:center;min-height:20px}
@@ -250,6 +253,7 @@ tbody tr:hover{background:#FFF7F9}
 .client-name-trigger{background:none;border:0;padding:0;margin:0;font:inherit;font-weight:700;color:var(--ink);text-align:right;cursor:pointer;display:inline-block;text-decoration:underline;text-decoration-color:rgba(196,30,92,.35);text-underline-offset:4px}
 .client-name-trigger:hover{color:var(--c3)}
 
+
 .quick-contact-row{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:5px}
 .quick-call-btn,.quick-wa-btn{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border-radius:9px;font-size:11px;font-weight:700;text-decoration:none;border:1px solid transparent;cursor:pointer;transition:transform .14s,box-shadow .14s}
 .quick-call-btn{background:#EEF5FF;color:#1D4ED8;border-color:#BFDBFE}
@@ -262,359 +266,20 @@ tbody tr:hover{background:#FFF7F9}
 .status-completed{background:#ECFDF5;color:#047857;border-color:#A7F3D0}
 .visit-status-select{padding:5px 8px;border-radius:9px;font-size:11px;font-weight:700;border:1px solid #E5C2CC;background:#FFFDFC;color:#2B0F1B;width:auto;min-width:118px;cursor:pointer}
 
-/* Theme Toggle Button */
-.theme-toggle-btn{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,.32);background:rgba(255,255,255,.16);color:#fff;border-radius:30px;padding:8px 13px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:transform .16s,background .16s,border-color .16s;white-space:nowrap}
-.theme-toggle-btn:hover{background:rgba(255,255,255,.26);transform:translateY(-1px)}
-.login-card .theme-toggle-btn{background:#FFF0F3;color:#881144;border-color:#F2C8D3;padding:6px 12px;font-size:11px}
-.login-card .theme-toggle-btn:hover{background:#FFE2E8}
-
-html.dark{
-  --c1:#6E0722;
-  --c2:#881144;
-  --c3:#C41E5C;
-  --c4:#C24366;
-  --c5:#FF69B4;
-  --c6:#26121A;
-  --red:#C41E5C;
-  --red2:#881144;
-  --bg:#180A10;
-  --card:#211118;
-  --ink:#F7EDF0;
-  --muted:#C2A4AE;
-  --line:#3B202C;
-  --shadow:0 16px 38px rgba(0,0,0,.52);
-  --grad:linear-gradient(90deg,#6E0722 0%,#8B1245 55%,#B81B56 100%)
-}
-html.dark body{
-  color:var(--ink);
-  background:radial-gradient(circle at 85% 0,rgba(196,30,92,.28) 0,transparent 42%),radial-gradient(circle at 10% 100%,rgba(110,7,34,.36) 0,transparent 48%),#16090F
-}
-html.dark body::before,
-html.dark .top{
-  background:var(--grad);
-  box-shadow:0 14px 32px rgba(0,0,0,.45)
-}
-html.dark .userbar span{
-  background:rgba(24,10,16,.38);
-  border-color:rgba(255,255,255,.22);
-  color:#fff
-}
-html.dark .userbar .btn{
-  background:#221017;
-  color:#F7EDF0;
-  border:1px solid #4D2838
-}
-html.dark .stat,
-html.dark .panel,
-html.dark .modalbox,
-html.dark .login-card,
-html.dark .report-sheet{
-  background:#201017;
-  border-color:#3A1F2B;
-  color:var(--ink);
-  box-shadow:var(--shadow)
-}
-html.dark .stat.active{
-  background:linear-gradient(145deg,#25121A,#341522);
-  border:2px solid #C41E5C;
-  box-shadow:0 14px 30px rgba(196,30,92,.25)
-}
-html.dark .stat span,
-html.dark label,
-html.dark .sub,
-html.dark .hint,
-html.dark .foot,
-html.dark .empty,
-html.dark .report-row-label{
-  color:var(--muted)
-}
-html.dark .stat strong,
-html.dark .toolbar h2,
-html.dark .modalhead h2,
-html.dark .login-card h2,
-html.dark .dash-item-title,
-html.dark .report-sheet-title-group h3,
-html.dark .report-row-val,
-html.dark .client-name-trigger{
-  color:var(--ink)
-}
-html.dark .stat-icon{
-  background:#2D1520;
-  color:#FF7AA0
-}
-html.dark .stat-foot{
-  color:#E8DCE1;
-  border-top-color:#3A1F2B
-}
-html.dark .btn{
-  background:#28141D;
-  color:var(--ink);
-  border-color:#422331
-}
-html.dark .btn:hover{
-  background:#341925
-}
-html.dark .btn.primary{
-  background:linear-gradient(135deg,#C41E5C,#881144);
-  color:#fff;
-  border:0;
-  box-shadow:0 8px 20px rgba(196,30,92,.32)
-}
-html.dark .btn.danger{
-  background:#34131C;
-  border-color:#5E2332;
-  color:#FF8DA6
-}
-html.dark input,
-html.dark textarea,
-html.dark select,
-html.dark .search,
-html.dark .visit-status-select{
-  background:#26131B;
-  color:var(--ink);
-  border-color:#422331
-}
-html.dark input::placeholder,
-html.dark textarea::placeholder{
-  color:#957882
-}
-html.dark input:focus,
-html.dark textarea:focus,
-html.dark select:focus{
-  border-color:#D42A6A;
-  box-shadow:0 0 0 4px rgba(196,30,92,.22)
-}
-html.dark .tablewrap{
-  border-color:#3A1F2B;
-  background:#201017
-}
-html.dark table{
-  background:#201017
-}
-html.dark th{
-  background:#29151E;
-  color:#D8BAC4;
-  border-bottom-color:#3D212E
-}
-html.dark td{
-  border-bottom-color:#2F1822
-}
-html.dark tbody tr:hover{
-  background:#2B151F
-}
-html.dark .date-pill{
-  background:#2C1620;
-  color:#F5E2E8
-}
-html.dark .badge,
-html.dark .filter-chip,
-html.dark .part-total{
-  background:#2F1622;
-  color:#FF8CA8;
-  border-color:#502839
-}
-html.dark .part-row,
-html.dark .photo-box,
-html.dark .dash-item,
-html.dark .report-row-card,
-html.dark .report-visits-box{
-  background:#25121A;
-  border-color:#3C202D
-}
-html.dark .report-visit-item{
-  background:#2C1620;
-  border-color:#422331
-}
-html.dark .photo-pick{
-  background:#2F1622;
-  border-color:#52293B;
-  color:#FF8CA8
-}
-html.dark .photo-pick.gallery{
-  background:#26131B;
-  border-color:#422331;
-  color:var(--ink)
-}
-html.dark .dash-tab{
-  background:#26131B;
-  border-color:#3F222F;
-  color:#DEC0CA
-}
-html.dark .dash-tab.active{
-  background:#C41E5C;
-  border-color:#C41E5C;
-  color:#fff
-}
-html.dark .report-sheet-head,
-html.dark .report-sheet-handle-wrap{
-  background:#25121A;
-  border-bottom-color:#3C202D
-}
-html.dark .report-close-btn{
-  background:#341623;
-  border-color:#56293C;
-  color:#FF8CA8
-}
-html.dark .reminder-banner{
-  background:linear-gradient(120deg,#2D1720,#381624);
-  color:var(--ink)
-}
-html.dark .reminder-banner strong{
-  color:#FF8DA9
-}
-html.dark .reminder-banner span{
-  color:#DEC2CB
-}
-html.dark .quick-call-btn{
-  background:#192842;
-  color:#93C5FD;
-  border-color:#2B4570
-}
-html.dark .quick-wa-btn{
-  background:#132E25;
-  color:#6EE7B7;
-  border-color:#225443
-}
-html.dark .status-new{
-  background:#192842;
-  color:#93C5FD;
-  border-color:#2B4570
-}
-html.dark .status-followup{
-  background:#332410;
-  color:#FCD34D;
-  border-color:#5C411A
-}
-html.dark .status-completed{
-  background:#132E25;
-  color:#6EE7B7;
-  border-color:#225443
-}
-html.dark .login-screen{
-  background:radial-gradient(circle at 80% 10%,rgba(196,30,92,.26) 0,transparent 40%),radial-gradient(circle at 15% 90%,rgba(110,7,34,.36) 0,transparent 45%),#16090F
-}
-html.dark .toast{
-  background:#2C1620;
-  color:#FFF3F7;
-  border:1px solid #4E2839
-}
-
-/* Settings Header: Full Room for Title + Compact Close Button */
-.settings-modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
-.settings-title-wrap{flex:1;min-width:0}
-.settings-title-wrap h2{font-size:18px;line-height:1.4;margin:0;white-space:normal}
-.settings-title-wrap .sub{font-size:12px;line-height:1.6;margin-top:4px;white-space:normal}
-.settings-head-actions{flex-shrink:0;margin-top:2px}
-.settings-close-btn{padding:6px 12px;font-size:12px;font-weight:700;border-radius:10px;min-width:0;width:auto}
-@media(max-width:650px){
-  .settings-modal-head{gap:10px}
-  .settings-title-wrap h2{font-size:16px;line-height:1.4}
-  .settings-close-btn{padding:6px 11px;font-size:11px;width:auto}
-}
-#loginScreen .theme-toggle-btn,
-.top .theme-toggle-btn{display:none!important}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
-<style id="v3-4-settings-header-fix">
-.settings-modal-head{
-  display:flex !important;
-  flex-direction:row !important;
-  align-items:center !important;
-  justify-content:space-between !important;
-  gap:12px !important;
-  width:100% !important;
-}
-.settings-title-wrap{
-  flex:1 1 auto !important;
-  min-width:0 !important;
-  max-width:none !important;
-}
-.settings-title-wrap h2{
-  font-size:17px !important;
-  line-height:1.35 !important;
-  margin:0 !important;
-  white-space:normal !important;
-  word-break:break-word !important;
-}
-.settings-title-wrap .sub{
-  font-size:11.5px !important;
-  line-height:1.45 !important;
-  margin-top:3px !important;
-  white-space:normal !important;
-  word-break:break-word !important;
-}
-.settings-head-actions{
-  flex:0 0 auto !important;
-  width:auto !important;
-  display:inline-flex !important;
-  align-items:center !important;
-}
-.settings-close-btn{
-  padding:8px 14px !important;
-  font-size:12px !important;
-  font-weight:700 !important;
-  border-radius:11px !important;
-  min-width:0 !important;
-  width:auto !important;
-  flex:0 0 auto !important;
-  white-space:nowrap !important;
-}
-@media(max-width:650px){
-  .settings-modal-head{
-    gap:10px !important;
-  }
-  .settings-title-wrap h2{
-    font-size:15.5px !important;
-  }
-  .settings-title-wrap .sub{
-    font-size:11px !important;
-  }
-  .settings-close-btn{
-    padding:7px 12px !important;
-    font-size:11.5px !important;
-  }
-}
-</style>
-
-<style id="v3-7-visit-swipe-delete">
-.visit-swipe-container{position:relative;overflow:hidden;border-radius:18px;background:#dc2626;border:1px solid #b91c1c;box-shadow:0 8px 22px rgba(220,38,38,.16)}
-.visit-swipe-rail{position:absolute;top:0;right:0;bottom:0;width:104px;z-index:1;display:flex;align-items:center;justify-content:center;padding:8px;background:linear-gradient(180deg,#dc2626 0%,#b91c1c 100%)}
-.visit-swipe-delete-btn{width:76px;height:76px;border:1.5px solid rgba(255,255,255,.35);border-radius:18px;background:rgba(127,29,29,.92);color:#fff;padding:6px;font:inherit;font-size:11px;font-weight:800;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.28);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:transform .15s,background .15s}
-.visit-swipe-delete-btn .trash-ico{font-size:20px;line-height:1}
-.visit-swipe-delete-btn:active{transform:scale(.94);background:#450a0a}
-.visit-swipe-card{position:relative;z-index:2;transition:transform .22s ease;touch-action:pan-y;user-select:none;will-change:transform}
-.visit-swipe-card.swiping{transition:none}
-</style>
-
-<style id="v3-8-grouped-visits-clear">
-.client-visits-group-card{display:flex;flex-direction:column;gap:12px;padding:16px;background:#FFFDFC;border:1.5px solid #ECC9D2;border-radius:20px;box-shadow:0 8px 22px rgba(128,0,33,.06)}
-html.dark .client-visits-group-card{background:#221118;border-color:#4A2535;box-shadow:0 10px 24px rgba(0,0,0,.35)}
-.client-visits-group-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding-bottom:10px;border-bottom:2px solid #C41E5C}
-.client-visits-group-title{font-size:16px;font-weight:800;color:#2B0F1B}
-html.dark .client-visits-group-title{color:#F7EDF0}
-.client-visits-group-sub{font-size:12px;font-weight:700;color:#881144;margin-top:2px}
-html.dark .client-visits-group-sub{color:#FF8CA8}
-.client-visit-entries{display:flex;flex-direction:column;gap:10px}
-.client-visit-entry-box{padding:12px 14px;border-radius:14px;background:#FFF7F9;border:1px solid #F3DCE2;display:flex;flex-direction:column;gap:7px}
-html.dark .client-visit-entry-box{background:#2A151E;border-color:#442332}
-.client-visit-entry-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
-.client-visit-date-tag{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:10px;background:#FFE8EE;color:#881144;font-size:12px;font-weight:800}
-html.dark .client-visit-date-tag{background:#3A1927;color:#FF9BB2}
-</style>
-
 </head>
 <body>
 <div id="loginScreen" class="login-screen">
- <form id="loginForm" class="login-card" autocomplete="off">
+ <form id="loginForm" class="login-card">
   <div class="brand">
    <svg class="brandmark" viewBox="0 0 64 64" role="img" aria-label="CLIENT PRO"><circle cx="32" cy="32" r="31" fill="#fff" stroke="#eee"/><path d="M39 13c-4-3-8-4-13-4C13 9 4 19 4 32s9 23 22 23c5 0 9-1 13-4l-8-9c-2 2-4 3-7 3-7 0-11-5-11-13s4-13 11-13c3 0 5 1 7 3z" fill="#a92835"/><path d="M39 23h19v7H39zm0 12h19v7H39z" fill="#a92835"/></svg>
    <div><h1>CLIENT PRO</h1><p>إدارة العملاء والزيارات وقطع الغيار</p></div>
   </div>
   <h2>تسجيل الدخول</h2>
-  <div class="field"><label for="loginUsername">اسم المستخدم</label><input id="loginUsername" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" required></div>
-  <div class="field"><label for="loginPassword">كلمة المرور</label><input id="loginPassword" type="password" autocomplete="new-password" required></div>
+  <div class="field"><label for="loginUsername">اسم المستخدم</label><input id="loginUsername" type="text" autocomplete="username" autocapitalize="none" required></div>
+  <div class="field"><label for="loginPassword">كلمة المرور</label><input id="loginPassword" type="password" autocomplete="current-password" required></div>
   <button class="btn primary" id="loginBtn" type="submit">دخول</button>
   <p id="loginStatusNote" class="login-status-note"></p>
  </form>
@@ -659,11 +324,6 @@ html.dark .client-visit-date-tag{background:#3A1927;color:#FF9BB2}
   <strong id="visitsCount">0</strong>
   <div class="stat-foot"><span>تقرير الزيارات والأسباب والقطع</span><span>←</span></div>
  </button>
- <button type="button" class="stat" id="statSettings" onclick="openSettingsModal()">
-  <div class="stat-top"><span>الإعدادات</span><span class="stat-icon">⚙️</span></div>
-  <strong id="settingsVersionBadge">v4.1</strong>
-  <div class="stat-foot"><span id="settingsCardFootText">الإصدار، التحديثات، المظهر واللغة</span><span>←</span></div>
- </button>
 </section>
 
 <input class="search" id="search" placeholder="بحث بالاسم، التليفون، الجهاز، العنوان..." aria-label="بحث في سجل العملاء">
@@ -688,8 +348,12 @@ html.dark .client-visit-date-tag{background:#3A1927;color:#FF9BB2}
   </div>
   <div><label for="rating">التقييم</label><select id="rating"><option value="">بدون تقييم</option><option value="5">5 ممتاز</option><option value="4">4 جيد جداً</option><option value="3">3 جيد</option><option value="2">2 مقبول</option><option value="1">1 ضعيف</option></select></div>
   <div>
-   <label for="initDateInput">تاريخ الزيارة (اكتبه أو اتركه فارغاً لتاريخ اليوم)</label>
-   <input id="initDateInput" type="text" dir="ltr" inputmode="numeric" placeholder="DD/MM/YYYY">
+   <label>تاريخ الزيارة (يوم / شهر / سنة)</label>
+   <div class="dmy-grid">
+    <select id="initDay" aria-label="اليوم"></select>
+    <select id="initMonth" aria-label="الشهر"></select>
+    <select id="initYear" aria-label="السنة"></select>
+   </div>
   </div>
   <div>
    <label for="reminderAt">ميعاد التذكير</label>
@@ -727,8 +391,12 @@ html.dark .client-visit-date-tag{background:#3A1927;color:#FF9BB2}
   <h3 style="font-size:15px;margin-top:0">إضافة زيارة</h3>
   <form id="visitForm"><input type="hidden" id="visitCustomerId"><div class="formgrid">
    <div>
-    <label for="visitDateInput">تاريخ الزيارة (اكتبه أو اتركه فارغاً لتاريخ اليوم)</label>
-    <input id="visitDateInput" type="text" dir="ltr" inputmode="numeric" placeholder="DD/MM/YYYY">
+    <label>تاريخ الزيارة (يوم / شهر / سنة)</label>
+    <div class="dmy-grid">
+     <select id="vDay" aria-label="اليوم"></select>
+     <select id="vMonth" aria-label="الشهر"></select>
+     <select id="vYear" aria-label="السنة"></select>
+    </div>
    </div>
    <div><label for="visitReminderAt">ميعاد تذكير للزيارة</label><input id="visitReminderAt" type="datetime-local"><div class="sub" id="visitReminderFormatted"></div></div>
    <div><label for="visitStatus">حالة الزيارة</label><select id="visitStatus"><option value="جديد">جديد</option><option value="قيد متابعة" selected>قيد متابعة</option><option value="مكتمل">مكتمل</option></select></div>
@@ -782,7 +450,6 @@ html.dark .client-visit-date-tag{background:#3A1927;color:#FF9BB2}
     <option value="قيد متابعة">قيد متابعة</option>
     <option value="مكتمل">مكتمل</option>
    </select>
-   <button class="btn mini danger" type="button" onclick="clearAllVisits()">🗑️ مسح الكل</button>
    <button class="btn mini primary" type="button" onclick="refreshVisitsReport()">تحديث التقرير</button>
    <button class="btn mini" type="button" onclick="closeVisitsReportModal()">إغلاق</button>
   </div>
@@ -790,78 +457,6 @@ html.dark .client-visit-date-tag{background:#3A1927;color:#FF9BB2}
  <div id="visitsReportList" class="dash-list"></div>
 </div></div>
 
-<div id="settingsModal" class="modal hidden" onclick="if(event.target===this)closeSettingsModal()"><div class="modalbox settings-modal-box" style="width:min(760px,100%)">
- <div class="modalhead settings-modal-head">
-  <div class="settings-title-wrap"><h2 id="settingsModalTitle">إعدادات التطبيق والنظام</h2><div class="sub" id="settingsModalSub">الإصدار · سجل التحديثات · الوضع الليلي · اللغة</div></div>
-  <div class="actions settings-head-actions">
-   <button type="button" class="btn settings-close-btn" onclick="closeSettingsModal()">إغلاق</button>
-  </div>
- </div>
-
- <div class="panel" style="margin-bottom:14px">
-  <div class="toolbar" style="margin-bottom:10px">
-   <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-    <h2 style="font-size:15px;margin:0">معلومات الإصدار والتحديثات</h2>
-    <span id="updateAvailableBadge" class="update-pill-alert hidden">🔔 نسخة جديدة متاحة</span>
-   </div>
-   <span class="badge" id="appVersionTag">الإصدار v4.1</span>
-  </div>
-  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px">
-   <div>
-    <div id="updateStatusTitle" style="font-weight:800;font-size:14px">جاري التحقق من حالة التحديثات...</div>
-    <div id="updateStatusDesc" class="sub">النسخة المثبتة حالياً: v4.1 — عند توفر نسخة أحدث سيظهر إشعار هنا للتحميل والتحديث.</div>
-   </div>
-   <div class="actions">
-    <button type="button" class="btn mini" id="checkUpdateBtn" onclick="checkForAppUpdate(true)">فحص التحديثات</button>
-    <button type="button" class="btn mini primary hidden" id="applyUpdateBtn" onclick="applyAppUpdate()">تحديث الآن</button>
-    <button type="button" class="btn mini" onclick="toggleWhatsNewDrawer()">ما الجديد</button>
-   </div>
-  </div>
-  <div id="whatsNewBox" class="report-visits-box" style="margin-top:8px">
-   <div class="report-visits-head"><span>✨ ما الجديد في الإصدار</span><span class="badge" id="whatsNewVersionBadge">v4.1</span></div>
-   <div class="report-visit-item">
-    <div style="font-weight:800;font-size:13px">• إشعار التحديث داخل الإعدادات وتأكيد «تم التحديث»</div>
-    <div class="sub">يظهر إشعار التحديث داخل الإعدادات دون تغيير تلقائي قبل ضغطك على «تحديث الآن»، وعند التحميل يظهر «تم التحديث».</div>
-   </div>
-   <div class="report-visit-item">
-    <div style="font-weight:800;font-size:13px">• إدخال تاريخ الزيارة يدوياً وتسجيل تاريخ اليوم تلقائياً عند تركه فارغاً</div>
-    <div class="sub">اكتب التاريخ بإيدك في الخانة الفاضية، ولو تركتها فارغة يتم تسجيل تاريخ اليوم تلقائياً.</div>
-   </div>
-   <div class="report-visit-item">
-    <div style="font-weight:800;font-size:13px">• تأمين الجلسة وقفل الخمول والمظهر واللغة</div>
-    <div class="sub">تأمين جلسة الجهاز، القفل التلقائي بعد دقيقتين من الخمول أو الخلفية، الوضع الليلي والنهاري، وتبديل اللغة.</div>
-   </div>
-  </div>
- </div>
-
- <div class="panel" style="margin-bottom:14px">
-  <div class="toolbar" style="margin-bottom:10px">
-   <h2 style="font-size:15px;margin:0">المظهر والوضع الليلي</h2>
-   <span class="badge" id="currentThemeBadge">الوضع الحالي</span>
-  </div>
-  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
-   <div class="sub" style="margin:0">التبديل بين الوضع الليلي الداكن والوضع النهاري الفاتح مع الحفظ التلقائي.</div>
-   <div class="actions">
-    <button type="button" class="btn mini" id="setLightModeBtn" onclick="setThemeModeExplicit('light')">☀️ الوضع النهاري</button>
-    <button type="button" class="btn mini primary" id="setDarkModeBtn" onclick="setThemeModeExplicit('dark')">🌙 الوضع الليلي</button>
-   </div>
-  </div>
- </div>
-
- <div class="panel" style="margin-bottom:0">
-  <div class="toolbar" style="margin-bottom:10px">
-   <h2 style="font-size:15px;margin:0">لغة الواجهة واتجاه العرض</h2>
-   <span class="badge" id="currentLangBadge">العربية (RTL)</span>
-  </div>
-  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
-   <div class="sub" style="margin:0">اختر لغة واجهة التطبيق (العربية أو English) مع ضبط الاتجاه تلقائياً.</div>
-   <div class="actions">
-    <button type="button" class="btn mini primary" id="langArBtn" onclick="setAppLanguage('ar')">العربية (عربي)</button>
-    <button type="button" class="btn mini" id="langEnBtn" onclick="setAppLanguage('en')">English (إنجليزي)</button>
-   </div>
-  </div>
- </div>
-</div></div>
 
 <div id="clientReportSheet" class="report-sheet-backdrop" role="dialog" aria-modal="true" aria-labelledby="reportSheetTitle" onclick="if(event.target===this)closeClientReport()">
  <div class="report-sheet" onclick="event.stopPropagation()">
@@ -888,54 +483,17 @@ const SUPABASE_KEY='sb_publishable_LCdc9EPosGfewwDJYQFNog_OLXOMlph';
 const LOGIN_USERNAME='Mohamed helal';
 const LOGIN_EMAIL='mohamedkany1@gmail.com';
 const SESSION_STORAGE_KEY='clientpro_device_session_id';
-const DEVICE_TOKEN_KEY='cp_device_token';
-const IDLE_LOCK_MS=2*60*1000;
 const notifiedReminderKeys=new Set();
 let dismissedReminderSig='';
 let activeBannerCustomerIds=[];
-
-function getDeviceToken(){
-  let tok=localStorage.getItem(DEVICE_TOKEN_KEY);
-  if(!tok){
-    tok=(crypto.randomUUID?crypto.randomUUID():(Date.now()+'-'+Math.random().toString(36).slice(2)));
-    localStorage.setItem(DEVICE_TOKEN_KEY,tok);
-  }
-  return tok;
-}
-const DEVICE_TOKEN=getDeviceToken();
-
-const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
-  global:{
-    headers:{
-      'x-device-token':DEVICE_TOKEN
-    }
-  }
-});
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const $=id=>document.getElementById(id);
-let customers=[],currentPhotoPath='',selectedPhotoFile=null,activeCustomer=null,heartbeatTimer=null,reminderTimer=null,idleCheckTimer=null,lastActivityAt=Date.now(),hiddenSinceAt=null,securityLockInProgress=false,dashboardFilter='all',searchScrollTimer=null,visibleLimit=null,filteredCustomersCache=[];
+let customers=[],currentPhotoPath='',selectedPhotoFile=null,activeCustomer=null,heartbeatTimer=null,reminderTimer=null,dashboardFilter='all',searchScrollTimer=null,visibleLimit=null,filteredCustomersCache=[];
+const INITIAL_RECORDS_LIMIT=null;
 
 function toast(message){$('toast').textContent=message;$('toast').classList.remove('hidden');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>$('toast').classList.add('hidden'),3500)}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function localDate(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
-
-function parseManualDate(rawVal){
-  const txt=String(rawVal||'').trim();
-  if(!txt)return '';
-  const arabicDigits='٠١٢٣٤٥٦٧٨٩';
-  const norm=txt.replace(/[٠-٩]/g,d=>String(arabicDigits.indexOf(d))).replace(/\s+/g,'');
-
-  let m=norm.match(/^(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})$/);
-  if(m){
-    return `${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`;
-  }
-
-  m=norm.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/);
-  if(m){
-    return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
-  }
-
-  return '';
-}
 
 function setLoginNote(msg){
   const el=$('loginStatusNote');
@@ -968,148 +526,30 @@ async function hasLiveInternetConnection(){
   }
 }
 
-async function registerAndVerifyDeviceSession(userId){
-  if(!userId||!DEVICE_TOKEN){
-    await db.auth.signOut().catch(()=>{});
-    throw new Error('تعذر تحديد هوية الجهاز.');
-  }
-  const {error}=await db
-    .from('user_active_sessions')
-    .upsert(
-      {
-        user_id:userId,
-        device_token:DEVICE_TOKEN,
-        updated_at:new Date().toISOString()
-      },
-      {onConflict:'user_id'}
-    );
-  if(error){
-    console.warn('Session upsert warning:',error);
-  }
-  const {data,error:readError}=await db
-    .from('user_active_sessions')
-    .select('device_token')
-    .eq('user_id',userId)
-    .maybeSingle();
-  if(readError){
-    console.warn('Session verify warning:',readError);
-    return;
-  }
-  if(data&&data.device_token&&data.device_token!==DEVICE_TOKEN){
-    await db.auth.signOut().catch(()=>{});
-    throw new Error('لا يُسمح بتسجيل الدخول لنفس الحساب من جهاز آخر أثناء فتح الجلسة الحالية.');
+// Populate Day / Month / Year dropdowns (يوم / شهر / سنة)
+const ARABIC_MONTHS=['01 - يناير','02 - فبراير','03 - مارس','04 - أبريل','05 - مايو','06 - يونيو','07 - يوليو','08 - أغسطس','09 - سبتمبر','10 - أكتوبر','11 - نوفمبر','12 - ديسمبر'];
+function initDMYSelectors(dayId,monthId,yearId){
+  const dSel=$(dayId),mSel=$(monthId),ySel=$(yearId);
+  dSel.innerHTML='<option value="">يوم</option>'+Array.from({length:31},(_,i)=>{const v=String(i+1).padStart(2,'0');return `<option value="${v}">${v}</option>`}).join('');
+  mSel.innerHTML='<option value="">شهر</option>'+ARABIC_MONTHS.map((label,i)=>{const v=String(i+1).padStart(2,'0');return `<option value="${v}">${label}</option>`}).join('');
+  const curYear=new Date().getFullYear();
+  let years='<option value="">سنة</option>';
+  for(let y=curYear+2;y>=2020;y--)years+=`<option value="${y}">${y}</option>`;
+  ySel.innerHTML=years;
+}
+function setDMYValue(dayId,monthId,yearId,isoDate){
+  if(!isoDate){$(dayId).value='';$(monthId).value='';$(yearId).value='';return}
+  const parts=String(isoDate).slice(0,10).split('-');
+  if(parts.length===3){
+    $(yearId).value=parts[0];
+    $(monthId).value=parts[1];
+    $(dayId).value=parts[2];
   }
 }
-
-async function checkServerDeviceSessionValid(userId){
-  if(!userId||!DEVICE_TOKEN)return false;
-  try{
-    const {data,error}=await db
-      .from('user_active_sessions')
-      .select('device_token')
-      .eq('user_id',userId)
-      .maybeSingle();
-    if(error)return true;
-    if(!data||!data.device_token)return true;
-    return data.device_token===DEVICE_TOKEN;
-  }catch(_){
-    return true;
-  }
-}
-
-async function forceSecurityLogout(reasonMsg){
-  if(securityLockInProgress)return;
-  securityLockInProgress=true;
-  try{
-    stopSessionGuards();
-    try{await db.rpc('clientpro_release_session',{p_device_session_id:getDeviceSessionId()})}catch(_){}
-    await db.auth.signOut().catch(()=>{});
-    customers=[];
-    window._lastLoadedVisits=[];
-    window._latestVisitMap={};
-    closeClientReport();
-    closeVisits();
-    closeDashboardModal();
-    closeVisitsReportModal();
-    closeSettingsModal();
-    closePhotoModal();
-    showLogin();
-    if(reasonMsg)showLoginMessage(reasonMsg);
-  }finally{
-    securityLockInProgress=false;
-  }
-}
-
-function recordUserActivity(){
-  if($('app').classList.contains('hidden'))return;
-  if(!document.hidden){
-    lastActivityAt=Date.now();
-  }
-}
-
-function initActivityAndBackgroundWatchers(){
-  if(window._securityWatchersBound)return;
-  window._securityWatchersBound=true;
-
-  ['mousemove','mousedown','keydown','touchstart','scroll','click'].forEach(evt=>{
-    document.addEventListener(evt,recordUserActivity,{passive:true});
-  });
-
-  document.addEventListener('visibilitychange',async()=>{
-    if($('app').classList.contains('hidden'))return;
-    if(document.hidden){
-      hiddenSinceAt=Date.now();
-    }else{
-      const now=Date.now();
-      const hiddenDuration=hiddenSinceAt?(now-hiddenSinceAt):0;
-      const idleDuration=now-lastActivityAt;
-      hiddenSinceAt=null;
-      if(hiddenDuration>=IDLE_LOCK_MS||idleDuration>=IDLE_LOCK_MS){
-        await forceSecurityLogout('تم قفل التطبيق تلقائياً بعد مرور دقيقتين في الخلفية أو بدون نشاط.');
-        return;
-      }
-      lastActivityAt=now;
-      const online=await hasLiveInternetConnection();
-      if(!online){
-        await forceSecurityLogout('انقطع الاتصال بالإنترنت — التطبيق لا يعمل بدون اتصال.');
-        return;
-      }
-      checkReminders();
-    }
-  });
-
-  window.addEventListener('blur',()=>{
-    if(!$('app').classList.contains('hidden')&&!hiddenSinceAt){
-      hiddenSinceAt=Date.now();
-    }
-  });
-
-  window.addEventListener('focus',async()=>{
-    if($('app').classList.contains('hidden'))return;
-    const now=Date.now();
-    const hiddenDuration=hiddenSinceAt?(now-hiddenSinceAt):0;
-    const idleDuration=now-lastActivityAt;
-    hiddenSinceAt=null;
-    if(hiddenDuration>=IDLE_LOCK_MS||idleDuration>=IDLE_LOCK_MS){
-      await forceSecurityLogout('تم قفل التطبيق تلقائياً بعد مرور دقيقتين في الخلفية أو بدون نشاط.');
-      return;
-    }
-    lastActivityAt=now;
-    const online=await hasLiveInternetConnection();
-    if(!online){
-      await forceSecurityLogout('انقطع الاتصال بالإنترنت — التطبيق لا يعمل بدون اتصال.');
-      return;
-    }
-    checkReminders();
-  });
-
-  window.addEventListener('offline',async()=>{
-    if(!$('app').classList.contains('hidden')){
-      await forceSecurityLogout('انقطع الاتصال بالإنترنت — التطبيق لا يعمل بدون اتصال.');
-    }else{
-      showLoginMessage('مفيش اتصال بالإنترنت — راجع الاتصال بالنت وحاول مرة أخرى');
-    }
-  });
+function getDMYValue(dayId,monthId,yearId){
+  const d=$(dayId).value,m=$(monthId).value,y=$(yearId).value;
+  if(!d||!m||!y)return '';
+  return `${y}-${m}-${d}`;
 }
 
 function formatDMY(dateStr){
@@ -1135,6 +575,7 @@ function formatDateTimeAR(dtStr){
   return `${day}/${month}/${year} · ${hours}:${mins} ${period}`;
 }
 
+// Interactive Dashboard Filter
 window.setDashboardFilter=async mode=>{
   dashboardFilter=mode;
   visibleLimit=null;
@@ -1154,6 +595,7 @@ window.setDashboardFilter=async mode=>{
   await render();
   $('recordsPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
 };
+
 
 let currentReportCustomerId = null;
 
@@ -1194,7 +636,7 @@ window.openClientReport = id => {
       <div class="report-row-card">
         <span class="report-row-label">${esc(label)}</span>
         <span class="report-row-val" ${label === 'رقم التليفون' ? 'dir="ltr" style="text-align:right"' : ''}>${esc(val)}</span>
-        ${label === 'رقم التليفون' ? renderQuickContactButtons(c.phone, c.name, c) : ''}
+        ${label === 'رقم التليفون' ? renderQuickContactButtons(c.phone, c.name) : ''}
       </div>
     `).join('') +
     (c.device_photo ? `
@@ -1269,9 +711,88 @@ document.addEventListener('keydown', e => {
 
 function initTableDragAndScroll(){
   const wrap=$('recordsTableWrap');
-  if(!wrap)return;
-  wrap.style.transform='';
-  wrap.classList.remove('drag-pulling');
+  let startY=0,startX=0,startScrollTop=0,startScrollLeft=0,dragging=false,mode=null,rubberOffset=0,revealLock=false;
+
+  const resetRubber=()=>{
+    wrap.classList.remove('drag-pulling');
+    wrap.style.transform='';
+    rubberOffset=0;
+  };
+
+  const revealMoreIfAvailable=async()=>{
+    // All records are already rendered directly without lazy batching
+  };
+
+  wrap.addEventListener('scroll',()=>{
+    if(visibleLimit>=filteredCustomersCache.length)return;
+    const nearBottom=wrap.scrollTop+wrap.clientHeight>=wrap.scrollHeight-28;
+    if(nearBottom){
+      revealMoreIfAvailable();
+    }
+  },{passive:true});
+
+  const onStart=(x,y)=>{
+    dragging=true;
+    mode=null;
+    startX=x;
+    startY=y;
+    startScrollTop=wrap.scrollTop;
+    startScrollLeft=wrap.scrollLeft;
+    rubberOffset=0;
+  };
+
+  const onMove=(x,y,ev)=>{
+    if(!dragging)return;
+    const dx=x-startX;
+    const dy=y-startY;
+    if(!mode){
+      if(Math.abs(dy)<8&&Math.abs(dx)<8)return;
+      mode=Math.abs(dy)>=Math.abs(dx)?'y':'x';
+    }
+    if(mode==='x'){
+      wrap.scrollLeft=startScrollLeft-dx;
+      return;
+    }
+    if(ev&&ev.cancelable)ev.preventDefault();
+    const desiredTop=startScrollTop-dy;
+    const maxScrollTop=Math.max(0,wrap.scrollHeight-wrap.clientHeight);
+
+    resetRubber();
+    wrap.scrollTop=Math.max(0,Math.min(maxScrollTop,desiredTop));
+  };
+
+  const onEnd=()=>{
+    if(!dragging)return;
+    const pulledDown=rubberOffset<-10;
+    dragging=false;
+    mode=null;
+    resetRubber();
+    if(pulledDown&&visibleLimit<filteredCustomersCache.length){
+      revealMoreIfAvailable();
+    }
+  };
+
+  wrap.addEventListener('touchstart',e=>{
+    if(e.touches.length===1)onStart(e.touches[0].clientX,e.touches[0].clientY);
+  },{passive:true});
+  wrap.addEventListener('touchmove',e=>{
+    if(e.touches.length===1)onMove(e.touches[0].clientX,e.touches[0].clientY,e);
+  },{passive:false});
+  wrap.addEventListener('touchend',onEnd);
+  wrap.addEventListener('touchcancel',onEnd);
+
+  wrap.addEventListener('mousedown',e=>{
+    if(e.button!==0||e.target.closest('button,img,a,input,select'))return;
+    onStart(e.clientX,e.clientY);
+    const moveHandler=ev=>onMove(ev.clientX,ev.clientY,ev);
+    const upHandler=()=>{
+      window.removeEventListener('mousemove',moveHandler);
+      window.removeEventListener('mouseup',upHandler);
+      onEnd();
+    };
+    window.addEventListener('mousemove',moveHandler);
+    window.addEventListener('mouseup',upHandler);
+  });
 }
 
 function getDeviceSessionId(){
@@ -1289,113 +810,49 @@ function getDeviceInfo(){
 }
 function startSessionGuards(){
   stopSessionGuards();
-  lastActivityAt=Date.now();
-  hiddenSinceAt=document.hidden?Date.now():null;
   const sid=getDeviceSessionId();
-
-  idleCheckTimer=setInterval(async()=>{
-    if($('app').classList.contains('hidden'))return;
-    const now=Date.now();
-    const idleDuration=now-lastActivityAt;
-    const hiddenDuration=hiddenSinceAt?(now-hiddenSinceAt):0;
-    if(idleDuration>=IDLE_LOCK_MS||hiddenDuration>=IDLE_LOCK_MS){
-      await forceSecurityLogout('تم قفل التطبيق تلقائياً بعد مرور دقيقتين في الخلفية أو بدون نشاط.');
-      return;
-    }
-    const online=await hasLiveInternetConnection();
-    if(!online){
-      await forceSecurityLogout('انقطع الاتصال بالإنترنت — التطبيق لا يعمل بدون اتصال.');
-    }
-  },5000);
-
   heartbeatTimer=setInterval(async()=>{
     try{
-      const online=await hasLiveInternetConnection();
-      if(!online){
-        await forceSecurityLogout('انقطع الاتصال بالإنترنت — التطبيق لا يعمل بدون اتصال.');
-        return;
-      }
       const {data:{session}}=await db.auth.getSession();
-      if(!session){
-        await forceSecurityLogout('انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى.');
-        return;
-      }
-      const tokenOk=await checkServerDeviceSessionValid(session.user.id);
-      if(!tokenOk){
-        await forceSecurityLogout('تم تسجيل الدخول من جهاز آخر أو انتهت صلاحية جلسة هذا الجهاز.');
-        return;
-      }
+      if(!session)return;
       const {data,error}=await db.rpc('clientpro_heartbeat_session',{p_device_session_id:sid});
       if(!error&&data&&data.ok===false&&data.reason==='taken_over_by_another_device'){
-        await forceSecurityLogout('لا يُسمح بتسجيل الدخول لنفس الحساب من جهاز آخر أثناء فتح الجلسة الحالية.');
+        stopSessionGuards();
+        await db.auth.signOut();
+        showLogin();
+        setLoginNote('لا يُسمح بتسجيل الدخول لنفس الحساب من جهاز آخر أثناء فتح الجلسة الحالية.');
       }
-    }catch(e){
-      console.warn('heartbeat error',e);
-      if(isNetworkError(e)||!(await hasLiveInternetConnection())){
-        await forceSecurityLogout('انقطع الاتصال بالإنترنت — التطبيق لا يعمل بدون اتصال.');
-      }
-    }
-  },20000);
-
-  reminderTimer=setInterval(checkReminders,10000);
+    }catch(e){console.warn('heartbeat error',e)}
+  },25000);
+  reminderTimer=setInterval(checkReminders,10000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkReminders()});window.addEventListener('focus',checkReminders);
 }
 function stopSessionGuards(){
   if(heartbeatTimer){clearInterval(heartbeatTimer);heartbeatTimer=null}
   if(reminderTimer){clearInterval(reminderTimer);reminderTimer=null}
-  if(idleCheckTimer){clearInterval(idleCheckTimer);idleCheckTimer=null}
 }
 
 async function requireSession(){
-  const online=await hasLiveInternetConnection();
-  if(!online){
-    showLogin();
-    showLoginMessage('مفيش اتصال بالإنترنت — التطبيق لا يعمل بدون اتصال.');
-    return;
-  }
-
   const {data:{session}}=await db.auth.getSession();
-  if(!session || !session.user){
-    showLogin();
-    return;
-  }
-
-  try{
-    await registerAndVerifyDeviceSession(session.user.id);
-  }catch(err){
-    showLogin();
-    showLoginMessage(err?.message||'تعذر تأكيد جلسة الجهاز من السيرفر، تم تسجيل الخروج.');
-    return;
-  }
-
+  if(!session){showLogin();return}
   const sid=getDeviceSessionId();
-  try{
-    const {data,error}=await db.rpc('clientpro_claim_session',{p_device_session_id:sid,p_device_info:getDeviceInfo(),p_force:false});
-    if(!error&&data&&data.ok===false&&data.reason==='already_logged_in_elsewhere'){
-      await db.auth.signOut().catch(()=>{});
-      showLogin();
-      showLoginMessage('لا يُسمح بتسجيل الدخول لنفس الحساب من جهاز آخر أثناء فتح الجلسة الحالية.');
-      return;
-    }
-  }catch(_){}
-
+  const {data,error}=await db.rpc('clientpro_claim_session',{p_device_session_id:sid,p_device_info:getDeviceInfo(),p_force:false});
+  if(!error&&data&&data.ok===false&&data.reason==='already_logged_in_elsewhere'){
+    await db.auth.signOut();
+    showLogin();
+    setLoginNote('لا يُسمح بتسجيل الدخول لنفس الحساب من جهاز آخر أثناء فتح الجلسة الحالية.');
+    return;
+  }
   showApp(session);
   startSessionGuards();
   await loadCustomers();
 }
 
-function showLogin(){
-  $('loginScreen').classList.remove('hidden');
-  $('app').classList.add('hidden');
-}
-
+function showLogin(){$('loginScreen').classList.remove('hidden');$('app').classList.add('hidden')}
 function showApp(session){
-  if(!session || !session.user)return;
   setLoginNote('');
   $('loginScreen').classList.add('hidden');
   $('app').classList.remove('hidden');
-  lastActivityAt=Date.now();
-  hiddenSinceAt=null;
-  const email=session.user.email||'';
+  const email=session?.user?.email||'';
   $('userEmail').textContent=email.toLowerCase()===LOGIN_EMAIL.toLowerCase()?LOGIN_USERNAME:email;
 }
 
@@ -1413,23 +870,15 @@ function showLoginMessage(msg){
 
 $('loginForm').addEventListener('submit',async e=>{
   e.preventDefault();
-  e.stopPropagation();
-
-  const submitter=e.submitter;
-  if(submitter&&submitter.id!=='loginBtn'){
-    return;
-  }
-
   showLoginMessage('');
   const btn=$('loginBtn');
   if(btn)btn.disabled=true;
-
   try{
     const rawUser=($('loginUsername')?.value||'').trim();
     const username=rawUser.toLowerCase().replace(/\s+/g,' ');
     const password=$('loginPassword')?.value||'';
 
-    if(!rawUser||!password.trim()){
+    if(!rawUser||!password){
       showLoginMessage('اكتب اسم المستخدم وكلمة المرور أولاً');
       return;
     }
@@ -1446,8 +895,8 @@ $('loginForm').addEventListener('submit',async e=>{
     }
 
     const {data,error}=await db.auth.signInWithPassword({email:LOGIN_EMAIL,password});
-    if(error||!data?.session){
-      if(error&&(isNetworkError(error)||!(await hasLiveInternetConnection()))){
+    if(error){
+      if(isNetworkError(error)||!(await hasLiveInternetConnection())){
         showLoginMessage('مفيش اتصال بالإنترنت — راجع الاتصال بالنت وحاول مرة أخرى');
       }else{
         showLoginMessage('اسم المستخدم أو كلمة المرور خطأ — راجع البيانات وحاول مرة أخرى');
@@ -1455,29 +904,25 @@ $('loginForm').addEventListener('submit',async e=>{
       return;
     }
 
-    await registerAndVerifyDeviceSession(data.user.id);
-
     const sid=getDeviceSessionId();
-    try{
-      const {data:claim,error:claimError}=await db.rpc('clientpro_claim_session',{p_device_session_id:sid,p_device_info:getDeviceInfo(),p_force:false});
-      if(!claimError&&claim&&claim.ok===false&&claim.reason==='already_logged_in_elsewhere'){
-        await db.auth.signOut().catch(()=>{});
-        showLoginMessage('لا يُسمح بتسجيل الدخول لنفس الحساب من جهاز آخر أثناء فتح الجلسة الحالية.');
-        return;
-      }
-    }catch(_){}
-
-    showApp(data.session);
+    const {data:claim,error:claimError}=await db.rpc('clientpro_claim_session',{p_device_session_id:sid,p_device_info:getDeviceInfo(),p_force:false});
+    if(claimError){
+      console.warn('Session RPC notice:',claimError.message);
+    }else if(claim&&claim.ok===false&&claim.reason==='already_logged_in_elsewhere'){
+      await db.auth.signOut();
+      showLoginMessage('لا يُسمح بتسجيل الدخول لنفس الحساب من جهاز آخر أثناء فتح الجلسة الحالية.');
+      return;
+    }
+    showApp(data);
     startSessionGuards();
     await loadCustomers();
     toast('أهلاً بك Mohamed helal');
   }catch(err){
     console.error(err);
-    await db.auth.signOut().catch(()=>{});
     if(isNetworkError(err)||!(await hasLiveInternetConnection())){
       showLoginMessage('مفيش اتصال بالإنترنت — راجع الاتصال بالنت وحاول مرة أخرى');
     }else{
-      showLoginMessage(err?.message||'تعذر تسجيل الدخول — راجع البيانات وحاول مرة أخرى');
+      showLoginMessage('اسم المستخدم أو كلمة المرور خطأ — راجع البيانات وحاول مرة أخرى');
     }
   }finally{
     if(btn)btn.disabled=false;
@@ -1495,7 +940,7 @@ $('logoutBtn').onclick=async()=>{
 
 db.auth.onAuthStateChange((event,session)=>{
   if(event==='SIGNED_OUT'){stopSessionGuards();showLogin()}
-  if(event==='TOKEN_REFRESHED'&&session&&!$ ('app').classList.contains('hidden'))showApp(session)
+  if(event==='TOKEN_REFRESHED'&&session)showApp(session)
 });
 
 async function uploadPhoto(file,customerId){
@@ -1513,10 +958,6 @@ async function signedPhoto(path){
 
 async function loadCustomers(){
   try{
-    if(!(await hasLiveInternetConnection())){
-      await forceSecurityLogout('انقطع الاتصال بالإنترنت — التطبيق لا يعمل بدون اتصال.');
-      return;
-    }
     const {data,error}=await db.from('customers').select('*').order('created_at',{ascending:false});
     if(error)throw error;
     customers=data||[];
@@ -1541,10 +982,6 @@ async function loadCustomers(){
     checkReminders();
   }catch(err){
     console.error(err);
-    if(isNetworkError(err)||!(await hasLiveInternetConnection())){
-      await forceSecurityLogout('انقطع الاتصال بالإنترنت — التطبيق لا يعمل بدون اتصال.');
-      return;
-    }
     toast('تعذر تحميل العملاء. راجع اتصال قاعدة البيانات والصلاحيات');
   }
 }
@@ -1608,7 +1045,7 @@ async function render(){
       : '—';
     return `<tr class="client-row-clickable" data-customer-id="${c.id}">
       <td><button type="button" class="client-name-trigger name" onclick="openClientReport('${c.id}')" title="عرض تقرير بيانات العميل">${esc(c.name)}</button><div class="sub">${esc(c.notes||'')}</div></td>
-      <td><div dir="ltr" style="text-align:right">${esc(c.phone||'—')}</div>${renderQuickContactButtons(c.phone,c.name,c)}</td>
+      <td><div dir="ltr" style="text-align:right">${esc(c.phone||'—')}</div>${renderQuickContactButtons(c.phone,c.name)}</td>
       <td>${esc(c.address||'—')}</td>
       <td><span class="date-pill" data-latest-visit="${c.id}">${esc(formatDMY(window._latestVisitMap[c.id]))}</span></td>
       <td>${remHtml}</td>
@@ -1636,6 +1073,7 @@ function syncReminderLabels(){
 $('reminderAt').addEventListener('input',syncReminderLabels);
 $('visitReminderAt').addEventListener('input',syncReminderLabels);
 
+// Photo handlers (Camera + Device Gallery)
 function handlePickedPhoto(file){
   if(!file)return;
   selectedPhotoFile=file;
@@ -1917,15 +1355,7 @@ $('customerForm').addEventListener('submit',async e=>{
     else if(!currentPhotoPath)photoPath=null;
 
     const reminderVal=$('reminderAt').value?new Date($('reminderAt').value).toISOString():null;
-    const rawInitDate=($('initDateInput')?.value||'').trim();
-    const parsedInitDate=parseManualDate(rawInitDate);
-    if(rawInitDate&&!parsedInitDate){
-      toast('صيغة التاريخ غير صحيحة — اكتبها مثل 24/11/2026 أو اتركها فارغة');
-      $('saveBtn').disabled=false;
-      return;
-    }
-    const initDateVal=parsedInitDate||localDate();
-
+    const initDateVal=getDMYValue('initDay','initMonth','initYear');
     const payload={
       id,
       name:formValue('name'),
@@ -1941,8 +1371,8 @@ $('customerForm').addEventListener('submit',async e=>{
     if(old){
       const result=await db.from('customers').update(payload).eq('id',id).select().single();
       if(result.error)throw result.error;
-      if(parsedInitDate||parts.length){
-        const {data:visit,error:visitError}=await db.from('visits').insert({customer_id:id,visit_date:initDateVal,problem_description:payload.problem_description,notes:payload.notes}).select().single();
+      if(initDateVal||parts.length){
+        const {data:visit,error:visitError}=await db.from('visits').insert({customer_id:id,visit_date:initDateVal||localDate(),problem_description:payload.problem_description,notes:payload.notes}).select().single();
         if(visitError)throw visitError;
         if(parts.length){const {error:partsError}=await db.from('spare_parts').insert(parts.map(p=>({...p,visit_id:visit.id})));if(partsError){await db.from('visits').delete().eq('id',visit.id);throw partsError}}
         await logActivity(id,'visited','تسجيل زيارة وقطع غيار');
@@ -1950,7 +1380,7 @@ $('customerForm').addEventListener('submit',async e=>{
       await logActivity(id,'updated','تعديل بيانات العميل');
       toast('تم تحديث بيانات العميل');
     }else{
-      const visit={visit_date:initDateVal,problem_description:payload.problem_description,notes:payload.notes};
+      const visit={visit_date:initDateVal||localDate(),problem_description:payload.problem_description,notes:payload.notes};
       const {data,error}=await db.rpc('clientpro_create_customer_visit',{p_customer:payload,p_parts:parts,p_visit:visit});
       if(error)throw error;
       const savedId=typeof data==='string'?data:(data?.id||id);
@@ -1985,7 +1415,7 @@ window.editCustomer=async id=>{
     $('reminderAt').value='';
   }
   $('editId').value=id;
-  if($('initDateInput'))$('initDateInput').value='';
+  setDMYValue('initDay','initMonth','initYear','');
   $('initialPartsEditor').innerHTML='';
   updatePartsTotal('initialPartsEditor','initialPartsTotal');
   currentPhotoPath=c.device_photo||'';
@@ -2025,7 +1455,7 @@ function resetForm(){
   $('removePhoto').classList.add('hidden');
   $('initialPartsEditor').innerHTML='';
   updatePartsTotal('initialPartsEditor','initialPartsTotal');
-  if($('initDateInput'))$('initDateInput').value='';
+  setDMYValue('initDay','initMonth','initYear',localDate());
   $('reminderAt').value='';
   $('formTitle').textContent='إضافة عميل جديد';
   $('saveBtn').textContent='حفظ العميل';
@@ -2055,7 +1485,7 @@ window.openVisits=async id=>{
   if(!activeCustomer)return;
   $('visitTitle').textContent=`زيارات وقطع غيار: ${activeCustomer.name}`;
   $('visitCustomerId').value=id;
-  if($('visitDateInput'))$('visitDateInput').value='';
+  setDMYValue('vDay','vMonth','vYear',localDate());
   $('visitReminderAt').value='';
   $('visitProblem').value='';
   $('visitNotes').value='';
@@ -2099,10 +1529,8 @@ $('visitForm').addEventListener('submit',async e=>{
   e.preventDefault();
   const customerId=$('visitCustomerId').value;
   const parts=collectParts('partsEditor');
-  const rawVDate=($('visitDateInput')?.value||'').trim();
-  const parsedVDate=parseManualDate(rawVDate);
-  if(rawVDate&&!parsedVDate){toast('صيغة التاريخ غير صحيحة — اكتبها مثل 24/11/2026 أو اتركها فارغة');return}
-  const vDate=parsedVDate||localDate();
+  const vDate=getDMYValue('vDay','vMonth','vYear');
+  if(!vDate){toast('اختر اليوم والشهر والسنة للزيارة');return}
   if([...$('partsEditor').querySelectorAll('.part-row')].some(r=>r.querySelector('.p-name').value.trim()&&(!(Number(r.querySelector('.p-qty').value)>0)||Number(r.querySelector('.p-price').value)<0))){toast('راجع كمية وسعر قطع الغيار');return}
   $('saveVisitBtn').disabled=true;
   try{
@@ -2138,7 +1566,7 @@ $('visitForm').addEventListener('submit',async e=>{
     }
     await logActivity(customerId,'visited','تسجيل زيارة وقطع غيار');
     toast('تم حفظ الزيارة وقطع الغيار');
-    if($('visitDateInput'))$('visitDateInput').value='';
+    setDMYValue('vDay','vMonth','vYear',localDate());
     $('visitReminderAt').value='';
     $('visitProblem').value='';
     $('visitNotes').value='';
@@ -2173,6 +1601,8 @@ async function loadVisitHistory(customerId){
   }catch(err){console.error(err);$('visitHistory').innerHTML='<div class="empty">تعذر تحميل سجل الزيارات.</div>'}
 }
 
+
+// Photo Lightbox Modal
 window.openPhotoModal=(url,clientName,deviceType)=>{
   if(!url)return;
   $('photoModalImg').src=url;
@@ -2186,6 +1616,7 @@ window.closePhotoModal=()=>{
   $('photoModalImg').src='';
 };
 
+// Interactive Dashboard Modal
 let currentDashTab='all';
 window.openDashboardModal=tab=>{
   currentDashTab=tab||'all';
@@ -2357,6 +1788,7 @@ $('exportBtn').onclick=async()=>{
   }finally{btn.disabled=false;btn.textContent=oldText}
 };
 
+
 window.closeVisitsReportModal = () => {
   const m = $('visitsReportModal');
   if (m) m.classList.add('hidden');
@@ -2367,9 +1799,7 @@ window.refreshVisitsReport = async () => {
   if (!listEl) return;
   listEl.innerHTML = '<div class="empty">جاري تحميل تقرير الزيارات...</div>';
   try {
-    const { data: vListRaw, error: vErr } = await db.from('visits').select('*').order('visit_date', { ascending: false }).limit(120);
-    const vList = (vListRaw || []).map(v => ({ ...v, status: getStoredVisitStatus(v.id, v.status) }));
-    window._lastLoadedVisits = vList;
+    const { data: vList, error: vErr } = await db.from('visits').select('*').order('visit_date', { ascending: false }).limit(80);
     if (vErr) throw vErr;
     if ($('visitsCount')) $('visitsCount').textContent = (vList || []).length;
     if (!vList || !vList.length) {
@@ -2394,84 +1824,58 @@ window.refreshVisitsReport = async () => {
       ? vList
       : vList.filter(v => getStoredVisitStatus(v.id, v.status) === statusFilterVal);
 
-    const groupedMap = new Map();
-    filteredVisits.forEach(v => {
-      const cid = v.customer_id || 'unknown';
-      if (!groupedMap.has(cid)) groupedMap.set(cid, []);
-      groupedMap.get(cid).push(v);
-    });
-
-    $('visitsReportSub').textContent = `إجمالي الزيارات المعروضة: ${filteredVisits.length} زيارة عبر ${groupedMap.size} عميل${totalAmtTxt}`;
+    $('visitsReportSub').textContent = `إجمالي الزيارات المعروضة: ${filteredVisits.length} من ${vList.length} زيارة${totalAmtTxt}`;
     if (!filteredVisits.length) {
       listEl.innerHTML = '<div class="empty">لا توجد زيارات مطابقة للحالة المختارة.</div>';
       return;
     }
-
-    listEl.innerHTML = [...groupedMap.entries()].map(([cid, clientVisits]) => {
-      const c = custMap[cid] || {};
+    listEl.innerHTML = filteredVisits.map(v => {
+      const c = custMap[v.customer_id] || {};
       const cname = c.name || 'عميل';
       const cphone = c.phone || 'غير مسجل';
       const caddress = c.address || 'غير مسجل';
       const cdevice = c.device_type || 'غير محدد';
-      const clientAllPartsTotal = clientVisits.reduce((acc, vv) => {
-        const vp = partsByVisit[vv.id] || [];
-        return acc + vp.reduce((s, p) => s + Number(p.quantity) * Number(p.unit_price), 0);
-      }, 0);
+      const vStatus = getStoredVisitStatus(v.id, v.status);
+      const vp = partsByVisit[v.id] || [];
+      const vTotal = vp.reduce((s, p) => s + Number(p.quantity) * Number(p.unit_price), 0);
+      const partsTxt = vp.length
+        ? vp.map(p => `${esc(p.part_name)} (${esc(p.quantity)} × ${Number(p.unit_price).toFixed(2)})`).join('، ')
+        : 'لا توجد قطع غيار';
+      const reasonTxt = v.problem_description || c.problem_description || 'غير محدد';
+      const notesTxt = v.notes || 'لا توجد ملاحظات';
 
-      const visitsHtml = clientVisits.map((v, idx) => {
-        const vStatus = getStoredVisitStatus(v.id, v.status);
-        const vp = partsByVisit[v.id] || [];
-        const vTotal = vp.reduce((s, p) => s + Number(p.quantity) * Number(p.unit_price), 0);
-        const partsTxt = vp.length
-          ? vp.map(p => `${esc(p.part_name)} (${esc(p.quantity)} × ${Number(p.unit_price).toFixed(2)})`).join('، ')
-          : 'لا توجد قطع غيار';
-        const reasonTxt = v.problem_description || c.problem_description || 'غير محدد';
-        const notesTxt = v.notes || 'لا توجد ملاحظات';
-        const remTxt = v.reminder_at ? ` · ⏰ تذكير: ${esc(formatDateTimeAR(v.reminder_at))}` : '';
-
-        return `<div class="visit-swipe-container" data-visit-swipe-id="${esc(v.id)}">
-          <div class="visit-swipe-rail">
-            <button type="button" class="visit-swipe-delete-btn" onclick="event.stopPropagation();deleteVisitEntry('${esc(v.id)}','${esc(cid)}')" title="حذف الزيارة"><span class="trash-ico">🗑️</span><span>حذف</span></button>
+      return `<div class="dash-item" style="display:flex;flex-direction:column;align-items:stretch;gap:12px;padding:16px;background:#FFFDFC;border:1px solid #F0DCE0;border-radius:18px">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding-bottom:10px;border-bottom:2px solid #C41E5C">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span class="badge" style="font-size:12px;padding:6px 12px;background:#FFE8EE;color:#881144">📅 تاريخ الزيارة: ${esc(formatDMY(v.visit_date))}</span>
+            ${renderVisitStatusBadge(vStatus)}
           </div>
-          <div class="client-visit-entry-box visit-swipe-card">
-            <div class="client-visit-entry-top">
-              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-                <span class="client-visit-date-tag">📅 زيارة #${idx + 1} · تاريخ: ${esc(formatDMY(v.visit_date))}</span>
-                ${renderVisitStatusBadge(vStatus)}
-              </div>
-              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-                <select class="visit-status-select" onchange="updateVisitStatus('${v.id}',this.value,'${esc(cid)}')" aria-label="تغيير حالة الزيارة">
-                  <option value="جديد" ${vStatus==='جديد'?'selected':''}>جديد</option>
-                  <option value="قيد متابعة" ${vStatus==='قيد متابعة'?'selected':''}>قيد متابعة</option>
-                  <option value="مكتمل" ${vStatus==='مكتمل'?'selected':''}>مكتمل</option>
-                </select>
-                <button type="button" class="btn mini danger" onclick="deleteVisitEntry('${esc(v.id)}','${esc(cid)}')" title="حذف هذه الزيارة">حذف</button>
-              </div>
-            </div>
-            <div style="font-size:13px;word-break:break-word"><strong>⚠️ السبب:</strong> ${esc(reasonTxt)}${remTxt}</div>
-            <div style="font-size:13px;word-break:break-word"><strong>📝 ما تم / ملاحظات:</strong> ${esc(notesTxt)}</div>
-            <div style="font-size:13px;word-break:break-word"><strong>🛠️ قطع الغيار:</strong> ${partsTxt} — <strong>إجمالي الزيارة: ${vTotal.toFixed(2)}</strong></div>
-          </div>
-        </div>`;
-      }).join('');
-
-      return `<div class="client-visits-group-card">
-        <div class="client-visits-group-head">
-          <div>
-            <div class="client-visits-group-title">👤 ${esc(cname)} <span class="badge" style="margin-right:6px">${clientVisits.length} ${clientVisits.length === 1 ? 'زيارة' : 'زيارات'}</span></div>
-            <div class="client-visits-group-sub">🔧 الجهاز: ${esc(cdevice)} · إجمالي قطع العميل: ${clientAllPartsTotal.toFixed(2)}</div>
-          </div>
-          <div class="actions">
-            <button type="button" class="btn mini primary" onclick="closeVisitsReportModal();openClientReport('${esc(cid)}')">تقرير العميل</button>
-            <button type="button" class="btn mini" onclick="closeVisitsReportModal();openVisits('${esc(cid)}')">إضافة / إدارة زيارة</button>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <select class="visit-status-select" onchange="updateVisitStatus('${v.id}',this.value,'${esc(v.customer_id)}')" aria-label="تغيير حالة الزيارة">
+              <option value="جديد" ${vStatus==='جديد'?'selected':''}>جديد</option>
+              <option value="قيد متابعة" ${vStatus==='قيد متابعة'?'selected':''}>قيد متابعة</option>
+              <option value="مكتمل" ${vStatus==='مكتمل'?'selected':''}>مكتمل</option>
+            </select>
+            <button type="button" class="btn mini primary" style="padding:7px 13px;font-size:12px" onclick="closeVisitsReportModal();openClientReport('${esc(v.customer_id)}')">تقرير العميل</button>
+            <button type="button" class="btn mini" style="padding:7px 13px;font-size:12px" onclick="closeVisitsReportModal();openVisits('${esc(v.customer_id)}')">إدارة الزيارات</button>
           </div>
         </div>
-        <div style="font-size:12.5px;display:flex;flex-wrap:wrap;gap:12px;align-items:center">
-          <span><strong>📞 التليفون:</strong> <span dir="ltr">${esc(cphone)}</span></span>
-          <span><strong>📍 العنوان:</strong> ${esc(caddress)}</span>
-          ${renderQuickContactButtons(c.phone, cname, c)}
+
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="padding:10px 12px;border-radius:12px;background:#FFF7F9;border:1px solid #F6E6E2">
+            <div style="font-size:11px;font-weight:700;color:#8E727C">العميل والجهاز</div>
+            <div style="font-size:16px;font-weight:800;color:#2B0F1B;margin-top:2px;word-break:break-word">${esc(cname)}</div>
+            <div style="font-size:13px;font-weight:700;color:#881144;margin-top:4px;word-break:break-word">🔧 الجهاز: ${esc(cdevice)}</div>
+          </div>
+
+          <div style="padding:10px 12px;border-radius:12px;background:#FFF9F8;border:1px solid #F6E6E2;display:flex;flex-direction:column;gap:6px;font-size:13px;color:#2B0F1B">
+            <div style="word-break:break-word"><strong>📞 رقم التليفون:</strong> <span dir="ltr">${esc(cphone)}</span> ${renderQuickContactButtons(c.phone, cname)}</div>
+            <div style="word-break:break-word"><strong>📍 العنوان:</strong> ${esc(caddress)}</div>
+            <div style="word-break:break-word"><strong>⚠️ السبب:</strong> ${esc(reasonTxt)}</div>
+            <div style="word-break:break-word"><strong>📝 ما تم / ملاحظات:</strong> ${esc(notesTxt)}</div>
+            <div style="word-break:break-word"><strong>🛠️ قطع الغيار:</strong> ${partsTxt} — <strong>الإجمالي: ${vTotal.toFixed(2)}</strong></div>
+          </div>
         </div>
-        <div class="client-visit-entries">${visitsHtml}</div>
       </div>`;
     }).join('');
   } catch (err) {
@@ -2487,6 +1891,7 @@ window.openVisitsReportModal = async () => {
   await refreshVisitsReport();
 };
 
+
 function normalizePhoneForLink(phone){
   if(!phone)return '';
   const arabicDigits='٠١٢٣٤٥٦٧٨٩';
@@ -2497,23 +1902,13 @@ function normalizePhoneForLink(phone){
   if(digits.length===11&&digits.startsWith('01'))digits='20'+digits.slice(1);
   return digits;
 }
-function buildReminderWhatsAppMessage(clientName,customerObj=null){
-  const cleanName=String(clientName||customerObj?.name||'').trim();
-  const greetingName=cleanName?`أستاذ ${cleanName}`:'حضرتك';
-  const c=customerObj||(Array.isArray(customers)?customers.find(x=>cleanName&&String(x.name||'').trim()===cleanName):null);
-  const deviceTxt=c?.device_type?` بخصوص جهاز (${String(c.device_type).trim()})`:' بخصوص الجهاز';
-  const remFormatted=c?.reminder_at?formatDateTimeAR(c.reminder_at):'';
-  const timePart=remFormatted?` المحدد له موعد التذكير يوم ${remFormatted}`:'';
-  const problemPart=c?.problem_description?` (${String(c.problem_description).trim()})`:'';
-  return `مرحباً ${greetingName}، نذكّر حضرتك بمتابعة زيارة/صيانة${deviceTxt}${problemPart}${timePart}. يسعدنا تأكيد الموعد المناسب لحضرتك أو إخبارنا بأي تفاصيل إضافية.`;
-}
-function renderQuickContactButtons(phone,clientName,customerObj=null){
+function renderQuickContactButtons(phone,clientName){
   const raw=String(phone||'').trim();
   if(!raw||raw==='—')return '';
   const waNum=normalizePhoneForLink(raw);
   if(!waNum)return '';
   const telHref='tel:+'+waNum;
-  const msg=encodeURIComponent(buildReminderWhatsAppMessage(clientName,customerObj));
+  const msg=encodeURIComponent(`أهلاً ${clientName||'بك'}، نتابع مع حضرتك بخصوص زيارة/صيانة الجهاز.`);
   const waHref=`https://wa.me/${waNum}?text=${msg}`;
   return `<div class="quick-contact-row" onclick="event.stopPropagation()">
     <a class="quick-call-btn" href="${esc(telHref)}" onclick="event.stopPropagation()" title="اتصال سريع">📞 اتصال</a>
@@ -2534,25 +1929,21 @@ function renderVisitStatusBadge(status){
 }
 function getStoredVisitStatus(visitId,dbStatus){
   try{
+    if(dbStatus)return normalizeVisitStatus(dbStatus);
     const saved=localStorage.getItem('clientpro_visit_status_'+visitId);
     if(saved)return normalizeVisitStatus(saved);
   }catch(_){}
-  if(dbStatus)return normalizeVisitStatus(dbStatus);
   return 'قيد متابعة';
 }
 window.updateVisitStatus=async(visitId,newStatus,customerId=null)=>{
   const st=normalizeVisitStatus(newStatus);
   try{localStorage.setItem('clientpro_visit_status_'+visitId,st)}catch(_){}
-  if(Array.isArray(window._lastLoadedVisits)){
-    const target=window._lastLoadedVisits.find(item=>String(item.id)===String(visitId));
-    if(target)target.status=st;
-  }
   try{
     const {error}=await db.from('visits').update({status:st}).eq('id',visitId);
     if(error)console.warn('visit status column notice:',error.message);
   }catch(_){}
   toast(`تم تحديث حالة الزيارة إلى: ${st}`);
-  if(customerId&&!$('visitModal').classList.contains('hidden')){
+  if(customerId&&!$ ('visitModal').classList.contains('hidden')){
     await loadVisitHistory(customerId);
   }
   if(!$ ('visitsReportModal').classList.contains('hidden')){
@@ -2563,276 +1954,6 @@ window.updateVisitStatus=async(visitId,newStatus,customerId=null)=>{
   }
 };
 
-const THEME_STORAGE_KEY='clientpro_theme_mode_v3';
-function getPreferredTheme(){
-  try{
-    const saved=localStorage.getItem(THEME_STORAGE_KEY);
-    if(saved==='dark'||saved==='light')return saved;
-  }catch(_){}
-  return 'light';
-}
-function syncThemeUI(mode){
-  const isDark=mode==='dark';
-  document.documentElement.classList.toggle('dark',isDark);
-  document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
-  const metaTheme=document.querySelector('meta[name="theme-color"]');
-  if(metaTheme)metaTheme.setAttribute('content',isDark?'#800021':'#a92835');
-  const iconTxt=isDark?'☀️':'🌙';
-  const labelTxt=isDark?'نهاري':'ليلي';
-  if($('themeToggleIcon'))$('themeToggleIcon').textContent=iconTxt;
-  if($('themeToggleLabel'))$('themeToggleLabel').textContent=labelTxt;
-  if($('loginThemeToggleIcon'))$('loginThemeToggleIcon').textContent=iconTxt;
-  if($('loginThemeToggleLabel'))$('loginThemeToggleLabel').textContent=labelTxt;
-}
-window.toggleThemeMode=function(){
-  const next=document.documentElement.classList.contains('dark')?'light':'dark';
-  try{localStorage.setItem(THEME_STORAGE_KEY,next)}catch(_){}
-  syncThemeUI(next);
-  toast(next==='dark'?'تم تفعيل الوضع الليلي':'تم تفعيل الوضع النهاري');
-};
-syncThemeUI(getPreferredTheme());
-
-/* ===== نظام التحديثات والإعدادات (v4.1) ===== */
-const APP_VERSION='v4.1';
-const LANG_STORAGE_KEY='clientpro_lang_mode';
-let pendingRemoteVersion=null;
-let waitingSWWorker=null;
-
-function compareVersionStrings(v1,v2){
-  const parse=v=>String(v||'').trim().replace(/^v/i,'').split('.').map(n=>parseInt(n,10)||0);
-  const a=parse(v1);
-  const b=parse(v2);
-  const len=Math.max(a.length,b.length);
-  for(let i=0;i<len;i++){
-    const diff=(a[i]||0)-(b[i]||0);
-    if(diff!==0)return diff;
-  }
-  return 0;
-}
-
-function setUpdateNoticeUI({hasUpdate=false,remoteVer=null,titleText='',descText='',isError=false,isUpdatedDone=false}){
-  const badge=$('updateAvailableBadge');
-  const applyBtn=$('applyUpdateBtn');
-  const titleEl=$('updateStatusTitle');
-  const descEl=$('updateStatusDesc');
-  const footText=$('settingsCardFootText');
-  const verBadge=$('whatsNewVersionBadge');
-  const verTag=$('appVersionTag');
-  const statVer=$('settingsVersionBadge');
-
-  if(badge)badge.classList.toggle('hidden',!hasUpdate||isUpdatedDone);
-  if(applyBtn){
-    applyBtn.classList.toggle('hidden',!hasUpdate||isUpdatedDone);
-    applyBtn.disabled=false;
-    applyBtn.textContent='تحديث الآن';
-  }
-  if(remoteVer&&verBadge)verBadge.textContent=remoteVer;
-  if(isUpdatedDone&&remoteVer){
-    if(verTag)verTag.textContent=`الإصدار ${remoteVer}`;
-    if(statVer)statVer.textContent=remoteVer;
-  }
-
-  if(titleEl){
-    if(isUpdatedDone){
-      titleEl.textContent=`تم التحديث إلى ${remoteVer||APP_VERSION}`;
-      titleEl.style.color='#047857';
-    }else{
-      titleEl.textContent=titleText||(hasUpdate
-        ? `نسخة جديدة متاحة (${remoteVer||APP_VERSION})`
-        : `أنت تستخدم أحدث إصدار متاح (${APP_VERSION})`);
-      titleEl.style.color=isError?'#c62828':(hasUpdate?'#047857':'');
-    }
-  }
-  if(descEl&&descText){
-    descEl.textContent=descText;
-  }
-  if(footText){
-    if(isUpdatedDone){
-      footText.textContent=`تم التحديث (${remoteVer||APP_VERSION})`;
-    }else if(hasUpdate){
-      footText.textContent=`نسخة جديدة متاحة (${remoteVer}) · افتح التحديثات`;
-    }else{
-      footText.textContent='الإصدار، التحديثات، المظهر واللغة';
-    }
-  }
-}
-
-async function fetchLatestRemoteVersion(){
-  const res=await fetch(`./sw.js?t=${Date.now()}`,{cache:'no-store'});
-  if(!res.ok)throw new Error('تعذر جلب ملف التحديث');
-  const txt=await res.text();
-  const m=txt.match(/const\s+APP_VERSION\s*=\s*['"]([^'"]+)['"]/);
-  return m?m[1].trim():null;
-}
-
-window.checkForAppUpdate=async function(manual=false){
-  const btn=$('checkUpdateBtn');
-  if(manual&&btn){btn.disabled=true;btn.textContent='جاري الفحص...';}
-  if(manual){
-    setUpdateNoticeUI({
-      hasUpdate:Boolean(pendingRemoteVersion||waitingSWWorker),
-      remoteVer:pendingRemoteVersion,
-      titleText:'جاري فحص التحديثات...',
-      descText:'يتم التحقق من وجود نسخة جديدة على السيرفر.'
-    });
-  }
-
-  try{
-    let reg=null;
-    if('serviceWorker' in navigator){
-      reg=await navigator.serviceWorker.getRegistration();
-      if(reg){
-        try{await reg.update();}catch(_){}
-        if(reg.waiting)waitingSWWorker=reg.waiting;
-      }
-    }
-
-    const remoteVer=await fetchLatestRemoteVersion();
-    const hasNewerRemote=Boolean(remoteVer&&compareVersionStrings(remoteVer,APP_VERSION)>0);
-    const hasWaitingWorker=Boolean(waitingSWWorker||(reg&&reg.waiting));
-
-    if(hasNewerRemote||hasWaitingWorker){
-      pendingRemoteVersion=hasNewerRemote?remoteVer:APP_VERSION;
-      setUpdateNoticeUI({
-        hasUpdate:true,
-        remoteVer:pendingRemoteVersion,
-        titleText:`نسخة جديدة متاحة (${pendingRemoteVersion})`,
-        descText:`النسخة الحالية ${APP_VERSION} — اضغط «تحديث الآن» لتحميل وتطبيق النسخة الجديدة.`
-      });
-      if(manual)toast(`توجد نسخة جديدة (${pendingRemoteVersion}) داخل الإعدادات`);
-    }else{
-      pendingRemoteVersion=null;
-      setUpdateNoticeUI({
-        hasUpdate:false,
-        remoteVer:APP_VERSION,
-        titleText:`أنت تستخدم أحدث إصدار متاح (${APP_VERSION})`,
-        descText:'لا توجد نسخ أحدث متاحة حالياً.'
-      });
-      if(manual)toast(`أنت على أحدث إصدار (${APP_VERSION})`);
-    }
-  }catch(err){
-    console.warn('Update check error:',err);
-    setUpdateNoticeUI({
-      hasUpdate:Boolean(pendingRemoteVersion||waitingSWWorker),
-      remoteVer:pendingRemoteVersion,
-      titleText:manual?'تعذر فحص التحديثات الآن':`أنت على أحدث إصدار متاح (${APP_VERSION})`,
-      descText:manual?'راجع الاتصال بالإنترنت ثم حاول مرة أخرى.':'النسخة الحالية المثبتة: '+APP_VERSION,
-      isError:manual
-    });
-    if(manual)toast('تعذر فحص التحديثات، راجع الاتصال بالإنترنت');
-  }finally{
-    if(btn){btn.disabled=false;btn.textContent='فحص التحديثات';}
-  }
-};
-
-window.applyAppUpdate=async function(){
-  const applyBtn=$('applyUpdateBtn');
-  const targetVer=pendingRemoteVersion||APP_VERSION;
-  if(applyBtn){applyBtn.disabled=true;applyBtn.textContent='جاري التحميل والتحديث...';}
-  setUpdateNoticeUI({
-    hasUpdate:true,
-    remoteVer:targetVer,
-    titleText:`جاري تحميل وتطبيق النسخة (${targetVer})...`,
-    descText:'يرجى الانتظار لحين الانتهاء من تحديث الملفات والكاش.'
-  });
-  toast('جاري تحميل وتطبيق التحديث...');
-
-  try{
-    if('caches' in window){
-      const keys=await caches.keys();
-      await Promise.all(keys.map(k=>caches.delete(k)));
-    }
-    if('serviceWorker' in navigator){
-      const reg=await navigator.serviceWorker.getRegistration();
-      const targetWorker=waitingSWWorker||(reg&&reg.waiting);
-      if(targetWorker){
-        targetWorker.postMessage({type:'SKIP_WAITING'});
-      }
-      if(reg){
-        await reg.update();
-      }
-    }
-    try{
-      await fetch(`./index.html?t=${Date.now()}`,{cache:'no-store'});
-    }catch(_){}
-  }catch(_){}
-
-  pendingRemoteVersion=null;
-  waitingSWWorker=null;
-  setUpdateNoticeUI({
-    hasUpdate:false,
-    remoteVer:targetVer,
-    isUpdatedDone:true,
-    descText:'تم تحميل وتطبيق النسخة الجديدة بنجاح. يمكنك إعادة فتح أو تحديث الصفحة لتشغيلها بالكامل.'
-  });
-  toast('تم التحديث');
-};
-
-window.openSettingsModal=function(){
-  const m=$('settingsModal');
-  if(!m)return;
-  syncSettingsModalState();
-  m.classList.remove('hidden');
-  checkForAppUpdate(false);
-};
-window.closeSettingsModal=function(){
-  const m=$('settingsModal');
-  if(m)m.classList.add('hidden');
-};
-window.toggleWhatsNewDrawer=function(){
-  const box=$('whatsNewBox');
-  if(!box)return;
-  box.classList.toggle('hidden');
-};
-window.setThemeModeExplicit=function(mode){
-  const target=(mode==='dark')?'dark':'light';
-  try{localStorage.setItem(THEME_STORAGE_KEY,target)}catch(_){}
-  syncThemeUI(target);
-  syncSettingsModalState();
-  toast(target==='dark'?'تم تفعيل الوضع الليلي':'تم تفعيل الوضع النهاري');
-};
-
-function applyLanguageDirection(lang){
-  const isEn=lang==='en';
-  document.documentElement.lang=isEn?'en':'ar';
-  document.documentElement.dir=isEn?'ltr':'rtl';
-  if($('langArBtn')){
-    $('langArBtn').className=isEn?'btn mini':'btn mini primary';
-  }
-  if($('langEnBtn')){
-    $('langEnBtn').className=isEn?'btn mini primary':'btn mini';
-  }
-  if($('currentLangBadge')){
-    $('currentLangBadge').textContent=isEn?'English (LTR)':'العربية (RTL)';
-  }
-}
-
-window.setAppLanguage=function(lang){
-  const chosen=(lang==='en')?'en':'ar';
-  try{localStorage.setItem(LANG_STORAGE_KEY,chosen)}catch(_){}
-  applyLanguageDirection(chosen);
-  syncSettingsModalState();
-  toast(chosen==='en'?'Interface direction switched to English (LTR)':'تم ضبط اللغة إلى العربية (RTL)');
-};
-
-function syncSettingsModalState(){
-  const isDark=document.documentElement.classList.contains('dark');
-  if($('settingsVersionBadge'))$('settingsVersionBadge').textContent=APP_VERSION;
-  if($('appVersionTag'))$('appVersionTag').textContent=`الإصدار ${APP_VERSION}`;
-  if($('currentThemeBadge'))$('currentThemeBadge').textContent=isDark?'الوضع الليلي':'الوضع النهاري';
-  if($('setDarkModeBtn'))$('setDarkModeBtn').className=isDark?'btn mini primary':'btn mini';
-  if($('setLightModeBtn'))$('setLightModeBtn').className=isDark?'btn mini':'btn mini primary';
-  let savedLang='ar';
-  try{savedLang=localStorage.getItem(LANG_STORAGE_KEY)||'ar';}catch(_){}
-  applyLanguageDirection(savedLang);
-}
-
-try{
-  const initLang=localStorage.getItem(LANG_STORAGE_KEY)||'ar';
-  applyLanguageDirection(initLang);
-}catch(_){}
-
-initActivityAndBackgroundWatchers();
 initTableDragAndScroll();
 $('rows').addEventListener('click', ev => {
   if (ev.target.closest('button, a, input, select, textarea, img')) return;
@@ -2842,445 +1963,14 @@ $('rows').addEventListener('click', ev => {
   if (cid) openClientReport(cid);
 });
 initSwipeableReminderBanner();
-if($('initDateInput'))$('initDateInput').value='';
-if($('visitDateInput'))$('visitDateInput').value='';
+initDMYSelectors('initDay','initMonth','initYear');
+initDMYSelectors('vDay','vMonth','vYear');
+setDMYValue('initDay','initMonth','initYear',localDate());
 syncReminderLabels();
 requireSession();
-
-if('serviceWorker' in navigator){
-  window.addEventListener('load', async () => {
-    try{
-      const reg = await navigator.serviceWorker.register('./sw.js');
-      if(reg.waiting){
-        waitingSWWorker = reg.waiting;
-      }
-      reg.addEventListener('updatefound', () => {
-        const nw = reg.installing;
-        if(!nw) return;
-        nw.addEventListener('statechange', () => {
-          if(nw.state === 'installed' && navigator.serviceWorker.controller){
-            waitingSWWorker = nw;
-            checkForAppUpdate(false);
-          }
-        });
-      });
-      checkForAppUpdate(false);
-    }catch(err){
-      console.warn('Service worker registration failed', err);
-    }
-  });
-}
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(err=>console.warn('Service worker registration failed',err)))}
 </script>
 <script>
 try{var C=window.Capacitor;if(C&&C.nativePromise){C.nativePromise('SystemBars','setStyle',{style:'DARK',bar:'StatusBar'}).catch(function(){})}}catch(e){}
-</script>
-
-<script id="v3-5-clean-i18n">
-(function(){
-  const AR_TO_EN = {
-    "CLIENT PRO | إدارة العملاء": "CLIENT PRO | Client Management",
-    "إدارة العملاء والزيارات وقطع الغيار": "Client, Visit & Spare Parts Management",
-    "تسجيل الدخول": "Sign In",
-    "اسم المستخدم": "Username",
-    "كلمة المرور": "Password",
-    "دخول": "Sign In",
-    "تسجيل الخروج": "Sign Out",
-    "تفعيل إشعارات الجهاز": "Enable Device Notifications",
-    "تنبيه بمواعيد التذكير": "Reminder Alerts",
-    "اسحب يمين أو شمال لإظهار زر الإيقاف": "Swipe left or right to show the Stop button",
-    "⛔ إيقاف": "⛔ Stop",
-
-    "إجمالي العملاء": "Total Clients",
-    "عرض القائمة والتفاصيل": "View list & details",
-    "عملاء هذا الشهر": "Clients This Month",
-    "استعراض عملاء الشهر": "Browse this month's clients",
-    "متوسط التقييم": "Average Rating",
-    "ترتيب التقييمات والتذكيرات": "Ratings & reminders order",
-    "الزيارات": "Visits",
-    "تقرير الزيارات والأسباب والقطع": "Visits, issues & parts report",
-    "الإعدادات": "Settings",
-    "الإصدار، التحديثات، المظهر واللغة": "Version, updates, theme & language",
-
-    "بحث بالاسم، التليفون، الجهاز، العنوان...": "Search by name, phone, device, address...",
-    "بحث في سجل العملاء": "Search client records",
-    "إضافة عميل جديد": "Add New Client",
-    "تعديل بيانات العميل": "Edit Client Details",
-    "بيانات العميل": "Client Info",
-    "رقم التليفون": "Phone Number",
-    "اسم العميل *": "Client Name *",
-    "العنوان": "Address",
-    "نوع الجهاز": "Device Type",
-    "صورة الجهاز": "Device Photo",
-    "تصوير بالكاميرا": "Take Photo",
-    "اختيار صورة من الجهاز": "Choose from Device",
-    "معاينة صورة الجهاز": "Device photo preview",
-    "إزالة الصورة": "Remove Photo",
-    "التقييم": "Rating",
-    "بدون تقييم": "No rating",
-    "5 ممتاز": "5 - Excellent",
-    "4 جيد جداً": "4 - Very Good",
-    "3 جيد": "3 - Good",
-    "2 مقبول": "2 - Fair",
-    "1 ضعيف": "1 - Poor",
-    "تاريخ الزيارة (اكتبه أو اتركه فارغاً لتاريخ اليوم)": "Visit Date (Enter or leave blank for today)",
-    "ميعاد التذكير": "Reminder Time",
-    "سبب المشكلة": "Issue Description",
-    "ملاحظات": "Notes",
-    "قطع الغيار": "Spare Parts",
-    "+ إضافة قطعة غيار": "+ Add Spare Part",
-    "إجمالي قطع الغيار: 0": "Spare Parts Total: 0",
-    "حفظ العميل": "Save Client",
-    "حفظ التعديلات": "Save Changes",
-    "إلغاء التعديل": "Cancel Edit",
-    "مسح الخانات": "Clear Fields",
-
-    "سجل العملاء": "Client Records",
-    "تحديث البيانات": "Refresh Data",
-    "تصدير Excel": "Export Excel",
-    "العميل": "Client",
-    "آخر زيارة (يوم/شهر/سنة)": "Last Visit (DD/MM/YYYY)",
-    "ميعاد التذكير": "Reminder",
-    "سبب المشكلة": "Issue",
-    "الإجراءات": "Actions",
-    "لا توجد بيانات لعرضها.": "No records to display.",
-    "البيانات تُحفظ في قاعدة بيانات CLIENT PRO وتظهر بعد تسجيل الدخول من الأجهزة الأخرى.": "Data is saved in the CLIENT PRO database and appears after signing in from other devices.",
-    "CLIENT PRO · Customer Records": "CLIENT PRO · Customer Records",
-
-    "سجل زيارات العميل": "Client Visit History",
-    "إغلاق": "Close",
-    "إضافة زيارة": "Add Visit",
-    "ميعاد تذكير للزيارة": "Visit Reminder Time",
-    "حالة الزيارة": "Visit Status",
-    "جديد": "New",
-    "قيد متابعة": "In Progress",
-    "مكتمل": "Completed",
-    "سبب الزيارة أو المشكلة": "Visit Reason or Issue",
-    "ملاحظات الزيارة": "Visit Notes",
-    "قطع الغيار المستخدمة": "Spare Parts Used",
-    "إضافة قطعة": "+ Add Part",
-    "حفظ الزيارة وقطع الغيار": "Save Visit & Spare Parts",
-    "سجل الزيارات السابق": "Previous Visits",
-
-    "فتح / تنزيل": "Open / Download",
-    "صورة الجهاز مكبرة": "Enlarged device photo",
-
-    "لوحة البيانات التفاعلية": "Interactive Data Dashboard",
-    "تطبيق على الجدول الرئيسي": "Apply to Main Table",
-    "قائمة جميع العملاء": "All Clients List",
-    "تقييمات العملاء": "Client Ratings",
-    "جدول مواعيد التذكير": "Reminder Schedule",
-
-    "تقرير الزيارات": "Visits Report",
-    "سجل شامل لكل الزيارات وأسبابها وما تم فيها": "Complete log of all visits, reasons, and actions taken",
-    "كل الحالات": "All Statuses",
-    "تحديث التقرير": "Refresh Report",
-
-    "إعدادات التطبيق والنظام": "App & System Settings",
-    "الإصدار · سجل التحديثات · الوضع الليلي · اللغة": "Version · Changelog · Dark Mode · Language",
-    "معلومات الإصدار والتحديثات": "Version & Updates Info",
-    "فحص التحديثات": "Check for Updates",
-    "تحديث الآن": "Update Now",
-    "🔔 نسخة جديدة متاحة": "🔔 New Version Available",
-    "ما الجديد": "What's New",
-    "✨ ما الجديد في الإصدار": "✨ What's New in This Release",
-    "المظهر والوضع الليلي": "Appearance & Dark Mode",
-    "الوضع الحالي": "Current Mode",
-    "التبديل بين الوضع الليلي الداكن والوضع النهاري الفاتح مع الحفظ التلقائي.": "Switch between dark mode and light mode with automatic saving.",
-    "☀️ الوضع النهاري": "☀️ Light Mode",
-    "🌙 الوضع الليلي": "🌙 Dark Mode",
-    "لغة الواجهة واتجاه العرض": "Interface Language & Direction",
-    "العربية (RTL)": "Arabic (RTL)",
-    "اختر لغة واجهة التطبيق (العربية أو English) مع ضبط الاتجاه تلقائياً.": "Choose the app language (Arabic or English) with automatic text direction.",
-    "العربية (عربي)": "Arabic (العربية)",
-    "English (إنجليزي)": "English",
-
-    "تقرير بيانات العميل": "Client Data Report",
-    "عرض تفصيلي مرتب": "Structured detailed view",
-    "إغلاق التقرير": "Close Report",
-    "تعديل بيانات العميل": "Edit Client Details",
-    "إدارة الزيارات والقطع": "Manage Visits & Parts",
-    "سجل الزيارات وقطع الغيار": "Visits & Spare Parts Log",
-    "تقرير العميل": "Client Report"
-  };
-
-  const EN_TO_AR = {};
-  Object.entries(AR_TO_EN).forEach(([ar, en]) => {
-    if (!EN_TO_AR[en]) EN_TO_AR[en] = ar;
-  });
-
-  function normSpace(s) {
-    return String(s || "").replace(/\s+/g, " ").trim();
-  }
-
-  function translateString(str, lang) {
-    if (typeof str !== "string") return str;
-    const normalized = normSpace(str);
-    if (!normalized) return str;
-
-    const map = lang === "en" ? AR_TO_EN : EN_TO_AR;
-    if (map[normalized]) return map[normalized];
-
-    if (lang === "en") {
-      return normalized
-        .replace(/^إجمالي قطع الغيار:\s*/g, "Spare Parts Total: ")
-        .replace(/^الميعاد المحدد:\s*/g, "Selected Time: ")
-        .replace(/^ميعاد التذكير:\s*/g, "Reminder Time: ")
-        .replace(/^زيارة\s+/g, "Visit ")
-        .replace(/(\d+)\s*قطعة/g, "$1 part(s)")
-        .replace(/أنت تستخدم أحدث إصدار متاح\s*\(([^)]+)\)/g, "You are using the latest version ($1)")
-        .replace(/نسخة جديدة متاحة\s*\(([^)]+)\)/g, "New version available ($1)")
-        .replace(/^الإصدار\s+/g, "Version ");
-    } else {
-      return normalized
-        .replace(/^Spare Parts Total:\s*/g, "إجمالي قطع الغيار: ")
-        .replace(/^Selected Time:\s*/g, "الميعاد المحدد: ")
-        .replace(/^Reminder Time:\s*/g, "ميعاد التذكير: ")
-        .replace(/^Visit\s+/g, "زيارة ")
-        .replace(/(\d+)\s*part\(s\)/g, "$1 قطعة")
-        .replace(/You are using the latest version\s*\(([^)]+)\)/g, "أنت تستخدم أحدث إصدار متاح ($1)")
-        .replace(/New version available\s*\(([^)]+)\)/g, "نسخة جديدة متاحة ($1)")
-        .replace(/^Version\s+/g, "الإصدار ");
-    }
-  }
-
-  function translateDOM(lang) {
-    if (!document.body) return;
-    if (document.title) {
-      document.title = translateString(document.title, lang);
-    }
-
-    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
-      acceptNode(node) {
-        const p = node.parentElement;
-        if (!p) return NodeFilter.FILTER_REJECT;
-        const tag = p.tagName;
-        if (tag === "SCRIPT" || tag === "STYLE") return NodeFilter.FILTER_REJECT;
-        if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_SKIP;
-        return NodeFilter.FILTER_ACCEPT;
-      }
-    });
-
-    const textNodes = [];
-    let n;
-    while ((n = walker.nextNode())) textNodes.push(n);
-    for (const tn of textNodes) {
-      const nextVal = translateString(tn.nodeValue, lang);
-      if (nextVal !== tn.nodeValue) tn.nodeValue = nextVal;
-    }
-
-    const attrTargets = document.querySelectorAll("input[placeholder], textarea[placeholder], [aria-label], [title], img[alt]");
-    for (const el of attrTargets) {
-      for (const attr of ["placeholder", "aria-label", "title", "alt"]) {
-        if (el.hasAttribute(attr)) {
-          const cur = el.getAttribute(attr);
-          const next = translateString(cur, lang);
-          if (next !== cur) el.setAttribute(attr, next);
-        }
-      }
-    }
-
-    const options = document.querySelectorAll("option");
-    for (const opt of options) {
-      const next = translateString(opt.textContent, lang);
-      if (next !== opt.textContent) opt.textContent = next;
-    }
-  }
-
-  window.translateCurrentPage = function(lang) {
-    const chosen = lang || (document.documentElement.lang === "en" ? "en" : "ar");
-    translateDOM(chosen);
-  };
-
-  const prevApplyLang = window.applyLanguageDirection;
-  window.applyLanguageDirection = function(lang) {
-    if (typeof prevApplyLang === "function") {
-      prevApplyLang(lang);
-    } else {
-      const isEn = lang === "en";
-      document.documentElement.lang = isEn ? "en" : "ar";
-      document.documentElement.dir = isEn ? "ltr" : "rtl";
-    }
-    translateDOM(lang);
-  };
-
-  const prevSetAppLanguage = window.setAppLanguage;
-  if (typeof prevSetAppLanguage === "function") {
-    window.setAppLanguage = function(lang) {
-      prevSetAppLanguage(lang);
-      translateDOM(lang === "en" ? "en" : "ar");
-    };
-  }
-
-  let obsTimer = null;
-  const observer = new MutationObserver(() => {
-    clearTimeout(obsTimer);
-    obsTimer = setTimeout(() => {
-      const curLang = document.documentElement.lang === "en" ? "en" : "ar";
-      translateDOM(curLang);
-    }, 30);
-  });
-
-  function runInit() {
-    const curLang = document.documentElement.lang === "en" ? "en" : "ar";
-    translateDOM(curLang);
-    if (document.body) {
-      observer.observe(document.body, { childList: true, subtree: true, characterData: true });
-    }
-  }
-
-  if (document.readyState === "loading") {
-    window.addEventListener("DOMContentLoaded", runInit);
-  } else {
-    runInit();
-  }
-})();
-</script>
-<script id="v3-7-visit-swipe-script">
-(function(){
-  window.deleteVisitEntry = async function(visitId, customerId){
-    if(!visitId) return;
-    if(!confirm('تأكيد حذف هذه الزيارة بالكامل وقطع الغيار المرتبطة بها؟')) return;
-    try{
-      try{ await db.from('spare_parts').delete().eq('visit_id', visitId); }catch(_){}
-      const { error } = await db.from('visits').delete().eq('id', visitId);
-      if(error) throw error;
-      try{ localStorage.removeItem('clientpro_visit_status_' + visitId); }catch(_){}
-      if(Array.isArray(window._lastLoadedVisits)){
-        window._lastLoadedVisits = window._lastLoadedVisits.filter(x => String(x.id) !== String(visitId));
-      }
-      toast('تم حذف الزيارة بالكامل');
-      if(typeof refreshVisitsReport === 'function') await refreshVisitsReport();
-      if(customerId && typeof loadVisitHistory === 'function' && !$('visitModal').classList.contains('hidden')){
-        await loadVisitHistory(customerId);
-      }
-      if(typeof loadCustomers === 'function') await loadCustomers();
-    }catch(err){
-      console.error('deleteVisitEntry error:', err);
-      toast('تعذر حذف الزيارة: ' + (err?.message || 'حاول مرة أخرى'));
-    }
-  };
-
-  function bindVisitSwipeHandlers(){
-    const container = $('visitsReportList');
-    if(!container || container.dataset.swipeBound === '1') return;
-    container.dataset.swipeBound = '1';
-
-    let activeCard = null;
-    let startX = 0, startY = 0, currentDx = 0, isHoriz = false;
-
-    const resetOtherCards = (exceptCard) => {
-      container.querySelectorAll('.visit-swipe-card').forEach(c => {
-        if(c !== exceptCard) c.style.transform = '';
-      });
-    };
-
-    const onPointerDown = (x, y, target) => {
-      if(target.closest('button, select, input, textarea, a')) return;
-      const card = target.closest('.visit-swipe-card');
-      if(!card) return;
-      resetOtherCards(card);
-      activeCard = card;
-      startX = x;
-      startY = y;
-      currentDx = 0;
-      isHoriz = false;
-      activeCard.classList.add('swiping');
-    };
-
-    const onPointerMove = (x, y, ev) => {
-      if(!activeCard) return;
-      const dx = x - startX;
-      const dy = y - startY;
-      if(!isHoriz){
-        if(Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy) * 1.2){
-          isHoriz = true;
-        }else if(Math.abs(dy) > 12){
-          activeCard.classList.remove('swiping');
-          activeCard.style.transform = '';
-          activeCard = null;
-          return;
-        }
-      }
-      if(isHoriz){
-        if(ev && ev.cancelable) ev.preventDefault();
-        const clamped = Math.max(-120, Math.min(0, dx));
-        currentDx = clamped;
-        activeCard.style.transform = `translate3d(${clamped}px, 0, 0)`;
-      }
-    };
-
-    const onPointerUp = () => {
-      if(!activeCard) return;
-      activeCard.classList.remove('swiping');
-      if(isHoriz && currentDx <= -48){
-        activeCard.style.transform = 'translate3d(-104px, 0, 0)';
-      }else{
-        activeCard.style.transform = '';
-      }
-      activeCard = null;
-      isHoriz = false;
-      currentDx = 0;
-    };
-
-    container.addEventListener('touchstart', e => {
-      if(e.touches.length === 1) onPointerDown(e.touches[0].clientX, e.touches[0].clientY, e.target);
-    }, { passive: true });
-    container.addEventListener('touchmove', e => {
-      if(e.touches.length === 1) onPointerMove(e.touches[0].clientX, e.touches[0].clientY, e);
-    }, { passive: false });
-    container.addEventListener('touchend', onPointerUp);
-    container.addEventListener('touchcancel', onPointerUp);
-
-    container.addEventListener('mousedown', e => {
-      if(e.button !== 0) return;
-      onPointerDown(e.clientX, e.clientY, e.target);
-      const mm = ev => onPointerMove(ev.clientX, ev.clientY, ev);
-      const mu = () => {
-        window.removeEventListener('mousemove', mm);
-        window.removeEventListener('mouseup', mu);
-        onPointerUp();
-      };
-      window.addEventListener('mousemove', mm);
-      window.addEventListener('mouseup', mu);
-    });
-  }
-
-  window.clearAllVisits = async function(){
-    const list = Array.isArray(window._lastLoadedVisits) && window._lastLoadedVisits.length
-      ? window._lastLoadedVisits
-      : null;
-    if(!confirm('تأكيد مسح جميع الزيارات وقطع الغيار المرتبطة بها بالكامل (Clear All Visits)؟ لا يمكن التراجع عن هذا الإجراء.')) return;
-    try{
-      let visitIds = (list || []).map(v => v.id).filter(Boolean);
-      if(!visitIds.length){
-        const { data: allV } = await db.from('visits').select('id');
-        visitIds = (allV || []).map(v => v.id).filter(Boolean);
-      }
-      if(!visitIds.length){
-        toast('لا توجد زيارات لمسحها');
-        return;
-      }
-      try{ await db.from('spare_parts').delete().in('visit_id', visitIds); }catch(_){}
-      const { error } = await db.from('visits').delete().in('id', visitIds);
-      if(error) throw error;
-      visitIds.forEach(vid => {
-        try{ localStorage.removeItem('clientpro_visit_status_' + vid); }catch(_){}
-      });
-      window._lastLoadedVisits = [];
-      toast('تم مسح جميع الزيارات بنجاح');
-      if(typeof refreshVisitsReport === 'function') await refreshVisitsReport();
-      if(typeof loadCustomers === 'function') await loadCustomers();
-    }catch(err){
-      console.error('clearAllVisits error:', err);
-      toast('تعذر مسح جميع الزيارات: ' + (err?.message || 'حاول مرة أخرى'));
-    }
-  };
-
-  if(document.readyState === "loading"){
-    window.addEventListener('DOMContentLoaded', bindVisitSwipeHandlers);
-  }else{
-    bindVisitSwipeHandlers();
-  }
-})();
 </script>
 </body></html>
