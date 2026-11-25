@@ -5128,5 +5128,12 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  html #app #recordsPanel #recordsTableWrap tbody tr>td:first-child{position:static!important;right:auto!important;box-shadow:none!important;z-index:auto!important}
  html #app #recordsPanel #recordsTableWrap tbody tr>td:nth-child(3)::before{content:none!important;display:none!important}
 }
+/* v4.4 perf: smoother, faster dashboard side-swipe. Presentation-only. */
+@media(max-width:650px){
+ html[data-cp-design] #app .wrap>.stats,html #app .wrap>.stats{scroll-snap-type:x proximity!important;scroll-behavior:auto!important;overscroll-behavior-x:contain!important;-webkit-overflow-scrolling:touch!important;touch-action:pan-x pan-y!important;contain:layout paint;transform:translateZ(0);will-change:scroll-position}
+ html[data-cp-design] #app .wrap>.stats>.stat,html #app .wrap>.stats>.stat{scroll-snap-stop:normal!important;transition:none!important;contain:layout paint style;backface-visibility:hidden}
+ html[data-cp-design] #app .wrap>.stats>.stat:hover{transform:none!important}
+ html[data-cp-design] #app .wrap>.stats .stat strong{animation:none!important}
+}
 </style>
 </body></html>
