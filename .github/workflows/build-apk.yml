@@ -46,9 +46,6 @@ jobs:
       - name: Add Android Platform
         run: npx cap add android
 
-      - name: Setup Gradle Cache
-        uses: gradle/actions/setup-gradle@v4
-
       - name: Configure Firebase
         env:
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
@@ -87,22 +84,36 @@ jobs:
 
           def pts(d):
               t = re.findall(r'[a-zA-Z]|-?\d*\.?\d+', d)
-              i = 0; cur = (0, 0); cmd = None; out = []; lc = None
+              i = 0
+              cur = (0, 0)
+              cmd = None
+              out = []
+              lc = None
+
               def n():
                   nonlocal i
                   i += 1
                   return float(t[i - 1])
+
               while i < len(t):
                   if t[i].isalpha():
-                      cmd = t[i]; i += 1
+                      cmd = t[i]
+                      i += 1
+
                   if cmd in 'zZ':
                       break
+
                   if cmd == 'M':
-                      cur = (n(), n()); out.append(cur); cmd = 'L'
+                      cur = (n(), n())
+                      out.append(cur)
+                      cmd = 'L'
+
                   elif cmd in 'lL':
                       x, y = n(), n()
                       cur = (cur[0] + x, cur[1] + y) if cmd == 'l' else (x, y)
-                      out.append(cur); lc = None
+                      out.append(cur)
+                      lc = None
+
                   elif cmd in 'cCsS':
                       if cmd in 'cC':
                           a = [(n(), n()) for _ in range(3)]
@@ -115,11 +126,18 @@ jobs:
                               a = [(cur[0] + x, cur[1] + y) for x, y in a]
                           p1 = (2 * cur[0] - lc[0], 2 * cur[1] - lc[1]) if lc else cur
                           p2, p3 = a
+
                       for k in range(1, 21):
-                          u = k / 20; v = 1 - u
-                          out.append((v**3*cur[0] + 3*v*v*u*p1[0] + 3*v*u*u*p2[0] + u**3*p3[0],
-                                      v**3*cur[1] + 3*v*v*u*p1[1] + 3*v*u*u*p2[1] + u**3*p3[1]))
-                      lc = p2; cur = p3
+                          u = k / 20
+                          v = 1 - u
+                          out.append((
+                              v**3 * cur[0] + 3 * v*v*u * p1[0] + 3 * v*u*u * p2[0] + u**3 * p3[0],
+                              v**3 * cur[1] + 3 * v*v*u * p1[1] + 3 * v*u*u * p2[1] + u**3 * p3[1]
+                          ))
+
+                      lc = p2
+                      cur = p3
+
               return out
 
           C = pts(D)
@@ -128,20 +146,40 @@ jobs:
               W = canvas * S
               im = Image.new('RGBA', (W, W), (0, 0, 0, 0))
               d = ImageDraw.Draw(im)
+
               if bg == 'rounded':
-                  d.rounded_rectangle((0, 0, W - 1, W - 1), radius=int(W * .22), fill=RED)
+                  d.rounded_rectangle(
+                      (0, 0, W - 1, W - 1),
+                      radius=int(W * .22),
+                      fill=RED
+                  )
               elif bg == 'round':
                   d.ellipse((0, 0, W - 1, W - 1), fill=RED)
+
               if disc:
                   k = diam * S / 62
-                  m = lambda x, y: (W / 2 + (x - 32) * k, W / 2 + (y - 32) * k)
-                  d.ellipse((W/2 - 31*k, W/2 - 31*k, W/2 + 31*k, W/2 + 31*k), fill=WHITE)
+                  m = lambda x, y: (
+                      W / 2 + (x - 32) * k,
+                      W / 2 + (y - 32) * k
+                  )
+                  d.ellipse((
+                      W/2 - 31*k,
+                      W/2 - 31*k,
+                      W/2 + 31*k,
+                      W/2 + 31*k
+                  ), fill=WHITE)
               else:
                   k = diam * S / 54
-                  m = lambda x, y: (W / 2 + (x - 31) * k, W / 2 + (y - 32) * k)
+                  m = lambda x, y: (
+                      W / 2 + (x - 31) * k,
+                      W / 2 + (y - 32) * k
+                  )
+
               d.polygon([m(*p) for p in C], fill=color)
+
               for x1, y1, x2, y2 in BARS:
                   d.rectangle((*m(x1, y1), *m(x2, y2)), fill=color)
+
               return im.resize((canvas, canvas), Image.LANCZOS)
 
           RES = Path('android/app/src/main/res')
@@ -151,26 +189,67 @@ jobs:
               f.parent.mkdir(parents=True, exist_ok=True)
               data.save(f) if hasattr(data, 'save') else f.write_text(data)
 
-          for dn, s in dict(mdpi=48, hdpi=72, xhdpi=96, xxhdpi=144, xxxhdpi=192).items():
+          for dn, s in dict(
+              mdpi=48,
+              hdpi=72,
+              xhdpi=96,
+              xxhdpi=144,
+              xxxhdpi=192
+          ).items():
               put(f'mipmap-{dn}/ic_launcher.png', art(s, s * .74, 'rounded'))
               put(f'mipmap-{dn}/ic_launcher_round.png', art(s, s * .68, 'round'))
-          for dn, s in dict(mdpi=108, hdpi=162, xhdpi=216, xxhdpi=324, xxxhdpi=432).items():
+
+          for dn, s in dict(
+              mdpi=108,
+              hdpi=162,
+              xhdpi=216,
+              xxhdpi=324,
+              xxxhdpi=432
+          ).items():
               put(f'mipmap-{dn}/ic_launcher_foreground.png', art(s, s * .60))
-          for dn, s in dict(mdpi=24, hdpi=36, xhdpi=48, xxhdpi=72, xxxhdpi=96).items():
-              put(f'drawable-{dn}/ic_stat_clientpro.png', art(s, s - 4, disc=False, color=WHITE))
+
+          for dn, s in dict(
+              mdpi=24,
+              hdpi=36,
+              xhdpi=48,
+              xxhdpi=72,
+              xxxhdpi=96
+          ).items():
+              put(
+                  f'drawable-{dn}/ic_stat_clientpro.png',
+                  art(s, s - 4, disc=False, color=WHITE)
+              )
 
           adaptive = '<?xml version="1.0" encoding="utf-8"?>\n<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\n    <background android:drawable="@color/ic_launcher_background"/>\n    <foreground android:drawable="@mipmap/ic_launcher_foreground"/>\n</adaptive-icon>\n'
+
           put('mipmap-anydpi-v26/ic_launcher.xml', adaptive)
           put('mipmap-anydpi-v26/ic_launcher_round.xml', adaptive)
-          put('values/ic_launcher_background.xml', '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">#A52836</color>\n</resources>\n')
+
+          put(
+              'values/ic_launcher_background.xml',
+              '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">#A52836</color>\n</resources>\n'
+          )
 
           manifest = Path("android/app/src/main/AndroidManifest.xml")
           content = manifest.read_text()
+
           if 'android:icon="@mipmap/ic_launcher"' not in content:
-              content, count = re.subn(r'android:icon="[^"]+"', 'android:icon="@mipmap/ic_launcher"', content, count=1)
+              content, count = re.subn(
+                  r'android:icon="[^"]+"',
+                  'android:icon="@mipmap/ic_launcher"',
+                  content,
+                  count=1
+              )
+
               if count == 0:
-                  content = content.replace("<application", '<application android:icon="@mipmap/ic_launcher"', 1)
+                  content = content.replace(
+                      "<application",
+                      '<application android:icon="@mipmap/ic_launcher"',
+                      1
+                  )
+
               manifest.write_text(content)
+
           print("launcher icons done")
           PY
 
