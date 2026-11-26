@@ -1627,19 +1627,42 @@ html[data-cp-design="barq"][data-cp-design] .login-card:before{content:"";positi
 
 </style>
 <script id="cp-theme-lock-config">
-/* ===== THEME LOCK CODE: change the text between the quotes to change the unlock code. =====
-   Every theme except "original" is locked until this code is entered on the device.
-   Changing the code later locks the themes again on every device until the new code is typed. */
-var CP_THEME_UNLOCK_CODE='KANY2026';
-/* ========================================================================================= */
+/* v4.6 server-driven lock. No unlock code lives in this file. The server (Supabase) decides.
+   Cached answer is per signed-in account; cleared on sign-out; any failed check = locked. */
 (function(){
- function norm(v){return String(v==null?'':v).replace(/\s+/g,'').toLowerCase();}
- function hash(v){var h=5381,t=norm(v);for(var i=0;i<t.length;i++)h=((h<<5)+h+t.charCodeAt(i))>>>0;return 'h'+h.toString(36);}
- var KEY='clientpro_themes_unlocked_v1';
- window.cpThemeCodeOk=function(v){return norm(v)!==''&&norm(v)===norm(CP_THEME_UNLOCK_CODE);};
- window.cpThemesUnlocked=function(){try{return localStorage.getItem(KEY)===hash(CP_THEME_UNLOCK_CODE);}catch(_){return false;}};
- window.cpThemeUnlock=function(){try{localStorage.setItem(KEY,hash(CP_THEME_UNLOCK_CODE));}catch(_){}};
- window.cpThemeLocked=function(id){return id!=='original'&&!window.cpThemesUnlocked();};
+ var KEY='clientpro_lock_v2';
+ try{localStorage.removeItem('clientpro_themes_unlocked_v1');}catch(_){}
+ function read(){try{var o=JSON.parse(localStorage.getItem(KEY)||'null');return o&&o.ok===true;}catch(_){return false;}}
+ function write(u,ok){try{if(ok)localStorage.setItem(KEY,JSON.stringify({u:u||'',ok:true}));else localStorage.removeItem(KEY);}catch(_){}}
+ window.cpThemesUnlocked=function(){return read();};
+ window.cpThemeLocked=function(id){return id!=='original'&&!read();};
+ window.cpLockClear=function(){write('',false);};
+ function applyLocked(){
+  try{var d=localStorage.getItem('clientpro_visual_design_v1');
+   if(d&&d!=='original'){localStorage.setItem('clientpro_visual_design_v1','original');document.documentElement.setAttribute('data-cp-design','original');location.reload();}}catch(_){}
+ }
+ window.cpLockRefresh=async function(){
+  var was=read(),ok=false,uid='';
+  try{
+   if(typeof db==='undefined')throw 0;
+   var s=await db.auth.getSession();uid=s&&s.data&&s.data.session&&s.data.session.user&&s.data.session.user.id||'';
+   if(!uid)throw 0;
+   var r=await db.rpc('clientpro_lock_status');
+   if(r.error)throw 0;
+   ok=(r.data===true);
+  }catch(_){ok=false;}
+  write(uid,ok);
+  if(was&&!ok)applyLocked();
+  return ok;
+ };
+ window.cpThemeRedeem=async function(code){
+  try{
+   var c=String(code==null?'':code).trim();if(!c)return false;
+   var r=await db.rpc('clientpro_redeem_code',{p_code:c});
+   if(r.error||r.data!==true)return false;
+   return await window.cpLockRefresh();
+  }catch(_){return false;}
+ };
 })();
 </script>
 <script id="cp-visual-boot">try{var cpSavedDesign=localStorage.getItem("clientpro_visual_design_v1");if(["original","atlas","studio","barq","pulse","royal","nile","sahara","layl"].includes(cpSavedDesign)&&(cpSavedDesign==="original"||window.cpThemesUnlocked()))document.documentElement.setAttribute("data-cp-design",cpSavedDesign);}catch(_){}</script>
@@ -2136,8 +2159,20 @@ html[data-cp-design]:not([data-cp-design="original"]) #recordsTableWrap tbody tr
 #recordsTableWrap{scroll-behavior:auto;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch}
 @media(prefers-reduced-motion:reduce){#recordsTableWrap{scroll-behavior:auto!important}}
 </style>
+<style id="cp-login-admin">
+.login-mode{display:flex;gap:6px;padding:4px;margin:0 0 18px;border-radius:13px;background:var(--cp-soft,#f2f3f6);border:1px solid var(--cp-line,var(--line,#e8eaf0))}
+.login-mode button{flex:1;border:0;border-radius:10px;padding:9px 6px;font:inherit;font-weight:700;font-size:13px;cursor:pointer;background:transparent;color:var(--cp-muted,var(--muted,#69707d))}
+.login-mode button.on{background:#fff;color:var(--cp-accent,#a92835);box-shadow:0 2px 8px #20283b17}
+.login-link{display:block;margin:12px auto 0;border:0;background:none;font:inherit;font-size:13px;font-weight:700;color:var(--cp-accent,#a92835);cursor:pointer;text-decoration:underline;padding:4px 8px}
+.login-link:disabled{opacity:.55;cursor:default;text-decoration:none}
+.login-code-tools{display:flex;gap:8px;margin:0 0 14px}
+.login-code-tools .btn{flex:1}
+#loginPassword.otp{text-align:center;letter-spacing:.35em;font-size:20px;font-weight:800;direction:ltr}
+#loginScreen .login-card.hidden{display:none}
+</style>
 </head>
 <body>
+<div id="cpV9Splash" aria-hidden="true"><div class="cp-v9-splash-mark"><svg class="cp-splash-brandmark" viewBox="0 0 64 64" role="img" aria-label="CLIENT PRO"><circle cx="32" cy="32" r="31" fill="#fff"/><path class="cp-sp-c" d="M39 13c-4-3-8-4-13-4C13 9 4 19 4 32s9 23 22 23c5 0 9-1 13-4l-8-9c-2 2-4 3-7 3-7 0-11-5-11-13s4-13 11-13c3 0 5 1 7 3z" fill="#a92835"/><path class="cp-sp-eq" d="M39 23h19v7H39zm0 12h19v7H39z" fill="#a92835"/></svg></div><div class="cp-v9-splash-name">CLIENT PRO</div><div class="cp-v9-splash-sub">\u0625\u062f\u0627\u0631\u0629 \u0627\u0644\u0639\u0645\u0644\u0627\u0621 \u0648\u0627\u0644\u0632\u064a\u0627\u0631\u0627\u062a</div><div class="cp-v9-splash-bar"><i></i></div></div>
 <div id="loginScreen" class="login-screen">
  <form id="loginForm" class="login-card">
   <div class="brand">
@@ -2145,10 +2180,27 @@ html[data-cp-design]:not([data-cp-design="original"]) #recordsTableWrap tbody tr
    <div><h1>CLIENT PRO</h1><p>إدارة العملاء والزيارات وقطع الغيار</p></div>
   </div>
   <h2>تسجيل الدخول</h2>
-  <div class="field"><label for="loginUsername">اسم المستخدم</label><input id="loginUsername" type="text" autocomplete="username" autocapitalize="none" required></div>
-  <div class="field"><label for="loginPassword">كلمة المرور</label><input id="loginPassword" type="password" autocomplete="current-password" required></div>
+  <div class="login-mode" role="tablist" aria-label="نوع الدخول"><button type="button" id="modeUser" class="on" role="tab" aria-selected="true">مستخدم</button><button type="button" id="modeAdmin" role="tab" aria-selected="false">أدمن</button></div>
+  <div class="field"><label for="loginUsername" id="loginUserLabel">اسم المستخدم</label><input id="loginUsername" type="text" autocomplete="username" autocapitalize="none" required></div>
+  <div class="field" id="loginPassField"><label for="loginPassword" id="loginPassLabel">كلمة المرور</label><input id="loginPassword" type="password" autocomplete="current-password" required></div>
   <button class="btn primary" id="loginBtn" type="submit">دخول</button>
+  <button type="button" id="forgotCodeBtn" class="login-link hidden">نسيت كلمة المرور؟</button>
+  <button type="button" id="resendCodeBtn" class="login-link hidden">إعادة إرسال الكود</button>
+  <button type="button" id="changeEmailBtn" class="login-link hidden">رجوع</button>
   <p id="loginStatusNote" class="login-status-note"></p>
+ </form>
+ <form id="newCodeForm" class="login-card hidden">
+  <div class="brand">
+   <svg class="brandmark" viewBox="0 0 64 64" role="img" aria-label="CLIENT PRO"><circle cx="32" cy="32" r="31" fill="#fff" stroke="#eee"/><path d="M39 13c-4-3-8-4-13-4C13 9 4 19 4 32s9 23 22 23c5 0 9-1 13-4l-8-9c-2 2-4 3-7 3-7 0-11-5-11-13s4-13 11-13c3 0 5 1 7 3z" fill="#a92835"/><path d="M39 23h19v7H39zm0 12h19v7H39z" fill="#a92835"/></svg>
+   <div><h1>CLIENT PRO</h1><p>إدارة العملاء والزيارات وقطع الغيار</p></div>
+  </div>
+  <h2>اختار كلمة مرور جديدة</h2>
+  <div class="field"><label for="newCodeInput">كلمة المرور الجديدة (12 حرف على الأقل)</label><input id="newCodeInput" type="password" autocomplete="new-password" minlength="12" required></div>
+  <div class="field"><label for="newCodeConfirm">أعد كتابة كلمة المرور</label><input id="newCodeConfirm" type="password" autocomplete="new-password" minlength="12" required></div>
+  <div class="login-code-tools"><button type="button" id="genCodeBtn" class="btn">توليد كود قوي</button><button type="button" id="copyCodeBtn" class="btn">نسخ</button></div>
+  <button class="btn primary" id="newCodeBtn" type="submit">حفظ كلمة المرور والدخول</button>
+  <button type="button" id="cancelNewCode" class="login-link">إلغاء</button>
+  <p id="newCodeNote" class="login-status-note"></p>
  </form>
 </div>
 
@@ -2194,7 +2246,7 @@ html[data-cp-design]:not([data-cp-design="original"]) #recordsTableWrap tbody tr
  </button>
  <button type="button" class="stat" id="statSettings" onclick="openSettingsModal()">
   <div class="stat-top"><span>الإعدادات</span><span class="stat-icon">⚙️</span></div>
-  <strong id="settingsVersionBadge">v4.5</strong>
+  <strong id="settingsVersionBadge">v4.6</strong>
   <div class="stat-foot"><span id="settingsCardFootText">الإصدار، التحديثات، المظهر واللغة</span><span>←</span></div>
  </button>
 </section>
@@ -2345,12 +2397,12 @@ html[data-cp-design]:not([data-cp-design="original"]) #recordsTableWrap tbody tr
     <h2 style="font-size:15px;margin:0">معلومات الإصدار والتحديثات</h2>
     <span id="updateAvailableBadge" class="update-pill-alert hidden">🔔 تحديث جديد متاح</span>
    </div>
-   <span class="badge" id="appVersionTag">الإصدار v4.5</span>
+   <span class="badge" id="appVersionTag">الإصدار v4.6</span>
   </div>
   <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px">
    <div>
     <div id="updateStatusTitle" style="font-weight:800;font-size:14px">جاري التحقق من حالة التحديثات...</div>
-    <div id="updateStatusDesc" class="sub">النسخة المثبتة حالياً: v4.5 — عند توفر إصدار أحدث ستظهر ملاحظاته هنا.</div>
+    <div id="updateStatusDesc" class="sub">النسخة المثبتة حالياً: v4.6 — عند توفر إصدار أحدث ستظهر ملاحظاته هنا.</div>
     <div id="releaseNotesSettings" class="sub" style="display:none;margin-top:8px;white-space:pre-wrap"></div>
    </div>
    <div class="actions">
@@ -2360,7 +2412,7 @@ html[data-cp-design]:not([data-cp-design="original"]) #recordsTableWrap tbody tr
    </div>
   </div>
   <div id="whatsNewBox" class="report-visits-box" style="margin-top:8px">
-   <div class="report-visits-head"><span>✨ ما الجديد في الإصدار</span><span class="badge" id="whatsNewVersionBadge">v4.5</span></div>
+   <div class="report-visits-head"><span>✨ ما الجديد في الإصدار</span><span class="badge" id="whatsNewVersionBadge">v4.6</span></div>
    <div class="report-visit-item">
     <div style="font-weight:800;font-size:13px">• قفل الثيمات والأيقونات بكود</div>
     <div class="sub">كل الثيمات والأيقونات عدا الأصلي مقفولة، وكود واحد يفتحهم معاً على الجهاز.</div>
@@ -2452,6 +2504,11 @@ const SUPABASE_KEY='sb_publishable_LCdc9EPosGfewwDJYQFNog_OLXOMlph';
 const LOGIN_USERNAME='Mohamed helal';
 const LOGIN_EMAIL='mohamedkany1@gmail.com';
 const SESSION_STORAGE_KEY='clientpro_device_session_id';
+const CP_LAST_UID_KEY='clientpro_last_uid';
+const CP_LOGIN_MODE_KEY='clientpro_login_mode';
+const CP_ADMIN_NAME='kany',CP_ADMIN_EMAIL='mohamed.kany1@gmail.com';
+let loginMode='user',adminStep='login',adminEmail='',resendTimer=null;
+function cpBadLoginMsg(){return loginMode==='admin'?'اسم المستخدم أو كلمة المرور خطأ. لو نسيتها دوس "نسيت كلمة المرور؟"':'اسم المستخدم أو كلمة المرور خطأ — راجع البيانات وحاول مرة أخرى'}
 const notifiedReminderKeys=new Set();
 let dismissedReminderSig='';
 let activeBannerCustomerIds=[];
@@ -2779,6 +2836,14 @@ function startSessionGuards(){
 function stopSessionGuards(){if(heartbeatTimer){clearInterval(heartbeatTimer);heartbeatTimer=null}if(reminderTimer){clearInterval(reminderTimer);reminderTimer=null}}
 async function requireSession(){
  try{
+  const CP_ALIVE='clientpro_tab_alive';let fresh=false;
+  try{fresh=!sessionStorage.getItem(CP_ALIVE);sessionStorage.setItem(CP_ALIVE,'1')}catch(_){}
+  if(fresh){
+   const {data:{session:old}}=await db.auth.getSession();
+   if(old){try{await db.rpc('clientpro_release_session',{p_device_session_id:getDeviceSessionId()})}catch(_){}try{await db.auth.signOut({scope:'local'})}catch(_){}clearSensitiveClientState();}
+  }
+ }catch(_){}
+ try{
   if(!(await hasLiveInternetConnection())){setOfflineGuardVisible(true);if(!cpOfflineProbeTimer)cpOfflineProbeTimer=setInterval(checkCpConnectivity,5000);throw new Error('offline at session restore');}
   const {data:{session},error}=await db.auth.getSession();
   if(error||!session){showLogin();return}
@@ -2816,7 +2881,7 @@ function startAutoLogoutWatch(){
  }
  resetIdleLogoutTimer();
 }
-function showLogin(){stopAutoLogoutWatch();$('loginScreen').classList.remove('hidden');$('app').classList.add('hidden')}
+function showLogin(){stopAutoLogoutWatch();$('loginScreen').classList.remove('hidden');$('app').classList.add('hidden');if($('newCodeForm')&&!$('newCodeForm').classList.contains('hidden')){$('newCodeForm').classList.add('hidden');$('loginForm').classList.remove('hidden')}if(loginMode==='admin')setLoginMode('admin')}
 function showApp(session){
  if(!session?.user?.id||backgroundExpired()||navigator.onLine===false||document.getElementById('cpOfflineGuard')&&!document.getElementById('cpOfflineGuard').classList.contains('hidden'))return false;
  setLoginNote('');$('loginScreen').classList.add('hidden');$('app').classList.remove('hidden');
@@ -2842,12 +2907,15 @@ $('loginForm').addEventListener('submit',async e=>{
   if(btn)btn.disabled=true;
   let authEstablished=false;
   try{
+    const isAdmin=loginMode==='admin';
+    if(isAdmin&&adminStep==='otpEmail'){await sendAdminCode();return;}
+    if(isAdmin&&adminStep==='otpCode'){await verifyAdminCode();return;}
     const rawUser=($('loginUsername')?.value||'').trim();
     const username=rawUser.toLowerCase().replace(/\s+/g,' ');
-    const password=$('loginPassword')?.value||'';
+    const password=isAdmin?($('loginPassword')?.value||'').trim():($('loginPassword')?.value||'');
 
     if(!rawUser||!password){
-      showLoginMessage('اكتب اسم المستخدم وكلمة المرور أولاً');
+      showLoginMessage(isAdmin?'اكتب اسم المستخدم وكلمة المرور أولاً':'اكتب اسم المستخدم وكلمة المرور أولاً');
       return;
     }
 
@@ -2857,22 +2925,23 @@ $('loginForm').addEventListener('submit',async e=>{
       return;
     }
 
-    if(username!==LOGIN_USERNAME.toLowerCase()){
-      showLoginMessage('اسم المستخدم أو كلمة المرور خطأ — راجع البيانات وحاول مرة أخرى');
+    if(isAdmin?username!==CP_ADMIN_NAME:username!==LOGIN_USERNAME.toLowerCase()){
+      showLoginMessage(cpBadLoginMsg());
       return;
     }
 
-    const {data,error}=await db.auth.signInWithPassword({email:LOGIN_EMAIL,password});
+    const {data,error}=await db.auth.signInWithPassword({email:isAdmin?CP_ADMIN_EMAIL:LOGIN_EMAIL,password});
     if(error){
       if(isNetworkError(error)||!(await hasLiveInternetConnection())){
         showLoginMessage('مفيش اتصال بالإنترنت — راجع الاتصال بالنت وحاول مرة أخرى');
       }else{
-        showLoginMessage('اسم المستخدم أو كلمة المرور خطأ — راجع البيانات وحاول مرة أخرى');
+        showLoginMessage(cpBadLoginMsg());
       }
       return;
     }
 
     authEstablished=true;
+    try{const prev=localStorage.getItem(CP_LAST_UID_KEY);if(prev&&prev!==data.user.id){clearSensitiveClientState();Object.keys(localStorage).filter(k=>k.indexOf('clientpro_visit_status_')===0).forEach(k=>localStorage.removeItem(k));}localStorage.setItem(CP_LAST_UID_KEY,data.user.id);localStorage.setItem(CP_LOGIN_MODE_KEY,loginMode);}catch(_){}
     if(!(await hasLiveInternetConnection())){await db.auth.signOut();authEstablished=false;setOfflineGuardVisible(true);return}
     const sid=getDeviceSessionId();
     const {data:claim,error:claimError}=await db.rpc('clientpro_claim_session',{p_device_session_id:sid,p_device_info:getDeviceInfo(),p_force:false});
@@ -2883,19 +2952,164 @@ $('loginForm').addEventListener('submit',async e=>{
     if(!showApp(data)){await failClosedSession('تعذر فتح التطبيق بأمان. سجّل الدخول مرة أخرى.');return;}
     startSessionGuards();
     await loadCustomers();
-    toast('أهلاً بك Mohamed helal');
+    toast(isAdmin?'أهلاً بك':'أهلاً بك Mohamed helal');
   }catch(err){
     console.error(err);
     if(authEstablished){await failClosedSession('تعذر إكمال التحقق الأمني. سجّل الدخول مرة أخرى.');return;}
     if(isNetworkError(err)||!(await hasLiveInternetConnection())){
       showLoginMessage('مفيش اتصال بالإنترنت — راجع الاتصال بالنت وحاول مرة أخرى');
     }else{
-      showLoginMessage('اسم المستخدم أو كلمة المرور خطأ — راجع البيانات وحاول مرة أخرى');
+      showLoginMessage(cpBadLoginMsg());
     }
   }finally{
     if(btn)btn.disabled=false;
   }
 });
+
+function startResendCooldown(sec=60){
+  const b=$('resendCodeBtn');if(resendTimer)clearInterval(resendTimer);
+  let left=sec;b.disabled=true;b.textContent='إعادة إرسال الكود ('+left+')';
+  resendTimer=setInterval(()=>{left--;if(left<=0){clearInterval(resendTimer);resendTimer=null;b.disabled=false;b.textContent='إعادة إرسال الكود'}else b.textContent='إعادة إرسال الكود ('+left+')'},1000);
+}
+function setAdminStep(step){
+  adminStep=step;
+  const u=$('loginUsername'),pw=$('loginPassword'),b=$('loginBtn');
+  if(resendTimer&&step!=='otpCode'){clearInterval(resendTimer);resendTimer=null}
+  pw.value='';
+  const show=(id,on)=>$(id).classList.toggle('hidden',!on);
+  if(step==='login'){
+    u.readOnly=false;$('loginPassField').classList.remove('hidden');
+    $('loginUserLabel').textContent='اسم المستخدم';u.type='text';u.autocomplete='username';$('loginPassLabel').textContent='كلمة المرور';pw.type='password';pw.classList.remove('otp');pw.setAttribute('inputmode','text');pw.setAttribute('autocomplete','current-password');pw.removeAttribute('maxlength');
+    b.textContent='دخول';show('forgotCodeBtn',true);show('resendCodeBtn',false);show('changeEmailBtn',false);
+  }else if(step==='otpEmail'){
+    u.readOnly=false;$('loginUserLabel').textContent='الإيميل';u.type='email';u.autocomplete='email';$('loginPassField').classList.add('hidden');
+    b.textContent='إرسال كود على الإيميل';show('forgotCodeBtn',false);show('resendCodeBtn',false);show('changeEmailBtn',true);
+    $('changeEmailBtn').textContent='رجوع لتسجيل الدخول';
+  }else{
+    u.readOnly=true;$('loginUserLabel').textContent='الإيميل';u.type='email';$('loginPassField').classList.remove('hidden');
+    $('loginPassLabel').textContent='الكود اللي وصلك على الإيميل';pw.type='text';pw.classList.add('otp');pw.setAttribute('inputmode','numeric');pw.setAttribute('autocomplete','one-time-code');pw.maxLength=10;
+    b.textContent='تأكيد الكود';show('forgotCodeBtn',false);show('resendCodeBtn',true);show('changeEmailBtn',true);
+    $('changeEmailBtn').textContent='تغيير الإيميل';
+    setTimeout(()=>pw.focus(),50);
+  }
+}
+function setLoginMode(m){
+  loginMode=m==='admin'?'admin':'user';
+  const admin=loginMode==='admin';
+  $('modeUser').classList.toggle('on',!admin);$('modeAdmin').classList.toggle('on',admin);
+  $('modeUser').setAttribute('aria-selected',String(!admin));$('modeAdmin').setAttribute('aria-selected',String(admin));
+  const u=$('loginUsername'),pw=$('loginPassword');
+  if(resendTimer){clearInterval(resendTimer);resendTimer=null}
+  adminEmail='';u.readOnly=false;u.value='';pw.value='';
+  $('forgotCodeBtn').classList.add('hidden');$('resendCodeBtn').classList.add('hidden');$('changeEmailBtn').classList.add('hidden');
+  if(admin){
+    $('loginUserLabel').textContent='اسم المستخدم';u.type='text';u.autocomplete='username';
+    setAdminStep('login');
+  }else{
+    adminStep='login';
+    $('loginUserLabel').textContent='اسم المستخدم';u.type='text';u.autocomplete='username';
+    $('loginPassField').classList.remove('hidden');
+    $('loginPassLabel').textContent='كلمة المرور';pw.type='password';pw.classList.remove('otp');pw.setAttribute('inputmode','text');pw.setAttribute('autocomplete','current-password');pw.removeAttribute('maxlength');
+    $('loginBtn').textContent='دخول';
+  }
+  setLoginNote('');
+}
+const cpEmailRe=/^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+async function requestOtp(email){
+  const {error}=await db.auth.signInWithOtp({email,options:{shouldCreateUser:false}});
+  return error;
+}
+async function sendAdminCode(){
+  const email=($('loginUsername').value||'').trim().toLowerCase().replace(/\s+/g,'');
+  if(!cpEmailRe.test(email)){showLoginMessage('اكتب الإيميل صح الأول');return}
+  if(!(await hasLiveInternetConnection())){showLoginMessage('مفيش اتصال بالإنترنت — راجع الاتصال بالنت وحاول مرة أخرى');return}
+  try{
+    if(email!==CP_ADMIN_EMAIL){adminEmail=email;setAdminStep('otpCode');startResendCooldown(60);showLoginMessage('لو الإيميل ده مسجّل هيوصلك كود خلال دقيقة. راجع Spam كمان.');return}
+    const error=await requestOtp(email);
+    if(error&&(error.status===429||/rate|seconds|limit/i.test(error.message||''))){showLoginMessage('استنى دقيقة وحاول تاني');return}
+    if(error&&isNetworkError(error)){showLoginMessage('مفيش اتصال بالإنترنت — راجع الاتصال بالنت وحاول مرة أخرى');return}
+    adminEmail=email;setAdminStep('otpCode');startResendCooldown(60);
+    showLoginMessage('لو الإيميل ده مسجّل هيوصلك كود خلال دقيقة. راجع Spam كمان.');
+  }catch(err){console.warn(err);showLoginMessage('تعذر الإرسال دلوقتي، حاول بعد دقيقة')}
+}
+async function verifyAdminCode(){
+  const token=($('loginPassword').value||'').replace(/\s+/g,'');
+  if(!token){showLoginMessage('اكتب الكود اللي وصلك على الإيميل');return}
+  if(!(await hasLiveInternetConnection())){showLoginMessage('مفيش اتصال بالإنترنت — راجع الاتصال بالنت وحاول مرة أخرى');return}
+  try{
+    const {data,error}=await db.auth.verifyOtp({email:adminEmail,token,type:'email'});
+    if(!error&&data?.session&&String(data.session.user?.email||'').toLowerCase()!==CP_ADMIN_EMAIL){try{await db.auth.signOut({scope:'local'})}catch(_){}showLoginMessage('الكود غلط أو انتهت صلاحيته');return}
+    if(error||!data?.session){showLoginMessage(isNetworkError(error)?'مفيش اتصال بالإنترنت — راجع الاتصال بالنت وحاول مرة أخرى':'الكود غلط أو انتهت صلاحيته. اطلب كود جديد وحاول تاني');return}
+    showLoginMessage('');
+    $('loginForm').classList.add('hidden');$('newCodeForm').classList.remove('hidden');
+    $('newCodeInput').type='password';$('newCodeConfirm').type='password';$('newCodeNote').textContent='';
+    $('newCodeInput').focus();
+  }catch(err){console.warn(err);showLoginMessage('تعذر التحقق دلوقتي، حاول تاني')}
+}
+$('modeUser').addEventListener('click',()=>{if(loginMode!=='user')setLoginMode('user')});
+$('modeAdmin').addEventListener('click',()=>{if(loginMode!=='admin')setLoginMode('admin')});
+$('forgotCodeBtn').addEventListener('click',()=>{
+  setAdminStep('otpEmail');$('loginUsername').value='';setLoginNote('');
+});
+$('changeEmailBtn').addEventListener('click',()=>{
+  if(adminStep==='otpEmail'){setAdminStep('login');setLoginNote('');return}
+  adminEmail='';$('loginUsername').value='';setAdminStep('otpEmail');setLoginNote('');$('loginUsername').focus();
+});
+$('resendCodeBtn').addEventListener('click',async()=>{
+  const b=$('resendCodeBtn');if(b.disabled||!adminEmail)return;
+  b.disabled=true;
+  try{
+    if(!(await hasLiveInternetConnection())){showLoginMessage('مفيش اتصال بالإنترنت — راجع الاتصال بالنت وحاول مرة أخرى');b.disabled=false;return}
+    const error=await requestOtp(adminEmail);
+    if(error&&(error.status===429||/rate|seconds|limit/i.test(error.message||''))){showLoginMessage('استنى دقيقة وحاول تاني');startResendCooldown(60);return}
+    showLoginMessage('اتبعت كود جديد. الكود القديم مبقاش شغال.');startResendCooldown(60);
+  }catch(err){console.warn(err);showLoginMessage('تعذر الإرسال دلوقتي، حاول بعد دقيقة');b.disabled=false}
+});
+function cpRandomCode(len=20){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%*-_';
+  const lim=256-(256%chars.length);let out='';
+  while(out.length<len){const b=new Uint8Array(len*2);crypto.getRandomValues(b);for(const x of b){if(x<lim&&out.length<len)out+=chars[x%chars.length]}}
+  return out;
+}
+$('genCodeBtn').addEventListener('click',()=>{
+  const c=cpRandomCode(20);
+  ['newCodeInput','newCodeConfirm'].forEach(id=>{$(id).type='text';$(id).value=c});
+  $('newCodeNote').style.color='';$('newCodeNote').textContent='انسخ الكود واحفظه في مكان آمن قبل ما تدوس حفظ.';
+});
+$('copyCodeBtn').addEventListener('click',async()=>{
+  const v=$('newCodeInput').value;if(!v)return;
+  try{await navigator.clipboard.writeText(v);$('newCodeNote').textContent='تم النسخ.'}catch(_){$('newCodeInput').select();$('newCodeNote').textContent='انسخ الكود يدويًا.'}
+});
+async function cpLeaveNewCode(){
+  $('newCodeInput').value='';$('newCodeConfirm').value='';
+  $('newCodeForm').classList.add('hidden');$('loginForm').classList.remove('hidden');
+}
+$('cancelNewCode').addEventListener('click',async()=>{
+  try{await db.auth.signOut({scope:'local'})}catch(_){}
+  await cpLeaveNewCode();setLoginMode('admin');
+});
+$('newCodeForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const note=$('newCodeNote'),btn=$('newCodeBtn');
+  const a=$('newCodeInput').value,b=$('newCodeConfirm').value;
+  note.style.color='#a52836';note.style.fontWeight='800';
+  if(a.length<12){note.textContent='كلمة المرور لازم 12 حرف على الأقل';return}
+  if(a!==b){note.textContent='كلمتين المرور مش متطابقتين';return}
+  btn.disabled=true;
+  try{
+    const {error}=await db.auth.updateUser({password:a});
+    if(error){note.textContent=/same|different/i.test(error.message||'')?'اختار كلمة مرور مختلفة عن القديمة':/weak|short|least|character/i.test(error.message||'')?'الكود ضعيف أو قصير. اختار كود أطول وأصعب':'تعذر حفظ الكود، اطلب كود جديد وحاول تاني';return}
+    const email=adminEmail;
+    try{await db.auth.signOut({scope:'local'})}catch(_){}
+    await new Promise(r=>setTimeout(r,80));
+    await cpLeaveNewCode();
+    setLoginMode('admin');
+    $('loginUsername').value=CP_ADMIN_NAME;$('loginPassword').value=a;
+    $('loginForm').requestSubmit();
+  }catch(err){console.warn(err);note.textContent='تعذر حفظ كلمة المرور، حاول تاني'}
+  finally{btn.disabled=false}
+});
+try{if(localStorage.getItem(CP_LOGIN_MODE_KEY)==='admin')setLoginMode('admin')}catch(_){}
 
 $('logoutBtn').onclick=async()=>{
   stopAutoLogoutWatch();stopReleaseVersionWatch();
@@ -4046,7 +4260,7 @@ window.toggleThemeMode=function(){
 syncThemeUI(getPreferredTheme());
 
 /* ===== نظام التحديثات والإعدادات (v3.9) ===== */
-const APP_VERSION='v4.5';
+const APP_VERSION='v4.6';window.CP_APP_VERSION=APP_VERSION;
 const BUILD_VERSION=APP_VERSION;
 const LANG_STORAGE_KEY='clientpro_lang_mode';
 let pendingRemoteVersion=null;
@@ -4350,7 +4564,7 @@ initDMYSelectors('initDay','initMonth','initYear');
 initDMYSelectors('vDay','vMonth','vYear');
 setDMYValue('initDay','initMonth','initYear',localDate());
 syncReminderLabels();
-requireSession();
+requireSession().finally(function(){window.__cpBootDone=true;if(window.cpSplashRelease)window.cpSplashRelease()});
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', async () => {
@@ -4846,6 +5060,7 @@ blankApp.querySelectorAll('input,textarea').forEach(el=>{el.value='';el.removeAt
 const previewMarkup=blankApp.outerHTML;
 const blankLogin=document.getElementById('loginScreen').cloneNode(true);
 blankLogin.classList.remove('hidden');
+blankLogin.querySelectorAll('#newCodeForm,#resendCodeBtn,#changeEmailBtn').forEach(el=>el.remove());
 blankLogin.querySelectorAll('input').forEach(el=>{el.value='';el.removeAttribute('value');});
 blankLogin.querySelectorAll('[onclick],[onchange],[onsubmit]').forEach(el=>{el.removeAttribute('onclick');el.removeAttribute('onchange');el.removeAttribute('onsubmit');});
 blankLogin.querySelector('#loginStatusNote').textContent='';
@@ -4915,13 +5130,13 @@ const LOCK_SVG='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stro
 function showLockPanel(){
  el('cpThemeConfirm').hidden=true;
  el('cpThemeLockTitle').textContent=text('التصميم ده مقفول','This design is locked');
- el('cpThemeLockNote').textContent=text('اكتب الكود عشان تفتح كل التصاميم على الجهاز ده.','Enter the code to unlock all designs on this device.');
+ el('cpThemeLockNote').textContent=text('اكتب الكود اللي أخدته عشان تفتح كل التصاميم على حسابك.','Enter your code to unlock all designs on your account.');
  el('cpThemeCode').value='';el('cpThemeLockErr').textContent='';
  el('cpThemeUnlock').textContent=text('فتح','Unlock');el('cpThemeLockBack').textContent=text('رجوع للمعاينة','Back to preview');
  el('cpThemeLock').hidden=false;el('cpThemeLock').scrollIntoView({block:'nearest'});el('cpThemeCode').focus();
 }
-function tryUnlock(){
- if(window.cpThemeCodeOk(el('cpThemeCode').value)){window.cpThemeUnlock();el('cpThemeLock').hidden=true;renderGallery();updatePreview();el('cpThemeChoose').click();}
+async function tryUnlock(){
+ if(await window.cpThemeRedeem(el('cpThemeCode').value)){el('cpThemeLock').hidden=true;renderGallery();updatePreview();el('cpThemeChoose').click();}
  else{el('cpThemeLockErr').textContent=text('الكود غلط، حاول تاني.','Wrong code, try again.');el('cpThemeCode').select();}
 }
 function renderGallery(){
@@ -5032,9 +5247,16 @@ try{
 /* Splash: brief branded screen on open. */
 try{
  var sp=document.createElement('div');sp.id='cpV9Splash';sp.setAttribute('aria-hidden','true');
- sp.innerHTML='<div class="cp-v9-splash-mark"><svg class="cp-splash-brandmark" viewBox="0 0 64 64" role="img" aria-label="CLIENT PRO"><circle cx="32" cy="32" r="31" fill="#fff"/><path class="cp-sp-c" d="M39 13c-4-3-8-4-13-4C13 9 4 19 4 32s9 23 22 23c5 0 9-1 13-4l-8-9c-2 2-4 3-7 3-7 0-11-5-11-13s4-13 11-13c3 0 5 1 7 3z" fill="#a92835"/><path class="cp-sp-eq" d="M39 23h19v7H39zm0 12h19v7H39z" fill="#a92835"/></svg></div><div class="cp-v9-splash-name">CLIENT PRO</div><div class="cp-v9-splash-sub">\u0625\u062f\u0627\u0631\u0629 \u0627\u0644\u0639\u0645\u0644\u0627\u0621 \u0648\u0627\u0644\u0632\u064a\u0627\u0631\u0627\u062a</div><div class="cp-v9-splash-bar"><i></i></div>';
- document.body.appendChild(sp);
- setTimeout(function(){sp.classList.add('cp-v9-splash-out');setTimeout(function(){sp.remove();},560);},1600);
+ var sp=document.getElementById('cpV9Splash');
+ if(sp){
+  var t0=Date.now(),gone=false;
+  window.cpSplashRelease=function(){
+   if(gone)return;gone=true;
+   setTimeout(function(){sp.classList.add('cp-v9-splash-out');setTimeout(function(){sp.remove();},560);},Math.max(0,1600-(Date.now()-t0)));
+  };
+  setTimeout(window.cpSplashRelease,6000);
+  if(window.__cpBootDone)window.cpSplashRelease();
+ }
 }catch(_){}
 
 /* Client rows: small circular initial avatar + colour group tags (VIP = 5 stars, overdue = due reminder). Visual only. */
@@ -5176,7 +5398,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  html #app #recordsPanel #recordsTableWrap tbody tr>td:first-child{position:static!important;right:auto!important;box-shadow:none!important;z-index:auto!important}
  html #app #recordsPanel #recordsTableWrap tbody tr>td:nth-child(3)::before{content:none!important;display:none!important}
 }
-/* v4.5 perf pass 2: free fling on the dashboard stats row. Presentation-only. */
+/* v4.6 perf pass 2: free fling on the dashboard stats row. Presentation-only. */
 @media(max-width:650px){
  html #app .wrap>.stats,html[data-cp-design] #app .wrap>.stats{scroll-snap-type:none!important;scroll-behavior:auto!important;overscroll-behavior-x:contain!important;-webkit-overflow-scrolling:touch!important;touch-action:pan-x pan-y!important;contain:layout paint;transform:translateZ(0);will-change:scroll-position}
  html #app .wrap>.stats>.stat,html[data-cp-design] #app .wrap>.stats>.stat{scroll-snap-align:none!important;scroll-snap-stop:normal!important;transition:none!important;animation:none!important;box-shadow:0 1px 4px rgba(0,0,0,.08)!important;filter:none!important;backdrop-filter:none!important;contain:layout paint style;backface-visibility:hidden;transform:translateZ(0)}
@@ -5235,8 +5457,8 @@ html[data-cp-design="layl"] #visitsReportModal .modalhead>.actions>.btn:not(.dan
  function locked(k){return k!=='original'&&!(window.cpThemesUnlocked&&window.cpThemesUnlocked());}
  function paintLocks(){var b=grid.querySelectorAll('.app-icon-item');for(var i=0;i<b.length;i++){var k=b[i].getAttribute('data-k'),L=locked(k),o=b[i].querySelector('.app-icon-lock');b[i].classList.toggle('is-locked',L);if(L&&!o){o=document.createElement('i');o.className='app-icon-lock';o.innerHTML='<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2" fill="currentColor" fill-opacity=".3"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';b[i].appendChild(o);}else if(!L&&o){o.remove();}}}
  var pend=null,box=document.getElementById('appIconLock');
- if(!box){box=document.createElement('div');box.id='appIconLock';box.hidden=true;box.style.cssText='margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(128,128,128,.35)';box.innerHTML='<div style="font-weight:800;margin-bottom:4px">الأيقونة دي مقفولة</div><div class="sub" style="margin-bottom:8px">اكتب الكود عشان تفتح كل الأيقونات والثيمات على الجهاز ده.</div><input id="appIconCode" type="text" dir="ltr" autocomplete="off" autocapitalize="off" spellcheck="false" style="width:100%;box-sizing:border-box;padding:12px;font-size:16px;border-radius:10px;border:1px solid currentColor;background:transparent;color:inherit"><div id="appIconCodeErr" role="alert" style="color:#d33;font-weight:700;min-height:18px;margin:6px 0"></div><div style="display:flex;gap:8px"><button type="button" class="btn primary" id="appIconUnlock">فتح</button><button type="button" class="btn" id="appIconLockCancel">إلغاء</button></div>';st.parentNode.insertBefore(box,st.nextSibling);}
- function tryUnlock(){var v=document.getElementById('appIconCode').value;if(window.cpThemeCodeOk&&window.cpThemeCodeOk(v)){window.cpThemeUnlock();box.hidden=true;paintLocks();var k=pend;pend=null;if(k)pick(k);}else{document.getElementById('appIconCodeErr').textContent='الكود غلط، حاول تاني.';document.getElementById('appIconCode').select();}}
+ if(!box){box=document.createElement('div');box.id='appIconLock';box.hidden=true;box.style.cssText='margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(128,128,128,.35)';box.innerHTML='<div style="font-weight:800;margin-bottom:4px">الأيقونة دي مقفولة</div><div class="sub" style="margin-bottom:8px">اكتب الكود اللي أخدته عشان تفتح كل الأيقونات والثيمات على حسابك.</div><input id="appIconCode" type="text" dir="ltr" autocomplete="off" autocapitalize="off" spellcheck="false" style="width:100%;box-sizing:border-box;padding:12px;font-size:16px;border-radius:10px;border:1px solid currentColor;background:transparent;color:inherit"><div id="appIconCodeErr" role="alert" style="color:#d33;font-weight:700;min-height:18px;margin:6px 0"></div><div style="display:flex;gap:8px"><button type="button" class="btn primary" id="appIconUnlock">فتح</button><button type="button" class="btn" id="appIconLockCancel">إلغاء</button></div>';st.parentNode.insertBefore(box,st.nextSibling);}
+ async function tryUnlock(){var v=document.getElementById('appIconCode').value;if(await window.cpThemeRedeem(v)){box.hidden=true;paintLocks();var k=pend;pend=null;if(k)pick(k);}else{document.getElementById('appIconCodeErr').textContent='الكود غلط، حاول تاني.';document.getElementById('appIconCode').select();}}
  document.getElementById('appIconUnlock').onclick=tryUnlock;
  document.getElementById('appIconCode').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();tryUnlock();}});
  document.getElementById('appIconLockCancel').onclick=function(){box.hidden=true;pend=null;};
@@ -5275,5 +5497,12 @@ html[data-cp-design="layl"] #visitsReportModal .modalhead>.actions>.btn:not(.dan
  window.addEventListener('resize',function(){clearTimeout(settle._t);settle._t=setTimeout(settle,150);});
  window.addEventListener('orientationchange',function(){setTimeout(settle,250);});
 })();
+</script>
+<script id="cp-lock-hooks">
+try{db.auth.onAuthStateChange(function(ev,ses){
+ if(ev==='SIGNED_OUT'){window.cpLockClear();return;}
+ if(ev==='SIGNED_IN'||ev==='INITIAL_SESSION'){setTimeout(function(){window.cpLockRefresh();},0);}
+});
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')setTimeout(function(){window.cpLockRefresh();},0);});}catch(_){}
 </script>
 </body></html>
