@@ -5,7 +5,7 @@
 (fn=>document.readyState==='loading'?document.addEventListener('DOMContentLoaded',fn):fn())(()=>{
 'use strict';
 
-const APP_VERSION='1.1.0';
+const APP_VERSION=String(window.CP_APP_VERSION||'4.6').replace(/^v/i,'');
 const VERSION_URLS=[
   'https://raw.githubusercontent.com/mohamedkany1-gif/CLIENT-PRO/main/version.json',
   'version.json'
@@ -303,7 +303,7 @@ if(LN){
 
 /* ---------- تنبيه التحديثات ---------- */
 
-const vn=v=>String(v).split('.').map(n=>parseInt(n)||0);
+const vn=v=>String(v).replace(/^v/i,'').split('.').map(n=>parseInt(n)||0);
 
 const newer=(a,b)=>{
   const x=vn(a);
